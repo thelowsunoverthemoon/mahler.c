@@ -128,20 +128,28 @@ double getFreqOrWave(Note note, int standard, enum NoteFormula type) {
     for (int i = 0; i < iter; i++) {
         raw *= base;
     }
-    if (type == FREQUENCY) {
-        return raw * standard;
-    } else {
-        return 345/(raw * standard);
-    }
+    return type == FREQUENCY ? raw * standard : 345/(raw * standard);
 }
 
 int isEnharmonic(Note notea, Note noteb) {
     int roota = notea.note;
     NOTETOCHROMA(roota);
     roota += notea.acci;
+    if (roota < 1) {
+        roota += 11;
+    } else if (roota > 12) {
+        roota -= 11;
+    }
+    roota += notea.pitch;
     int rootb = noteb.note;
     NOTETOCHROMA(rootb);
     rootb += noteb.acci;
+    if (rootb < 1) {
+        rootb += 11;
+    } else if (rootb > 12) {
+        rootb -= 11;
+    }
+    rootb += noteb.pitch;
     return roota == rootb ? 1 : 0;
 }
 
@@ -236,7 +244,7 @@ static int modeSimpleInter(int* pitch, int* inter) {
 
 Note getInter(enum NoteOrder root, enum Accidental acci, int pitch, int inter, enum Quality quality, modeInter type) {
     Note dest = {-1, 0, 0};
-    if (type(&pitch, &inter)== 1) {
+    if (type(&pitch, &inter) == 1) {
         return dest;
     }
     int end = 0;
@@ -268,7 +276,11 @@ Note getInter(enum NoteOrder root, enum Accidental acci, int pitch, int inter, e
     }
     NOTETOCHROMA(root);
     end += root + interSteps[inter - 1] + acci + quality - 1;
-    end -= ((end > 13) * 12) + ((end < 0) * 12);
+    if (end > 13) {
+        end -= 12;
+    } else if (end < 0) {
+        end += 12;
+    }
     if (chromatic[end].note == enharmonic) {
         dest.note = chromatic[end].note;
         dest.acci = chromatic[end].acci;
@@ -318,7 +330,11 @@ Note getInterStruct(Note note, Interval interval, modeInter type) {
     }
     NOTETOCHROMA(root);
     end += root + interSteps[inter - 1] + note.acci + quality - 1;
-    end -= ((end > 13) * 12) + ((end < 0) * 12);
+    if (end > 13) {
+        end -= 12;
+    } else if (end < 0) {
+        end += 12;
+    }
     if (chromatic[end].note == enharmonic) {
         dest.note = chromatic[end].note;
         dest.acci = chromatic[end].acci;
