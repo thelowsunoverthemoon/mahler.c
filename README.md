@@ -3,7 +3,7 @@ A simple library for music theory in pure C, with Interval, Chord, and Scale fun
 
 ## DOCUMENTATION
 
--- Enumerators --
+### Enumerators
 
 -- Structs --
 
