@@ -1,5 +1,5 @@
 # musictheory.c
-A simple library for music theory in pure C, with Interval, Chord, and Scale functions. I tried to keep this as minimal as possible, so there is no malloc or anything happening under the hood - the user of the library is in full control. All return values are enharmonically correct (ie, minor 6th of D is B flat, not A sharp). Below is the documentation. Examples are in code blocks, with the code first, and the result on the next line.
+A simple library for music theory in pure C, with Interval, Chord, and Scale functions. I tried to keep this as minimal as possible, so there is no malloc or anything happening under the hood - the user of the library is in full control. All return values are enharmonically correct (ie, minor 6th of D is B flat, not A sharp). Below is the documentation. Function examples are in code blocks labelled EXAMPLE, with the code first, and the result on the next line.
 
 ## DOCUMENTATION
 
@@ -73,11 +73,13 @@ typedef struct {
 
 This is the Chord struct. *size* is the number of the notes in the Chord. *inversion* is the current inversion of the chord in *notes*. *base* is the root position of the chord. *notes* is the chord according to it's *inversion*. 
 
+```C
 typedef struct {
     int size;
     int type;
     Note* notes;
 } Scale;
+```
 
 This is the Scale struct. *size* is the number of notes in the Scale. *type* is whether ASCEND, DESCEND, or FULL was used. *notes* is the scale.
 
