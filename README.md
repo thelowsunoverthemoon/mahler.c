@@ -1,5 +1,5 @@
 # musictheory.c
-A simple library for music theory in pure C, with Interval, Chord, and Scale functions. I tried to keep this as simple as possible, so there is no malloc or anything happening under the hood. The user of the library is in full control. All return values are enharmonically correct (ie, minor 6th of D is B flat, not A sharp) Below is the documentation. Examples are in code blocks, with the code first, and the result on the next line.
+A simple library for music theory in pure C, with Interval, Chord, and Scale functions. I tried to keep this as simple as possible, so there is no malloc or anything happening under the hood - the user of the library is in full control. All return values are enharmonically correct (ie, minor 6th of D is B flat, not A sharp). Below is the documentation. Examples are in code blocks, with the code first, and the result on the next line.
 
 ## DOCUMENTATION
 
@@ -18,9 +18,9 @@ void printScale(char* prefix, Note note, char* suffix);
 ```
 #### EXAMPLE
 ```C
-printNote("This note is ", (Note) {B, FLAT, 4}, "");
+printNote("This note is ", (Note) {G, SHARP, 4}, "");
 
-This note is Bb4
+This note is G#4
 ```
 
 ### Misc Note Functions
@@ -38,9 +38,10 @@ double getFreqOrWave(Note note, int standard, enum NoteFormula type);
 Note notea = {D, DBSHARP, 4};
 Note noteb = {E, NONE, 4};
 if (isEnharmonic(notea, noteb)) {
-    printf("%f", getFreqOrWave(notea, STANDARD, FREQUENCY));
+    printf("The frequency is %f", getFreqOrWave(notea, STANDARD, FREQUENCY));
 }
 
+The frequency is 329.627704
 ```
 
 ### Interval Functions
@@ -58,7 +59,11 @@ Note getInterStruct(Note note, Interval interval, modeInter type);
 ```
 #### EXAMPLE
 ```C
-printNote(getInterStruct(
+Note note = {B, DBFLAT, 4};
+Interval inter = {4, AUGMENTED};
+printNote("Augmented 4th of B double flat is ", getInterStruct(note, inter, SIMPLE), ".");
+
+Augmented 4th of B double flat is Eb5.
 ```
 
 ### Chord Functions
@@ -73,6 +78,17 @@ Chord invertChord(Chord* chord, int inversion);
 ```
 #### EXAMPLE
 ```C
+Note chdbase[4];
+Note chdnotes[4];
+Chord chord = getChord((Note) {D, NONE, 3}, &DOMINANT7, chdbase, chdnotes);
+for (int i = 0; i < chord.size; i++) {
+    printChord("", invertChord(&chord, i), "\n");
+}
+
+D3 F#3 A3 C4
+F#3 A3 C4 D4
+A3 C4 D4 F#4
+C4 D4 F#4 A4
 ```
 
 ### Scale Functions
@@ -85,4 +101,11 @@ Scale getScale (Note start, const ScaleBase* type, Note notes[], enum ScaleType 
 ```
 #### EXAMPLE
 ```C
+Note note = {F, SHARP, 4};
+Note scale[8];
+printScale("Ascending : ", getScale(note, &NATURALMINSCALE, scale, ASCEND), "\n");
+printScale("Descending : ", getScale(note, &NATURALMINSCALE, scale, DESCEND), "");
+
+Ascending : F#4 G#4 A4 B4 C#5 D5 E5 F#5
+Descending : F#5 E5 D5 C#5 B4 A4 G#4 F#4
 ```
