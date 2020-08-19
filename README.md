@@ -26,24 +26,73 @@ This is for the *type* parameter of getFreqOrWave.
 ```C
 enum PitchStandard {BAROQUE = 415, STANDARD = 440, CLASSICAL = 430};
 ```
-Finally, these are pre-defined standards for getFreqOrWave. You can pass them in parameter *standard*, or just put your own number.
+These are pre-defined standards for getFreqOrWave. You can pass them in parameter *standard*, or just put your own number.
 
 ```C
 enum NoteOrder {C, D, E, F, G, A, B};
 ```
-This is for the *root* parameter of getInter, or the note member of the Note struct. Pretty self-explanatory.
+This is for the *root* parameter of getInter, or the *note* member of the Note struct. Pretty self-explanatory.
 
 ```C
 enum Quality {MINOR = -1, MAJOR = 0, AUGMENTED = 1, DIMINISHED = -2, PERFECT = 3};
 ```
-This is for the *quality* parameter of getInter, or the quality member of the Interval struct. Also pretty self-explanatory.
+This is for the *quality* parameter of getInter, or the *quality* member of the Interval struct. Also pretty self-explanatory.
 
 ```C
 enum Accidental {DBFLAT = -2, FLAT = -1, NONE = 0, SHARP = 1, DBSHARP = 2};
 ```
-This is for the *acci* parameter of getInter, or the acci member of the Note struct. Like above, pretty self-explanatory.
+Finally, this is for the *acci* parameter of getInter, or the *acci* member of the Note struct. Like above, pretty self-explanatory.
 
 ### Structs
+```C
+typedef struct {
+    enum NoteOrder note;
+    enum Accidental acci;
+    int pitch;
+} Note;
+```
+This is the basic Note struct. *note* represents the root note (ie A). acci represents the accidental of said note (ie FLAT). Pitch is the octave the note occupies (ie 4).
+
+```C
+typedef struct {
+    int inter;
+    enum Quality quality;
+} Interval;
+```
+
+This is the Interval struct. *inter* is the number value of the interval (ie 5). *quality* is the quality of the interval (ie AUGMENTED),
+
+```C
+typedef struct {
+    int size;
+    int inversion;
+    Note* base;
+    Note* notes;
+} Chord;
+```
+
+This is the Chord struct. *size* is the number of the notes in the Chord. *inversion* is the current inversion of the chord in *notes*. *base* is the root position of the chord. *notes* is the chord according to it's *inversion*. 
+
+typedef struct {
+    int size;
+    int type;
+    Note* notes;
+} Scale;
+
+This is the Scale struct. *size* is the number of notes in the Scale. *type* is whether ASCEND, DESCEND, or FULL was used. *notes* is the scale.
+
+```C
+typedef struct {
+    int size;
+    Interval* steps;
+} ChordBase;
+
+typedef struct {
+    int length;
+    Interval* steps;
+} ScaleBase;
+```
+These last two are for the getChord and getScale functions. They are "types" of Chords to be passed to the functions. A number of common scales and chords have been pre-defined (a list is in musictheory.h), but you can add your own and pass it in if you wish.
 
 ### Print Functions
 
