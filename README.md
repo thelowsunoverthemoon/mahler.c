@@ -1,7 +1,7 @@
 # musictheory.c
 A simple library for music theory in pure C, with Interval, Chord, and Scale functions. I tried to keep this as simple as possible, so there is no malloc or anything happening under the hood. The user of the library is in full control. All return values are enharmonically correct (ie, minor 6th of D is B flat, not A sharp) Below is the documentation. Examples are in code blocks, with the code first, and the result on the next line.
 
-DOCUMENTATION
+## DOCUMENTATION
 
 -- Enumerators --
 
