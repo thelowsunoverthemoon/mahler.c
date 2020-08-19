@@ -1,7 +1,7 @@
 #ifndef __MUSICTHEORY_H__
 #define __MUSICTHEORY_H__
 
-// Macros for getInter functions //
+// Macros for getInter parameter "type" //
 
 #define COMPOUND modeCompoundInter
 #define SIMPLE modeSimpleInter
