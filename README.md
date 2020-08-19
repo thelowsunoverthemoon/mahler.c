@@ -183,7 +183,7 @@ C4 D4 F#4 A4
 ### Scale Functions
 
 There's only one scale function : getScale. It returns a Scale struct based on the base *note* and const ScaleBase* *type* (see Structs). You must pass in an array that can fit all the notes
-in the scale according to *mode* (ie, major scale (8 notes) has mode FULL (ascending and descending), so the array must fit 16). *mode* determines the format of the returned Scale. See the ScaleType enum above.
+in the scale according to *mode* (ie, major scale (8 notes) has mode FULL (ascending and descending), so the array must fit 16). *mode* determines the format of the returned Scale (See the ScaleType enum in Enumerators)
 
 ```C
 Scale getScale (Note start, const ScaleBase* type, Note notes[], enum ScaleType mode);
