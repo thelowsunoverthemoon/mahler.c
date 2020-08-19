@@ -1,9 +1,47 @@
 # musictheory.c
-A simple library for music theory in pure C, with Interval, Chord, and Scale functions. I tried to keep this as simple as possible, so there is no malloc or anything happening under the hood - the user of the library is in full control. All return values are enharmonically correct (ie, minor 6th of D is B flat, not A sharp). Below is the documentation. Examples are in code blocks, with the code first, and the result on the next line.
+A simple library for music theory in pure C, with Interval, Chord, and Scale functions. I tried to keep this as minimal as possible, so there is no malloc or anything happening under the hood - the user of the library is in full control. All return values are enharmonically correct (ie, minor 6th of D is B flat, not A sharp). Below is the documentation. Examples are in code blocks, with the code first, and the result on the next line.
 
 ## DOCUMENTATION
 
 ### Enumerators
+There are a couple enumerators for simplicity's sake.
+
+```C
+enum ScaleType {ASCEND, DESCEND, FULL};
+```
+This is for the *mode* parameter of getScale.
+
+* ASCEND is to only return a Scale ascending
+* DESCEND is to only return the Scale descending
+* FULL is to return the Scale both ascending and descending
+
+```C
+enum NoteFormula {FREQUENCY, WAVELENGTH};
+```
+This is for the *type* parameter of getFreqOrWave.
+
+* WAVELENGTH returns the wavelength of the Note
+* FREQUENCY returns the frequency fo the Note
+
+```C
+enum PitchStandard {BAROQUE = 415, STANDARD = 440, CLASSICAL = 430};
+```
+Finally, these are pre-defined standards for getFreqOrWave. You can pass them in parameter *standard*, or just put your own number.
+
+```C
+enum NoteOrder {C, D, E, F, G, A, B};
+```
+This is for the *root* parameter of getInter, or the note member of the Note struct. Pretty self-explanatory.
+
+```C
+enum Quality {MINOR = -1, MAJOR = 0, AUGMENTED = 1, DIMINISHED = -2, PERFECT = 3};
+```
+This is for the *quality* parameter of getInter, or the quality member of the Interval struct. Also pretty self-explanatory.
+
+```C
+enum Accidental {DBFLAT = -2, FLAT = -1, NONE = 0, SHARP = 1, DBSHARP = 2};
+```
+This is for the *acci* parameter of getInter, or the acci member of the Note struct. Like above, pretty self-explanatory.
 
 ### Structs
 
