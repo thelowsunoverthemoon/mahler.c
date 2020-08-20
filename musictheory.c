@@ -42,6 +42,14 @@ const ScaleBase MELODICMINSCALE = {
     8, (Interval[]) {{2, MAJOR},{2, MINOR},{2, MAJOR},{2, MAJOR},{2, MAJOR},{2, MAJOR},{2, MINOR}}
 };
 
+const ScaleBase PENTATONICMINSCALE = {
+    6, (Interval[]) {{2, MAJOR},{2, MAJOR},{3, MINOR},{2, MAJOR},{3, MINOR}}
+};
+
+const ScaleBase PENTATONICMAJSCALE = {
+    6, (Interval[]) {{3, MINOR},{2, MAJOR},{2, MAJOR},{3, MINOR},{2, MAJOR}}
+};
+
 const ChordBase MAJORTRIAD = {
     3, (Interval[]) {{3, MAJOR},{3, MINOR}}
 };
