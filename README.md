@@ -4,7 +4,6 @@ A simple library for music theory in pure C, with Interval, Chord, and Scale fun
 ## DOCUMENTATION
 
 ### Enumerators
-There are a couple enumerators for simplicity's sake.
 
 ```C
 enum ScaleType {ASCEND, DESCEND, FULL};
