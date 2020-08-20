@@ -50,7 +50,7 @@ typedef struct {
     int pitch;
 } Note;
 ```
-This is the basic Note struct. *note* represents the root note (ie A). acci represents the accidental of said note (ie FLAT). Pitch is the octave the note occupies (ie 4).
+This is the basic Note struct. *note* represents the root note (ie A). *acci* represents the accidental of said note (ie FLAT). *pitch* is the octave the note occupies (ie 4).
 
 ```C
 typedef struct {
