@@ -234,7 +234,7 @@ void modeDescend(Note notes[], const ScaleBase* type, Note* current, int index) 
 void modeFull(Note notes[], const ScaleBase* type, Note* current, int index) {
     notes[index] = getInterStruct(*current, type->steps[index - 1], SIMPLE);
     notes[type->length * 2 - index - 1] = notes[index];
-    *current = notes[index];    
+    *current = notes[index];
 }
 
 static int modeCompoundInter(int* pitch, int* inter) {

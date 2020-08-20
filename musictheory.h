@@ -1,6 +1,10 @@
 #ifndef __MUSICTHEORY_H__
 #define __MUSICTHEORY_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Macros for getInter parameter "type" //
 
 #define COMPOUND modeCompoundInter
@@ -98,5 +102,9 @@ Scale getScale (Note start, const ScaleBase* type, Note notes[], enum ScaleType 
 
 int isEnharmonic(Note notea, Note noteb);
 double getFreqOrWave(Note note, int standard, enum NoteFormula type);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif
