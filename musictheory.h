@@ -53,19 +53,21 @@ typedef struct {
 
 // Pre-defined Scales and Chord bases //
 
-extern const ScaleBase MAJORSCALE;
-extern const ScaleBase NATURALMINSCALE;
-extern const ScaleBase HARMONICMINSCALE;
-extern const ScaleBase MELODICMINSCALE;
-extern const ChordBase MINORTRIAD;
-extern const ChordBase MAJORTRIAD;
-extern const ChordBase AUGMENTEDTRIAD;
-extern const ChordBase DIMINISHEDTRIAD;
-extern const ChordBase DIMINISHED7;
-extern const ChordBase HALFDIMINISHED7;
-extern const ChordBase MINOR7;
-extern const ChordBase MAJOR7;
-extern const ChordBase DOMINANT7;
+extern const ScaleBase MAJORSCALE;         // Major Scale
+extern const ScaleBase NATURALMINSCALE;    // Natural Minor Scale
+extern const ScaleBase HARMONICMINSCALE;   // Harmonic Minor Scale
+extern const ScaleBase MELODICMINSCALE;    // Melodic Minor Scale
+extern const ScaleBase PENTATONICMINSCALE; // Major Pentatonic Scale
+extern const ScaleBase PENTATONICMAJSCALE; // Minor Pentatonic Scale (relative minor)
+extern const ChordBase MINORTRIAD;         // Minor Triad
+extern const ChordBase MAJORTRIAD;         // Major Triad
+extern const ChordBase AUGMENTEDTRIAD;     // Augmented Triad
+extern const ChordBase DIMINISHEDTRIAD;    // Diminished Triad
+extern const ChordBase DIMINISHED7;        // Diminished 7th
+extern const ChordBase HALFDIMINISHED7;    // Half Diminished 7th
+extern const ChordBase MINOR7;             // Minor 7th
+extern const ChordBase MAJOR7;             // Major 7th
+extern const ChordBase DOMINANT7;          // Dominant 7th
 
 // Defined function pointers for functions parameters. See documentation :) //
 
