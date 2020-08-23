@@ -163,7 +163,7 @@ Interval returnInter(Note notea, Note noteb) {
         return dest;
     }
     int pitch, checkcomp;
-    if (inter > 8) {
+    if (inter > SIMPLE_INTER_MAX) {
         checkcomp = 1;
         inter -= ADJUST_NOTE;
         pitch = noteb.pitch - 1;
