@@ -1,13 +1,20 @@
 #include <stdio.h>
 #include "musictheory.h"
 
-#define NOTETOCHROMA(A) { \
-    if (A > 2) {          \
-        A = 2 * A;        \
-    } else {              \
-        A = 2 * A + 1;    \
-    }                     \
-}
+#define TWELTH_ROOT_2 1.059463      // Needed for frequency formula (frequency of A4 * 2^(1/12)^half steps from A4)
+#define SOUND_SPEED 345             // Needed for wavelength formula
+#define SIZE_NOTE 6                 // Size of note scale from 0 (C D E F G A B)              
+#define SIZE_CHROMATIC 12           // Size of normal chromatic scale
+#define SIZE_ACCI 4                 // Max accidentals (bbbb to ####)
+#define SIZE_CHROMATIC_ADJUSTED 13  // For interval functions, size of chromatic[]
+#define STEPS_A4 46                 // Steps to A4, starting from C0
+#define ADJUST_OCTAVE 11            // For calculations in isEnharmonic
+#define ADJUST_CHROMATIC 12         // For calculations in getInter functions
+#define ADJUST_NOTE 7               // For calculations with note scale
+#define SIMPLE_INTER_MAX 8          // Simple Interval maximum
+#define SIMPLE_INTER_MIN 1          // Simple Interval minimum
+#define COMPOUND_INTER_MAX 15       // Compound Interval maximum
+#define COMPOUND_INTER_MIN 9        // Compoud Interval minimum
 
 static Note chromatic[] = {
     {C, NONE, 0},
@@ -26,66 +33,67 @@ static Note chromatic[] = {
     {C, SHARP, 0}
 };
 
-const ScaleBase MAJORSCALE = {
+const ScaleBase MAJOR_SCALE = {
     8, (Interval[]) {{2, MAJOR},{2, MAJOR},{2, MINOR},{2, MAJOR},{2, MAJOR},{2, MAJOR},{2, MINOR}}
 };
 
-const ScaleBase NATURALMINSCALE = {
+const ScaleBase NATURAL_MIN_SCALE = {
     8, (Interval[]) {{2, MAJOR},{2, MINOR},{2, MAJOR},{2, MAJOR},{2, MINOR},{2, MAJOR},{2, MAJOR}}
 };
 
-const ScaleBase HARMONICMINSCALE = {
+const ScaleBase HARMONIC_MIN_SCALE = {
     8, (Interval[]) {{2, MAJOR},{2, MINOR},{2, MAJOR},{2, MAJOR},{2, MINOR},{2, AUGMENTED},{2, MINOR}}
 };
 
-const ScaleBase MELODICMINSCALE = {
+const ScaleBase MELODIC_MIN_SCALE = {
     8, (Interval[]) {{2, MAJOR},{2, MINOR},{2, MAJOR},{2, MAJOR},{2, MAJOR},{2, MAJOR},{2, MINOR}}
 };
 
-const ScaleBase PENTATONICMINSCALE = {
+const ScaleBase PENTATONIC_MIN_SCALE = {
     6, (Interval[]) {{2, MAJOR},{2, MAJOR},{3, MINOR},{2, MAJOR},{3, MINOR}}
 };
 
-const ScaleBase PENTATONICMAJSCALE = {
+const ScaleBase PENTATONIC_MAJ_SCALE = {
     6, (Interval[]) {{3, MINOR},{2, MAJOR},{2, MAJOR},{3, MINOR},{2, MAJOR}}
 };
 
-const ChordBase MAJORTRIAD = {
+const ChordBase MAJOR_TRIAD = {
     3, (Interval[]) {{3, MAJOR},{3, MINOR}}
 };
 
-const ChordBase MINORTRIAD = {
+const ChordBase MINOR_TRIAD = {
     3, (Interval[]) {{3, MINOR},{3, MAJOR}}
 };
 
-const ChordBase AUGMENTEDTRIAD = {
+const ChordBase AUGMENTED_TRIAD = {
     3, (Interval[]) {{3, MAJOR},{3, MAJOR}}
 };
 
-const ChordBase DIMINISHEDTRIAD = {
+const ChordBase DIMINISHED_TRIAD = {
     3, (Interval[]) {{3, MINOR},{3, MINOR}}
 };
 
-const ChordBase DIMINISHED7 = {
+const ChordBase DIMINISHED_7 = {
     4, (Interval[]) {{3, MINOR},{3, MINOR},{3, MINOR}}
 };
 
-const ChordBase HALFDIMINISHED7 = {
+const ChordBase HALF_DIMINISHED_7 = {
     4, (Interval[]) {{3, MINOR},{3, MINOR},{3, MAJOR}}
 };
 
-const ChordBase MINOR7 = {
+const ChordBase MINOR_7 = {
     4, (Interval[]) {{3, MINOR},{3, MAJOR},{3, MINOR}}
 };
 
-const ChordBase MAJOR7 = {
+const ChordBase MAJOR_7 = {
     4, (Interval[]) {{3, MAJOR},{3, MINOR},{3, MAJOR}}
 };
 
-const ChordBase DOMINANT7 = {
+const ChordBase DOMINANT_7 = {
     4, (Interval[]) {{3, MAJOR},{3, MINOR},{3, MINOR}}
 };
 
+static int noteToChroma(int note);
 static int modeCompoundInter(int* pitch, int* inter);
 static int modeSimpleInter(int* pitch, int* inter);
 static void modeAscend(Note notes[], const ScaleBase* type, Note* current, int index);
@@ -94,13 +102,20 @@ static void modeFull(Note notes[], const ScaleBase* type, Note* current, int ind
 
 static int interSteps[] = {0, 2, 4, 5, 7, 9, 11, 12};
 static char* dispNote[] = {"C", "D", "E", "F", "G", "A", "B"};
+static char* dispInter[] = {"Diminished", "Minor", "Major", "Augmented", "Perfect"};
 static char* dispAccidental[] = {"bbbb", "bbb", "bb", "b", "", "#", "##", "###", "####"};
 static modeScale modeScaleArray[] = {modeAscend, modeDescend, modeFull};
 
 
 void printNote(char* prefix, Note note, char* suffix) {
-    if (!(note.note == -1)) {
+    if (note.note != -1) {
         printf("%s%s%s%d%s", prefix, dispNote[note.note], dispAccidental[note.acci + 4], note.pitch, suffix);
+    }
+}
+
+void printInter(char* prefix, Interval inter, char* suffix) {
+    if (inter.inter != -1) {
+        printf("%s%s %d%s", prefix, dispInter[inter.quality + 2], inter.inter, suffix);
     }
 }
 
@@ -121,41 +136,85 @@ void printScale(char* prefix, Scale scale, char* suffix) {
 }
 
 double getFreqOrWave(Note note, int standard, enum NoteFormula type) {
-    int root = note.note;
-    NOTETOCHROMA(root);
+    int root = noteToChroma(note.note);
     root += note.acci;
-    int iter = (12 * (note.pitch - 1) + root) - 46;
+    int iter = (SIZE_CHROMATIC * (note.pitch - 1) + root) - STEPS_A4;
     double base;
     if (iter > 0) {
-        base = 1.059463;
+        base = TWELTH_ROOT_2;
     } else {
         iter *= -1;
-        base = 1/1.059463;
+        base = 1/TWELTH_ROOT_2;
     }
     double raw = 1;
     for (int i = 0; i < iter; i++) {
         raw *= base;
     }
-    return type == FREQUENCY ? raw * standard : 345/(raw * standard);
+    return type == FREQUENCY ? raw * standard : SOUND_SPEED/(raw * standard);
+}
+
+Interval returnInter(Note notea, Note noteb) {
+    Interval dest = {-1, 0};
+    if (notea.note == -1 || noteb.note == -1) {
+        return dest;
+    }
+    int inter = (noteb.note + (noteb.pitch * ADJUST_NOTE)) - (notea.note + (notea.pitch * ADJUST_NOTE)) + 1;
+    if (inter < 0 || inter > 15) {
+        return dest;
+    }
+    int pitch, checkcomp;
+    if (inter > 8) {
+        checkcomp = 1;
+        inter -= ADJUST_NOTE;
+        pitch = noteb.pitch - 1;
+    } else {
+        pitch = noteb.pitch;
+    }
+    int quality = ((noteToChroma(noteb.note) + (pitch * SIZE_CHROMATIC) + noteb.acci) - (noteToChroma(notea.note) + (notea.pitch * SIZE_CHROMATIC) + notea.acci)) - interSteps[inter - 1];
+    if (inter == 1 || inter == 4 || inter == 5 || inter == 8) {
+        switch(quality) {
+            case MAJOR:
+                dest.quality = PERFECT;
+                break;
+            case MINOR:
+                dest.quality = DIMINISHED;
+                break;
+            case AUGMENTED:
+                dest.quality = AUGMENTED;
+                break;
+            default:
+                return dest;
+        }
+    } else {
+        if (quality < -2 || quality > 2) {
+            return dest;
+        } else {
+            dest.quality = quality;
+        }
+    }
+    if (checkcomp == 1) {
+        dest.inter = inter + ADJUST_NOTE;
+    } else {
+        dest.inter = inter;
+    }
+    return dest;
 }
 
 int isEnharmonic(Note notea, Note noteb) {
-    int roota = notea.note;
-    NOTETOCHROMA(roota);
+    int roota = noteToChroma(notea.note);
     roota += notea.acci;
     if (roota < 1) {
-        roota += 11;
-    } else if (roota > 12) {
-        roota -= 11;
+        roota += ADJUST_OCTAVE;
+    } else if (roota > SIZE_CHROMATIC) {
+        roota -= ADJUST_OCTAVE;
     }
     roota += notea.pitch;
-    int rootb = noteb.note;
-    NOTETOCHROMA(rootb);
+    int rootb = noteToChroma(noteb.note);
     rootb += noteb.acci;
     if (rootb < 1) {
-        rootb += 11;
-    } else if (rootb > 12) {
-        rootb -= 11;
+        rootb += ADJUST_OCTAVE;
+    } else if (rootb > SIZE_CHROMATIC) {
+        rootb -= ADJUST_OCTAVE;
     }
     rootb += noteb.pitch;
     return roota == rootb ? 1 : 0;
@@ -182,7 +241,7 @@ Chord invertChord(Chord* chord, int inversion) {
 }
 
 Chord getChord(Note note, const ChordBase* type, Note base[], Note notes[]) {
-    Chord chord; // need error checking for array!!!
+    Chord chord;
     Note current = note;
     notes[0] = note;
     base[0] = note;
@@ -237,17 +296,21 @@ void modeFull(Note notes[], const ScaleBase* type, Note* current, int index) {
     *current = notes[index];    
 }
 
+static int noteToChroma(int note) {
+    return note > 2 ? note * 2 : note * 2 + 1;
+}
+
 static int modeCompoundInter(int* pitch, int* inter) {
-    if (*inter > 15 || *inter < 9 || *pitch < 0) {
+    if (*inter > COMPOUND_INTER_MAX || *inter < COMPOUND_INTER_MIN || *pitch < 0) {
         return 1;
     }
     *pitch += 1;
-    *inter -= 7;
+    *inter -= ADJUST_NOTE;
     return 0;
 }
 
 static int modeSimpleInter(int* pitch, int* inter) {
-    return (*inter > 8 || *inter < 1 || *pitch < 0) ? 1 : 0;
+    return (*inter > SIMPLE_INTER_MAX || *inter < SIMPLE_INTER_MIN || *pitch < 0) ? 1 : 0;
 }
 
 Note getInter(enum NoteOrder root, enum Accidental acci, int pitch, int inter, enum Quality quality, modeInter type) {
@@ -265,7 +328,7 @@ Note getInter(enum NoteOrder root, enum Accidental acci, int pitch, int inter, e
                 end = 1;
                 break;
             case PERFECT:
-                end = -3;
+                end = -2;
                 break;
             default:
                 return dest;
@@ -276,28 +339,26 @@ Note getInter(enum NoteOrder root, enum Accidental acci, int pitch, int inter, e
         }
     }
     int enharmonic = root + inter - 1;
-    if (enharmonic > 6) {
-        enharmonic -= 7;
+    if (enharmonic > SIZE_NOTE) {
+        enharmonic -= ADJUST_NOTE;
         dest.pitch = pitch + 1;
     } else {
         dest.pitch = pitch;
     }
-    NOTETOCHROMA(root);
-    end += root + interSteps[inter - 1] + acci + quality - 1;
-    if (end > 13) {
-        end -= 12;
+    end += noteToChroma(root) + interSteps[inter - 1] + acci + quality - 1;
+    if (end > SIZE_CHROMATIC_ADJUSTED) {
+        end -= ADJUST_CHROMATIC;
     } else if (end < 0) {
-        end += 12;
+        end += ADJUST_CHROMATIC;
     }
     if (chromatic[end].note == enharmonic) {
         dest.note = chromatic[end].note;
         dest.acci = chromatic[end].acci;
     } else {
         dest.note = enharmonic;
-        NOTETOCHROMA(enharmonic);
-        dest.acci = end - (enharmonic - 1);
-        if (dest.acci > 4) {
-            dest.acci -= 12;
+        dest.acci = end - (noteToChroma(enharmonic) - 1);
+        if (dest.acci > SIZE_ACCI) {
+            dest.acci -= ADJUST_CHROMATIC;
         }
     }
     return dest;
@@ -319,7 +380,7 @@ Note getInterStruct(Note note, Interval interval, modeInter type) {
                 end = 1;
                 break;
             case PERFECT:
-                end = -3;
+                end = -2;
                 break;
             default:
                 return dest;
@@ -330,28 +391,26 @@ Note getInterStruct(Note note, Interval interval, modeInter type) {
         }
     }
     int enharmonic = root + inter - 1;
-    if (enharmonic > 6) {
-        enharmonic -= 7;
+    if (enharmonic > SIZE_NOTE) {
+        enharmonic -= ADJUST_NOTE;
         dest.pitch = pitch + 1;
     } else {
         dest.pitch = pitch;
     }
-    NOTETOCHROMA(root);
-    end += root + interSteps[inter - 1] + note.acci + quality - 1;
-    if (end > 13) {
-        end -= 12;
+    end += noteToChroma(root) + interSteps[inter - 1] + note.acci + quality - 1;
+    if (end > SIZE_CHROMATIC_ADJUSTED) {
+        end -= ADJUST_CHROMATIC;
     } else if (end < 0) {
-        end += 12;
+        end += ADJUST_CHROMATIC;
     }
     if (chromatic[end].note == enharmonic) {
         dest.note = chromatic[end].note;
         dest.acci = chromatic[end].acci;
     } else {
         dest.note = enharmonic;
-        NOTETOCHROMA(enharmonic);
-        dest.acci = end - (enharmonic - 1);
-        if (dest.acci > 4) {
-            dest.acci -= 12;
+        dest.acci = end - (noteToChroma(enharmonic) - 1);
+        if (dest.acci > SIZE_ACCI) {
+            dest.acci -= ADJUST_CHROMATIC;
         }
     }
     return dest;
