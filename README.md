@@ -102,6 +102,7 @@ These functions print a Note, a Chord, or a Scale respectively. There are also o
 ```C
 void printNote(char* prefix, Note note, char* suffix);
 void printChord(char* prefix, Note note, char* suffix);
+void printInter(char* prefix, Interval inter, char* suffix);
 void printScale(char* prefix, Note note, char* suffix);
 ```
 #### EXAMPLE
@@ -135,15 +136,18 @@ The frequency is 329.627704
 ### Interval Functions
 
 There are two interval functions that are identical, except in parameter format. Both return the destination Note of the given interval. getInterStruct requires the Note
-struct and the Interval struct, while getInter requires their members directly as parameters. The last parameter, *type*, is for the type of interval needed. (modeInter is a function pointer)
+struct and the Interval struct, while getInter requires their members directly as parameters. The last parameter, *type*, is for the type of interval needed. (modeInter is a function pointer). If the wrong *modeInter* is specified, or wrong interval quality (ie major 4th), than a Note with a -1 *note* is returned.
 
 * SIMPLE is for intervals between 1-8
 
 * COMPOUND is for intervals between 9-15
 
+returnInter returns an Interval that is between two Notes. *notea* must be lower than or equal to *noteb*. If notea or noteb is an invalid note (-1 *note*), or *notea* is greater than *noteb*, of if the interval is invalid (ie too large), than an Interval with a -1 *inter* is returned.
+
 ```C
 Note getInter(enum NoteOrder root, enum Accidental acci, int pitch, int inter, enum Quality quality, modeInter type);
 Note getInterStruct(Note note, Interval interval, modeInter type);
+Interval returnInter(Note notea, Note noteb);
 ```
 #### EXAMPLE
 ```C
