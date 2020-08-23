@@ -42,32 +42,32 @@ typedef struct {
 } Scale;
 
 typedef struct {
-    int size;
-    Interval* steps;
+    const int size;
+    Interval* const steps;
 } ChordBase;
 
 typedef struct {
-    int length;
-    Interval* steps;
+    const int length;
+    Interval* const steps;
 } ScaleBase;
 
 // Pre-defined Scales and Chord bases //
 
-extern const ScaleBase MAJORSCALE;         // Major Scale
-extern const ScaleBase NATURALMINSCALE;    // Natural Minor Scale
-extern const ScaleBase HARMONICMINSCALE;   // Harmonic Minor Scale
-extern const ScaleBase MELODICMINSCALE;    // Melodic Minor Scale
-extern const ScaleBase PENTATONICMINSCALE; // Major Pentatonic Scale
-extern const ScaleBase PENTATONICMAJSCALE; // Minor Pentatonic Scale (relative minor)
-extern const ChordBase MINORTRIAD;         // Minor Triad
-extern const ChordBase MAJORTRIAD;         // Major Triad
-extern const ChordBase AUGMENTEDTRIAD;     // Augmented Triad
-extern const ChordBase DIMINISHEDTRIAD;    // Diminished Triad
-extern const ChordBase DIMINISHED7;        // Diminished 7th
-extern const ChordBase HALFDIMINISHED7;    // Half Diminished 7th
-extern const ChordBase MINOR7;             // Minor 7th
-extern const ChordBase MAJOR7;             // Major 7th
-extern const ChordBase DOMINANT7;          // Dominant 7th
+extern const ScaleBase MAJOR_SCALE;          // Major Scale
+extern const ScaleBase NATURAL_MIN_SCALE;    // Natural Minor Scale
+extern const ScaleBase HARMONIC_MIN_SCALE;   // Harmonic Minor Scale
+extern const ScaleBase MELODIC_MIN_SCALE;    // Melodic Minor Scale
+extern const ScaleBase PENTATONIC_MIN_SCALE; // Major Pentatonic Scale
+extern const ScaleBase PENTATONIC_MAJ_SCALE; // Minor Pentatonic Scale (relative minor)
+extern const ChordBase MINOR_TRIAD;          // Minor Triad
+extern const ChordBase MAJOR_TRIAD;          // Major Triad
+extern const ChordBase AUGMENTED_TRIAD;      // Augmented Triad
+extern const ChordBase DIMINISHED_TRIAD;     // Diminished Triad
+extern const ChordBase DIMINISHED_7;         // Diminished 7th
+extern const ChordBase HALF_DIMINISHED_7;    // Half Diminished 7th
+extern const ChordBase MINOR_7;              // Minor 7th
+extern const ChordBase MAJOR_7;              // Major 7th
+extern const ChordBase DOMINANT_7;           // Dominant 7th
 
 // Defined function pointers for functions parameters. See documentation :) //
 
@@ -77,6 +77,7 @@ typedef void (*modeScale)(Note[], const ScaleBase*, Note*, int);
 // Print Functions //
 
 void printNote(char* prefix, Note note, char* suffix);
+void printInter(char* prefix, Interval inter, char* suffix);
 void printChord(char* prefix, Chord chord, char* suffix);
 void printScale(char* prefix, Scale scale, char* suffix);
 
@@ -84,6 +85,7 @@ void printScale(char* prefix, Scale scale, char* suffix);
 
 Note getInter(enum NoteOrder root, enum Accidental acci, int pitch, int inter, enum Quality quality, modeInter type);
 Note getInterStruct(Note note, Interval interval, modeInter type);
+Interval returnInter(Note notea, Note noteb);
 
 // Chord Functions //
 
