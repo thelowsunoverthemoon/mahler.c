@@ -97,7 +97,7 @@ These last two are for the getChord and getScale functions. They are "types" of 
 
 ### Print Functions
 
-These functions print a Note, a Chord, or a Scale respectively. There are also options for text to be displayed before and after.
+These functions print a Note, a Chord, or a Scale respectively. There are also options for text to be displayed before and after. If the said object contains/is invalid (first member of struct is -1), than the invalid object is not printed.
 
 ```C
 void printNote(char* prefix, Note note, char* suffix);
