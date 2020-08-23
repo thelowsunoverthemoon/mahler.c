@@ -280,17 +280,17 @@ Scale getScale(Note start, const ScaleBase* type, Note notes[], enum ScaleType m
     return scale;
 }
 
-void modeAscend(Note notes[], const ScaleBase* type, Note* current, int index) {
+static void modeAscend(Note notes[], const ScaleBase* type, Note* current, int index) {
     notes[index] = getInterStruct(*current, type->steps[index - 1], SIMPLE);
     *current = notes[index];
 }
 
-void modeDescend(Note notes[], const ScaleBase* type, Note* current, int index) {
+static void modeDescend(Note notes[], const ScaleBase* type, Note* current, int index) {
     notes[type->length - index - 1] = getInterStruct(*current, type->steps[index - 1], SIMPLE);
     *current = notes[type->length - index - 1];
 }
 
-void modeFull(Note notes[], const ScaleBase* type, Note* current, int index) {
+static void modeFull(Note notes[], const ScaleBase* type, Note* current, int index) {
     notes[index] = getInterStruct(*current, type->steps[index - 1], SIMPLE);
     notes[type->length * 2 - index - 1] = notes[index];
     *current = notes[index];    
