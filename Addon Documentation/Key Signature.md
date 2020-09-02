@@ -1,4 +1,6 @@
 # Key Signature Addon
+
+#Documentation still under construction
 The Key Signature addon contains a key signature struct KeySig, 3 enumerators, and 6 key signature related functions. All functions support any theoritical keys (ie G# minor). However, keep in mind that the print functions have a maximum of 4 accidentals (bbbb -> ####), so while the acci value will be correct, it may not print correctly. To use this addon, define the
 
     __MT_KEYSIG_H__
