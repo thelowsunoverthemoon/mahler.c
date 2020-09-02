@@ -101,4 +101,40 @@ Scale getScale (Note start, const ScaleBase* type, Note notes[], enum ScaleType 
 int isEnharmonic(Note notea, Note noteb);
 double getFreqOrWave(Note note, int standard, enum NoteFormula type);
 
+// --------------------- KEY SIGNATURE ADDON --------------------- //
+#ifdef __MT_KEYSIG_H__
+
+// Enumerators //
+
+enum KeySigChordType {TYPE_TRIAD = 3, TYPE_SEVENTH_CHORD = 4};
+enum DispKeySig {ACCIDENTAL_ONLY, KEYSIG_ONLY, KEYSIG_AND_ACCIDENTAL};
+enum KeySigType {MAJOR_KEY, MINOR_KEY};
+
+// Structures //
+
+typedef struct {
+    enum KeyType type;
+    int accinum;
+    int accitype;
+    Note* accilist;
+    Note* note;
+} KeySig;
+
+// Print Function //
+
+void printKeySig(char* prefix, KeySig key, char* suffix, enum DispKeySig type);
+
+// Get Key Signature Functions //
+
+KeySig getKeySig(Note note, enum KeySigType type, Note accilist[]);
+KeySig getKeyRelative(KeySig key, Note accilist[], Note* note);
+Chord getKeyChord(KeySig key, Note base[], Note notes[], int num, enum KeySigChordType type);
+
+// Misc Key Signature Functions //
+
+int getKeyAcci(Note note, enum KeyType type);
+Note getKeyNote(KeySig key, int num);
+
+#endif
+
 #endif
