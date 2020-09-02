@@ -415,3 +415,159 @@ Note getInterStruct(Note note, Interval interval, modeInter type) {
     }
     return dest;
 }
+
+#ifdef __MT_KEYSIG_H__
+// Key signature addon //
+
+static Note acciorder[] = {
+    {F, NONE, 0},
+    {C, NONE, 0},
+    {G, NONE, 0},
+    {D, NONE, 0},
+    {A, NONE, 0},
+    {E, NONE, 0},
+    {B, NONE, 0}
+};
+
+Chord getKeyChord(KeySig key, Note base[], Note notes[], int num, enum KeySigChordType type) {
+    Chord dest = {-1, 0, NULL, NULL};
+    if (num > 8 || num < 1) {
+        return dest;
+    }
+    dest = type == TYPE_TRIAD ? getChord(getKeyNote(key, num), &MAJOR_TRIAD, base, notes)
+                              : getChord(getKeyNote(key, num), &MAJOR_7, base, notes);
+    int check;
+    for (int i = 0; i < type; i++) {
+        if (key.accitype == FLAT) {
+            check = notes[i].note < F ? (2 - notes[i].note) * 2 + 1
+                                      : (6 - notes[i].note) * 2;
+        } else {
+            check = notes[i].note < F ? notes[i].note * 2 + 1
+                                      : (notes[i].note - 3) * 2;
+        }
+        if (check < key.accinum) {
+            notes[i].acci = key.accilist[check].acci;
+            base[i].acci = key.accilist[check].acci;
+        } else {
+            notes[i].acci = NONE;
+            base[i].acci = NONE;
+        }
+    }
+    return dest;
+}
+
+Note getKeyNote(KeySig key, int num) {
+    Note dest = {-1, 0, 0};
+    if (num > 8 || num < 1) {
+        return dest;
+    }
+    enum Quality type;
+    if (key.type == MINOR_KEY && (num == 3 || num == 6 || num == 7)) {
+        type = MINOR;
+    } else {
+        if (num == 1 || num == 4 || num == 5 || num == 8) {
+            type = PERFECT;
+        } else {
+            type = MAJOR;
+        }
+    }
+    dest = getInterStruct(*key.note, (Interval) {num, type}, SIMPLE);
+    return dest;
+}
+
+KeySig getKeyRelative(KeySig key, Note accilist[], Note* note) {
+    for (int i = 0; i < key.accinum; i++) {
+        accilist[i] = key.accilist[i];
+    }
+    enum KeyType type;
+    if (key.type == MINOR_KEY) {
+        *note = getInterStruct(*key.note, (Interval) {3, MINOR}, SIMPLE);
+        type = MAJOR_KEY;
+    } else {
+        *note = getInterStruct(*key.note, (Interval) {6, MAJOR}, SIMPLE);
+        type = MINOR_KEY;
+    }
+    return (KeySig) {type, key.accinum, key.accitype, accilist, note};
+}
+
+void printKeySig(char* prefix, KeySig key, char* suffix, enum DispKeySig type) {
+    printf("%s", prefix);
+    switch(type) {
+        case KEYSIG_ONLY:
+            printf("%s%s%s", dispNote[key.note->note], dispAccidental[key.note->acci + 4], key.type == MINOR_KEY ? "-" : "+");
+            break;
+        case KEYSIG_AND_ACCIDENTAL:
+            printf("%s%s%s", dispNote[key.note->note], dispAccidental[key.note->acci + 4], key.type == MINOR_KEY ? "- : " : "+ : ");
+        case ACCIDENTAL_ONLY:
+            for (int i = 0; i < key.accinum; i++) {
+                printNote("", key.accilist[i], " ");
+            }
+            break;
+    }
+    printf("%s", suffix);
+}
+
+KeySig getKeySig(Note note, enum KeySigType type, Note accilist[]) {
+    int iter = getKeyAcci(note, type);
+    int step;
+    note.pitch = 0;
+    Note base = type == MINOR_KEY ? getInterStruct(note, (Interval) {3, MINOR}, SIMPLE)
+                                  : note;
+    if (base.acci < NONE || (base.note == F && base.acci == NONE)) {
+        step = FLAT;
+    } else {
+        step = SHARP;
+    }
+    KeySig dest = {type, iter, step, accilist, &note};
+    if (iter == 7 && ((note.note != C && type == MAJOR_KEY) || (note.note != A && type == MINOR_KEY))) {
+        Note temp;
+        Interval keygap;
+        if (step < 0) {
+            temp = type == MINOR_KEY ? (Note) {A, FLAT, 0} :
+                                       (Note) {C, FLAT, 0};
+            keygap = (Interval) {4, PERFECT};
+        } else {
+            temp = type == MINOR_KEY ? (Note) {A, SHARP, 0} :
+                                       (Note) {C, SHARP, 0};
+            keygap = (Interval) {5, PERFECT};
+        }
+        while (temp.note != note.note || temp.acci != note.acci) {
+            temp = getInterStruct(temp, keygap, SIMPLE);
+            iter++;
+        }
+    }
+    int arraycheck = 0, accicheck = step;
+    for (int i = 0; i < iter; i++) {
+        if (arraycheck % 7 == 0 && arraycheck != 0) {
+            accicheck += step;
+            arraycheck = 0;
+        }
+        accilist[arraycheck] = acciorder[step == FLAT ? 6 - arraycheck : arraycheck];
+        accilist[arraycheck].acci = accicheck;
+        arraycheck++;
+    }
+    return dest;
+}
+
+int getKeyAcci(Note note, enum KeySigType type) {
+    int result = 7;
+    if (type == MINOR_KEY) {
+        note = getInterStruct(note, (Interval) {3, MINOR}, SIMPLE);
+    }
+    if (note.note == F) {
+        if (note.acci == NONE) {
+            result = 1;
+        } else if (note.acci == SHARP) {
+            result = 6;
+        }
+    } else if (note.acci == FLAT) {
+        result = note.note > F ? (4 - (note.note - 3)) * 2 :
+                                 (3 - note.note) * 2 + 1;
+    } else if (note.acci == NONE) {
+        result = note.note > F ? (note.note - 3) * 2 - 1 :
+                                 note.note * 2;
+    }
+    return result;
+}
+
+#endif
