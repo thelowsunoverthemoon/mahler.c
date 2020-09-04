@@ -128,12 +128,12 @@ void printKeySig(char* prefix, KeySig key, char* suffix, enum DispKeySig type);
 
 KeySig getKeySig(Note note, enum KeySigType type, Note accilist[]);
 KeySig getKeyRelative(KeySig key, Note accilist[], Note* note);
-Chord getKeyChord(KeySig key, Note base[], Note notes[], int num, enum KeySigChordType type);
 
 // Misc Key Signature Functions //
 
 int getKeyAcci(Note note, enum KeyType type);
 Note getKeyNote(KeySig key, int num);
+Chord getKeyChord(KeySig key, Note base[], Note notes[], int num, enum KeySigChordType type);
 
 #endif
 
