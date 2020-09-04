@@ -1,6 +1,6 @@
 # Key Signature Addon
 
-#Documentation still under construction
+# Documentation still under construction
 The Key Signature addon contains a key signature struct KeySig, 3 enumerators, and 6 key signature related functions. All functions support any theoritical keys (ie G# minor). However, keep in mind that the print functions have a maximum of 4 accidentals (bbbb -> ####), so while the acci value will be correct, it may not print correctly. To use this addon, define the
 
     __MT_KEYSIG_H__
@@ -48,7 +48,7 @@ The KeySig struct represents a key signature. *type* represents the tonality of 
 
 ### Print Function
 
-This function prints a KeySig, similar to the other key signature functions. However, this also has the *type* parameter so specify the format.
+This function prints a KeySig, similar to the other key signature functions. However, this also has the *type* parameter to specify the format.
 
 ```C
 void printKeySig(char* prefix, KeySig key, char* suffix, enum DispKeySig type);
@@ -60,4 +60,25 @@ KeySig key = getKeySig((Note) {B, FLAT, 4}, MAJOR_KEY, accilist);
 printKeySig("This key is ", key, "", KEYSIG_AND_ACCIDENTAL);
 
 This key is Bb+ : Bb Eb
+```
+
+### Get Key Signature Functions
+
+There are 2 functions that return KeySigs. getKeySig returns a KeySig based on a note, a *type* of enum KeySigType, and an array to hold the number of accidentals in the key signature. You can determine this number using the getKeyAcci function below. The pitch of *note* is automatically set to 0. On the other hand, the getKeyRelative function returns a KeySig that is the relative major or minor of the given KeySig *key* (ie A minor --> C major). You must provide an array to hold the number of accidentals, and also the address of a Note variable (to hold the *note* member of KeySig). 
+
+```C
+KeySig getKeySig(Note note, enum KeySigType type, Note accilist[]);
+KeySig getKeyRelative(KeySig key, Note accilist[], Note* note);
+```
+#### EXAMPLE
+```C
+Note majorlist[3];
+KeySig major = getKeySig((Note) {A, NONE, 3}, MAJOR_KEY, majorlist);
+printKeySig("", major, "", KEYSIG_ONLY);
+Note minorbase;
+Note minorlist[3];
+printKeySig("Relative minor : ", getKeyRelative(major, minorlist, &minorbase), "", KEYSIG_ONLY);
+
+A+
+Relative minor : F#-
 ```
