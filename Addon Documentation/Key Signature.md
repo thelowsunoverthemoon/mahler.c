@@ -1,7 +1,7 @@
 # Key Signature Addon
 
 # Documentation still under construction
-The Key Signature addon contains a key signature struct KeySig, 3 enumerators, and 6 key signature related functions. All functions support any theoritical keys (ie G# minor). However, keep in mind that the print functions have a maximum of 4 accidentals (bbbb -> ####), so while the acci value will be correct, it may not print correctly. To use this addon, define the
+The Key Signature addon contains a key signature struct KeySig, 3 enumerators, and 6 key signature related functions. All functions support any theoritical keys (ie G# major). However, keep in mind that the print functions have a maximum of 4 accidentals (bbbb -> ####), so while the acci value will be correct, it may not print correctly. To use this addon, define the
 
     __MT_KEYSIG_H__
 
@@ -32,6 +32,11 @@ This specifies the display format for printKeySig in the parameter *type*.
 enum KeySigType {MAJOR_KEY, MINOR_KEY};
 ```
 This is for *type* parameter of getKeySig and the *type* member of KeySig. Pretty self-explanatory.
+
+```C
+enum ScaleDegree {TONIC = 1, SUPERTONIC = 2, MEDIANT = 3, SUBDOMINANT = 4, DOMINANT = 5, SUBMEDIANT = 6, SUBTONIC = 7};
+```
+This can be used in the *num* parameter of getKeyChord, as an alternative to numbers.
 
 ### Structs
 
