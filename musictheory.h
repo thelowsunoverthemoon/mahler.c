@@ -108,6 +108,7 @@ double getFreqOrWave(Note note, int standard, enum NoteFormula type);
 
 enum KeySigChordType {TYPE_TRIAD = 3, TYPE_SEVENTH_CHORD = 4};
 enum DispKeySig {ACCIDENTAL_ONLY, KEYSIG_ONLY, KEYSIG_AND_ACCIDENTAL};
+enum ScaleDegree {TONIC = 1, SUPERTONIC = 2, MEDIANT = 3, SUBDOMINANT = 4, DOMINANT = 5, SUBMEDIANT = 6, SUBTONIC = 7};
 enum KeySigType {MAJOR_KEY, MINOR_KEY};
 
 // Structures //
