@@ -1,7 +1,6 @@
 # Key Signature Addon
 
-# Documentation still under construction
-The Key Signature addon contains a key signature struct KeySig, 3 enumerators, and 6 key signature related functions. All functions support any theoritical keys (ie G# major). However, keep in mind that the print functions have a maximum of 4 accidentals (bbbb -> ####), so while the acci value will be correct, it may not print correctly. To use this addon, define the
+The Key Signature addon contains a key signature struct KeySig, 4 enumerators, and 6 key signature related functions. All functions support any theoritical keys (ie G# major). However, keep in mind that the print functions have a maximum of 4 accidentals (bbbb -> ####), so while the acci value will be correct, it may not print correctly. To use this addon, define the
 
     __MT_KEYSIG_H__
 
@@ -53,7 +52,7 @@ The KeySig struct represents a key signature. *type* represents the tonality of 
 
 ### Print Function
 
-This function prints a KeySig, similar to the other key signature functions. However, this also has the *type* parameter to specify the format.
+This function prints a KeySig, similar to the other print functions. However, this also has the *type* parameter to specify the format (see enum DispKeySig).
 
 ```C
 void printKeySig(char* prefix, KeySig key, char* suffix, enum DispKeySig type);
@@ -64,7 +63,7 @@ Note accilist[2];
 KeySig key = getKeySig((Note) {B, FLAT, 4}, MAJOR_KEY, accilist);
 printKeySig("This key is ", key, "", KEYSIG_AND_ACCIDENTAL);
 
-This key is Bb+ : Bb Eb
+This key is Bb+ : Bb0 Eb0
 ```
 
 ### Get Key Signature Functions
@@ -79,11 +78,37 @@ KeySig getKeyRelative(KeySig key, Note accilist[], Note* note);
 ```C
 Note majorlist[3];
 KeySig major = getKeySig((Note) {A, NONE, 3}, MAJOR_KEY, majorlist);
-printKeySig("", major, "", KEYSIG_ONLY);
+printKeySig("", major, "\n", KEYSIG_ONLY);
 Note minorbase;
 Note minorlist[3];
 printKeySig("Relative minor : ", getKeyRelative(major, minorlist, &minorbase), "", KEYSIG_ONLY);
 
 A+
 Relative minor : F#-
+```
+
+### Misc Key Signature Functions
+
+These are key signature related functions that may be useful. getKeyAcci takes in a Note *note* and an enum KeyType *type*. It returns the number of accidentals in the specified key. For theoritical keys, the result will always be 7. getKeyNote takes in a KeySig *key* and an int *num* for the scale degree. You may use enum ScaleDegree instead of an int. It returns a Note that corresponds to the given scale degree. Finally, getKeyChord returns a Chord based on a KeySig *key* and built on scale degree *num*. *base* and *notes* are arrays to contain the *base* and *notes* member of the Chord struct (see getChord). There is also *type*, which determines the type of chord built (see enum KeySigChordType).
+
+```C
+int getKeyAcci(Note note, enum KeyType type);
+Note getKeyNote(KeySig key, int num);
+Chord getKeyChord(KeySig key, Note base[], Note notes[], int num, enum KeySigChordType type);
+```
+#### EXAMPLE
+```C
+Note note = {B, NONE, 0};
+Note* accilist = malloc(getKeyAcci(note, MINOR_KEY) * sizeof(Note));
+KeySig key = getKeySig(note, MINOR_KEY, accilist);
+Note base[3];
+Note notes[3];
+for (int i = 0; i < 5; i++) {
+    printChord("", getKeyChord(key, base, notes, i, TYPE_TRIAD), "\n");
+}
+
+B0 D1 F#1
+C#1 E1 G1
+D1 F#1 A1
+E1 G1 B1
 ```
