@@ -1,209 +1,265 @@
-# musictheory.c
-A simple library for music theory in pure C, with Interval, Chord, Scale, and Key Signature functions. I tried to keep this as minimal as possible, so there's no malloc or anything happening under the hood. All return values are enharmonically correct (ie, minor 6th of D is B flat, not A sharp). Below is the documentation. Function examples are in code blocks labelled EXAMPLE, with the code first, and the result on the next line. There is an addon for key signature functions - the documentation is in the Addon Documentation folder, and you must define
+<h1 align="center">musictheory.c</h1>
+
+<p align="center">A simple and easy-to-use library for Western music theory in pure C99</p>
+
+## Features
+
+* Small & Simple - just 10 functions!
+* Interval, Chord, and Scale functions
+* No Memory Allocation happening under the hood
+* No Accidental Limit (ie, G 20th sharp)
+* Enharmonically Correct (ie, minor 6th of D is Bb, not A#)
+
+## Example
+
+Here's an example that creates the C4 Blues Scale, ascending:
 
 ```C
-__MT_KEYSIG_H__
+struct Note notes[7];
+struct Scale scale = getScale(
+    (struct Note) {C, NONE, 4}, &BLUES_SCALE, notes, SCALE_ASCEND
+);
 ```
 
-to compile.
-
-## DOCUMENTATION
-
-### Enumerators
+And if you want to print it:
 
 ```C
-enum ScaleType {ASCEND, DESCEND, FULL};
-```
-This is for the *mode* parameter of getScale.
-
-* ASCEND is to only return a Scale ascending
-* DESCEND is to only return the Scale descending
-* FULL is to return the Scale both ascending and descending
-
-```C
-enum NoteFormula {FREQUENCY, WAVELENGTH};
-```
-This is for the *type* parameter of getFreqOrWave.
-
-* WAVELENGTH returns the wavelength of the Note
-* FREQUENCY returns the frequency fo the Note
-
-```C
-enum PitchStandard {BAROQUE = 415, STANDARD = 440, CLASSICAL = 430};
-```
-These are pre-defined standards for getFreqOrWave. You can pass them in parameter *standard*, or just put your own number.
-
-```C
-enum NoteOrder {C, D, E, F, G, A, B};
-```
-This is for the *root* parameter of getInter, or the *note* member of the Note struct. Pretty self-explanatory.
-
-```C
-enum Quality {MINOR = -1, MAJOR = 0, AUGMENTED = 1, DIMINISHED = -2, PERFECT = 3};
-```
-This is for the *quality* parameter of getInter, or the *quality* member of the Interval struct. Also pretty self-explanatory.
-
-```C
-enum Accidental {DBFLAT = -2, FLAT = -1, NONE = 0, SHARP = 1, DBSHARP = 2};
-```
-Finally, this is for the *acci* parameter of getInter, or the *acci* member of the Note struct. Like above, pretty self-explanatory.
-
-### Structs
-```C
-typedef struct {
-    enum NoteOrder note;
-    enum Accidental acci;
-    int pitch;
-} Note;
-```
-This is the basic Note struct. *note* represents the root note (ie A). *acci* represents the accidental of said note (ie FLAT). *pitch* is the octave the note occupies (ie 4).
-
-```C
-typedef struct {
-    int inter;
-    enum Quality quality;
-} Interval;
-```
-
-This is the Interval struct. *inter* is the number value of the interval (ie 5). *quality* is the quality of the interval (ie AUGMENTED),
-
-```C
-typedef struct {
-    int size;
-    int inversion;
-    Note* base;
-    Note* notes;
-} Chord;
-```
-
-This is the Chord struct. *size* is the number of the notes in the Chord. *inversion* is the current inversion of the chord in *notes*. *base* is the root position of the chord. *notes* is the chord according to it's *inversion*. 
-
-```C
-typedef struct {
-    int size;
-    int type;
-    Note* notes;
-} Scale;
-```
-
-This is the Scale struct. *size* is the number of notes in the Scale. *type* is whether ASCEND, DESCEND, or FULL was used. *notes* is the scale.
-
-```C
-typedef struct {
-    int size;
-    Interval* steps;
-} ChordBase;
-
-typedef struct {
-    int length;
-    Interval* steps;
-} ScaleBase;
-```
-These last two are for the getChord and getScale functions. They are "types" of Chords to be passed to the functions. A number of common scales and chords have been pre-defined (a list is in musictheory.h), but you can add your own and pass it in if you wish.
-
-### Print Functions
-
-These functions print a Note, a Chord, or a Scale respectively. There are also options for text to be displayed before and after. If the said object contains/is invalid (first member of struct is -1), than the invalid object is not printed.
-
-```C
-void printNote(char* prefix, Note note, char* suffix);
-void printChord(char* prefix, Note note, char* suffix);
-void printInter(char* prefix, Interval inter, char* suffix);
-void printScale(char* prefix, Note note, char* suffix);
-```
-#### EXAMPLE
-```C
-printNote("This note is ", (Note) {G, SHARP, 4}, "");
-
-This note is G#4
-```
-
-### Misc Note Functions
-
-These are just two miscallenous functions that may be handy. isEnharmonic checks if two Notes are enharmonic, and returns 1 if true, and 0 if false.
-getFreqOrWave returns the frequency (in Hertz) or wavelength (in meters) of a given Note. The parameter *standard* sets the pitch standard of A4 (there's also the PitchStandard enum defined for basic pitches), while *type*
-specifies whether you want the frequency or wavelength.
-
-```C
-int isEnharmonic(Note notea, Note noteb);
-double getFreqOrWave(Note note, int standard, enum NoteFormula type);
-```
-#### EXAMPLE
-```C
-Note notea = {D, DBSHARP, 4};
-Note noteb = {E, NONE, 4};
-if (isEnharmonic(notea, noteb)) {
-    printf("The frequency is %f", getFreqOrWave(notea, STANDARD, FREQUENCY));
+char print[MT_DISP_LEN];
+for (int i = 0; i < scale.size; i++) {
+    puts(printNote(scale.notes[i], print, MT_DISP_LEN));
 }
-
-The frequency is 329.627704
 ```
 
-### Interval Functions
+## Documentation
 
-There are two interval functions that are identical, except in parameter format. Both return the destination Note of the given interval. getInterStruct requires the Note
-struct and the Interval struct, while getInter requires their members directly as parameters. The last parameter, *type*, is for the type of interval needed. (modeInter is a function pointer). If the wrong *modeInter* is specified, or wrong interval quality (ie major 4th), than a Note with a -1 *note* is returned.
-
-* SIMPLE is for intervals between 1-8
-
-* COMPOUND is for intervals between 9-15
-
-returnInter returns an Interval that is between two Notes. *notea* must be lower than or equal to *noteb*. If notea or noteb is an invalid note (-1 *note*), or *notea* is greater than *noteb*, of if the interval is invalid (ie too large), than an Interval with a -1 *inter* is returned.
-
+### 🟥 Enumerators & Macros 🟥
 ```C
-Note getInter(enum NoteOrder root, enum Accidental acci, int pitch, int inter, enum Quality quality, modeInter type);
-Note getInterStruct(Note note, Interval interval, modeInter type);
-Interval returnInter(Note notea, Note noteb);
+#define MT_DISP_LEN 8
 ```
-#### EXAMPLE
+This is the default print size you can use for the ```printNote()```. The rationale is note (1) + max acci (<= 4) + number (<= 99) + null terminating (1)
 ```C
-Note note = {B, DBFLAT, 4};
-Interval inter = {4, AUGMENTED};
-printNote("Augmented 4th of B double flat is ", getInterStruct(note, inter, SIMPLE), ".");
+enum NoteOrder {
+    C, D, E, F, G, A, B
+};
+```
+```note``` member ```struct Note```, and represents the "root" note (no accidentals).
 
+```C
+enum Quality {
+    MINOR = -1, MAJOR = 0, AUGMENTED = 1, DIMINISHED = -2, PERFECT = 3
+};
+```
+```quality``` member of ```struct Interval```. Self-explanatory.
+
+```C
+enum Accidental {
+    DBFLAT = -2, FLAT = -1, NONE = 0, SHARP = 1, DBSHARP = 2
+};
+```
+```acci``` member of ```struct Note```. Also self-explanatory. All functions support an infinite range of accidentals (ie, 30th sharp). Only thing holding you back is the size of ```enum Accidental```.
+```C
+enum ScaleType {
+    SCALE_ASCEND, SCALE_DESCEND, SCALE_FULL
+};
+```
+```mode``` parameter of getScale. Determines whether it is ascending, descending, or full (both). Scales include 8th degree, and in ```SCALE_FULL``` it is doubled.
+
+```C
+enum MT_Error {
+    MT_ERROR_NONE,
+    MT_ERROR_INVALID_QUAL, MT_ERROR_INVALID_INTER, MT_ERROR_INVALID_INVERSION, MT_ERROR_INVALID_PRINT_NOTE,
+    MT_ERROR_OVERFLOW_PRINT_NOTE, MT_ERROR_OVERFLOW_SCALE_RETURN, MT_ERROR_OVERFLOW_CHORD_RETURN
+};
+```
+For reference only. See Error Handling section down below.
+
+### 🟧 Structures 🟧
+```C
+struct Note {
+    enum NoteOrder  note;
+    enum Accidental acci;
+    int             pitch;
+};
+```
+The building block of music theory. ```pitch``` is the octave the note resides in.
+
+```C
+struct Interval {
+    int          inter;
+    enum Quality quality;
+};
+```
+Self explanatory.
+```C
+struct Chord {
+    int const                         size;
+    int                               inversion;
+    struct Note const* const restrict base;
+    struct Note* const restrict       notes;
+};
+```
+You must provide two arrays of ```struct Note``` : ```base``` is for the root inversion chord (ie ```G7 is G B D F```) and ```notes``` is for the current inversion (ie ```B D F G```) specified in ```inversion```.
+```C
+struct Scale {
+    int const            size;
+    enum ScaleType const type;
+    struct Note* const   notes;
+};
+```
+Self-explanatory.
+```C
+struct ChordResult {
+    struct Note             key;
+    struct ChordBase const* chord;
+};
+
+struct ScaleResult {
+    struct Note             key;
+    struct ScaleBase const* scale;
+};
+```
+Used for results of ```returnChord``` and ```returnScale```, respectively.
+```C
+struct ChordBase {
+    char const*            name;
+    int const              size;
+    struct Interval const* steps;
+};
+
+struct ScaleBase {
+    char const*            name;
+    int const              size;
+    struct Interval const* steps;
+};
+```
+These are the "types" of Chords/Scales to be used. A number of common types have been pre-defined, but you make make your own if you wish. ```steps``` defines the intervals between *each note* (ie, ```G -> B -> D``` is a major 3rd, then a minor 3rd). ```size``` for ```struct ScaleBase``` includes the octave (ie, a major scale is size 8)
+
+### 🟨 Interval Functions 🟨
+```C
+struct Note getInter(struct Note note, struct Interval interval);
+```
+```getInter``` accepts all intervals (both simple and compound). Returns the destination note of ```interval``` starting from ```note```. If the given interval is an invalid quality (ie, non-perfect intervals with perfect quality, or perfect intervals with major or minor quality), then the last error is set to ```MT_ERROR_INVALID_QUAL```.
+```C
+struct Interval returnInter(struct Note notea, struct Note noteb);
+```
+```returnInter``` does the opposite. Given two notes, it will return the interval between them. If the resulting interval is invalid (wrong quality), then the last error is set to ```MT_ERROR_INVALID_INTER```.
+
+#### Example
+```C
+struct Note note = {B, DBFLAT, 4};
+struct Interval inter = {4, AUGMENTED};
+
+printf("Augmented 4th of B double flat is %s",
+    printNote(getInter(note, inter), (char[MT_DISP_LEN]) {0}, MT_DISP_LEN)
+);
+```
+#### Result
+```
 Augmented 4th of B double flat is Eb5.
 ```
-
-### Chord Functions
-
-The chord functions are pretty self-explanatory. getChord returns a Chord struct starting from base *note*. The *type* is specified from const ChordBase* (see Structs), and you must
-pass 2 arrays that can fit the number of chord notes (you can also read the size member of the ChordBase struct). One is for the base member of the Chord, while the other is for the notes member of the Chord. invertChord inverts the given Chord (1st inversion, 2nd inversion, ect), and also returns it. Only the Chord member notes[] is inverted;
-the base is kept unchanged in case you still need the original.
-
+### 🟩 Chord Functions 🟩
 ```C
-Chord getChord(Note note, const ChordBase* type, Note base[], Note notes[]);
-Chord invertChord(Chord* chord, int inversion);
+struct Chord getChord(struct Note root, struct ChordBase const* type, struct Note* restrict base, struct Note* restrict notes);
 ```
-#### EXAMPLE
+Returns a ```struct Chord``` with root ```root``` and type ```type```. You must provide two arrays of ```struct Note``` : ```base``` is for the root inversion chord (ie ```G7 is G B D F```) and ```notes``` is for the current inversion (ie ```B D F G```) specified in ```inversion```.
 ```C
-Note chdbase[4];
-Note chdnotes[4];
-Chord chord = getChord((Note) {D, NONE, 3}, &DOMINANT7, chdbase, chdnotes);
-for (int i = 0; i < chord.size; i++) {
-    printChord("", invertChord(&chord, i), "\n");
-}
+void returnChord(struct Note const notes[], size_t noteNum, struct ChordResult list[], size_t listMax, bool useEnharmonic);
+```
+This function populates ```list``` with the potential chords containing each note in ```notes``` . ```noteNum``` is the number of entries in ```notes```, while ```listMax - 1``` is the maximum number of entries to write to. The reason for -1 is because the last ```struct ChordBase``` is set empty as a looping sentinel. The ```pitch``` of each ```struct ChordResult``` note is 0. ```useEnharmonic``` determines whether enharmonic equivalents are used (ie, Bb+ triad is also A#+ triad). If there are more possible chords than ```listMax - 1```, the last error is set to ```MT_ERROR_OVERFLOW_CHORD_RETURN```. This function tests for major, minor, augmented, and diminished triads, as well as dominant and diminished 7ths up to one accidental (ie, flat, natural, and sharp).
+```C
+void invertChord(struct Chord* chord, int inversion);
+```
+This function inverts the ```notes``` member of ```chord``` to the ```inversion```th inversion. ```base``` is left unaltered. An inversion of 0 is considered the root inversion. Any invalid inversions will set the last error to ```MT_ERROR_INVALID_INVERSION```.
 
+#### Example
+```C
+struct Note base[4];
+struct Note notes[4];
+struct Chord chord = getChord(
+    (struct Note) {D, NONE, 3}, &DOMINANT_7, base, notes
+);
+
+for (size_t i = 0; i < chord.size; i++) {
+    invertChord(&chord, i);
+    
+    char disp[MT_DISP_LEN];
+    for (size_t j = 0; j < chord.size; j++) {
+        printf("%s ", printNote(chord.notes[j], disp, MT_DISP_LEN));
+    }
+    putchar('\n');
+}
+```
+#### Result
+```
 D3 F#3 A3 C4
 F#3 A3 C4 D4
 A3 C4 D4 F#4
 C4 D4 F#4 A4
 ```
 
-### Scale Functions
-
-There's only one scale function : getScale. It returns a Scale struct based on the base *note* and const ScaleBase* *type* (see Structs). You must pass in an array that can fit all the notes
-in the scale according to *mode* (ie, major scale (8 notes) has mode FULL (ascending and descending), so the array must fit 16). *mode* determines the format of the returned Scale (See the ScaleType enum in Enumerators)
+### 🟦 Scale Functions 🟦
 
 ```C
-Scale getScale (Note start, const ScaleBase* type, Note notes[], enum ScaleType mode);
+struct Scale getScale(struct Note start, const struct ScaleBase* type, struct Note notes[], enum ScaleType mode);
 ```
-#### EXAMPLE
+Returns a ```type``` scale starting on ```start```. ```notes``` contains the notes of the scale, hence the size must be >= the size member of ```type```. As well, a ```mode``` of ```SCALE_FULL``` doubles the size requirement (ie, if it was 8, ```SCALE_FULL``` would be 16).
 ```C
-Note note = {F, SHARP, 4};
-Note scale[8];
-printScale("Ascending : ", getScale(note, &NATURALMINSCALE, scale, ASCEND), "\n");
-printScale("Descending : ", getScale(note, &NATURALMINSCALE, scale, DESCEND), "");
-
-Ascending : F#4 G#4 A4 B4 C#5 D5 E5 F#5
-Descending : F#5 E5 D5 C#5 B4 A4 G#4 F#4
+void returnScale(struct Note const note[], size_t noteNum, struct ScaleResult list[], size_t listMax, bool useEnharmonic);
 ```
+Identical to ```returnChord()```, but for scales. This function tests for major, natural minor, harmonic minor, and melodic minor scales up to one accidental (ie, flat, natural, and sharp).
+
+#### Example
+```C
+struct ScaleResult list[5];
+returnScale(
+    (struct Note[]) {
+        {A, FLAT, 0},
+        {C, FLAT, 0},
+        {G, NONE, 0}
+    },
+    3, list, sizeof(list) / sizeof(*list), true
+);
+
+size_t i = 0;
+while (list[i].scale) {
+    printf("%s %s\n",
+        printNote(list[i].key, (char[MT_DISP_LEN]) {0}, MT_DISP_LEN), list[i].scale->name
+    );
+    i++;
+}
+```
+#### Result
+```
+Ab0 Harmonic Minor
+G#0 Harmonic Minor
+Ab0 Melodic Minor
+G#0 Melodic Minor
+```
+### 🟪 Misc Functions 🟪
+```C
+char* printNote(struct Note const note, char buf[], size_t size);
+```
+This returns the buffer with ```note``` in text up to 4 accidentals (ie, ````bbbb -> ####````). If ```acci``` exceeds that range or the ```note``` member is invalid, the last error is set to ```MT_ERROR_INVALID_PRINT_NOTE```. If the given buffer is not large enough, the last error is set to ```MT_ERROR_OVERFLOW_PRINT_NOTE```.
+```C
+bool isEnharmonic(struct Note notea, struct Note noteb);
+```
+This returns ```true``` if enharmonic, ```false``` if not. Identical notes are considered enharmonic.
+#### Example
+```C
+struct Note noteA = {C, FLAT, 4};
+struct Note noteB = {B, NONE, 3};
+
+if (isEnharmonic (noteA, noteB)) {
+    puts("Enharmonic!");
+}
+```
+#### Result
+```
+Enharmonic!
+```
+### 🟫 Error Handling 🟫
+If a function encounters one of the defined errors, it will return an empty struct if applicable, or an empty string in the case of ```printNote()```. You can then query the error through
+```
+char* getMTError(void);
+```
+which returns a string containing details of the last error. Read each function blurb for their specific errors.
