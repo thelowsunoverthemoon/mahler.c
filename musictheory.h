@@ -1,141 +1,122 @@
 #ifndef __MUSICTHEORY_H__
 #define __MUSICTHEORY_H__
 
-// Macros for getInter parameter "type" //
+#include <stdbool.h>
 
-#define COMPOUND modeCompoundInter
-#define SIMPLE modeSimpleInter
+#define MT_DISP_LEN 8 // default print size (note + max acci (4) + max number (99) + 1 (null terminating))
 
 // Enumerators //
 
-enum ScaleType {ASCEND, DESCEND, FULL};
-enum NoteFormula {FREQUENCY, WAVELENGTH};
-enum NoteOrder {C, D, E, F, G, A, B};
-enum Quality {MINOR = -1, MAJOR = 0, AUGMENTED = 1, DIMINISHED = -2, PERFECT = 3};
-enum Accidental {DBFLAT = -2, FLAT = -1, NONE = 0, SHARP = 1, DBSHARP = 2};
-enum PitchStandard {BAROQUE = 415, STANDARD = 440, CLASSICAL = 430};
+enum NoteOrder {
+    C, D, E, F, G, A, B
+};
+
+enum Quality {
+    MINOR = -1, MAJOR = 0, AUGMENTED = 1, DIMINISHED = -2, PERFECT = 3
+};
+
+enum Accidental {
+    DBFLAT = -2, FLAT = -1, NONE = 0, SHARP = 1, DBSHARP = 2
+};
+
+enum ScaleType {
+    SCALE_ASCEND, SCALE_DESCEND, SCALE_FULL
+};
+
+enum MT_Error {
+    MT_ERROR_NONE,
+    MT_ERROR_INVALID_QUAL, MT_ERROR_INVALID_INTER, MT_ERROR_INVALID_INVERSION, MT_ERROR_INVALID_PRINT_NOTE,
+    MT_ERROR_OVERFLOW_PRINT_NOTE, MT_ERROR_OVERFLOW_SCALE_RETURN, MT_ERROR_OVERFLOW_CHORD_RETURN
+};
 
 // Structures //
 
-typedef struct {
-    enum NoteOrder note;
+struct Note {
+    enum NoteOrder  note;
     enum Accidental acci;
-    int pitch;
-} Note;
+    int             pitch;
+};
 
-typedef struct {
-    int inter;
+struct Interval {
+    int          inter;
     enum Quality quality;
-} Interval;
+};
 
-typedef struct {
-    int size;
-    int inversion;
-    Note* base;
-    Note* notes;
-} Chord;
+struct Chord {
+    int const                         size;
+    int                               inversion;
+    struct Note const* const restrict base;
+    struct Note* const restrict       notes;
+};
 
-typedef struct {
-    int size;
-    int type;
-    Note* notes;
-} Scale;
+struct ChordResult {
+    struct Note             key;
+    struct ChordBase const* chord;
+};
 
-typedef struct {
-    const int size;
-    Interval* const steps;
-} ChordBase;
+struct ChordBase {
+    char const*            name;
+    int const              size;
+    struct Interval const* steps;
+};
 
-typedef struct {
-    const int length;
-    Interval* const steps;
-} ScaleBase;
+struct Scale {
+    int const            size;
+    enum ScaleType const type;
+    struct Note* const   notes;
+};
 
-// Pre-defined Scales and Chord bases //
+struct ScaleResult {
+    struct Note             key;
+    struct ScaleBase const* scale;
+};
 
-extern const ScaleBase MAJOR_SCALE;          // Major Scale
-extern const ScaleBase NATURAL_MIN_SCALE;    // Natural Minor Scale
-extern const ScaleBase HARMONIC_MIN_SCALE;   // Harmonic Minor Scale
-extern const ScaleBase MELODIC_MIN_SCALE;    // Melodic Minor Scale
-extern const ScaleBase PENTATONIC_MIN_SCALE; // Major Pentatonic Scale
-extern const ScaleBase PENTATONIC_MAJ_SCALE; // Minor Pentatonic Scale (relative minor)
-extern const ChordBase MINOR_TRIAD;          // Minor Triad
-extern const ChordBase MAJOR_TRIAD;          // Major Triad
-extern const ChordBase AUGMENTED_TRIAD;      // Augmented Triad
-extern const ChordBase DIMINISHED_TRIAD;     // Diminished Triad
-extern const ChordBase DIMINISHED_7;         // Diminished 7th
-extern const ChordBase HALF_DIMINISHED_7;    // Half Diminished 7th
-extern const ChordBase MINOR_7;              // Minor 7th
-extern const ChordBase MAJOR_7;              // Major 7th
-extern const ChordBase DOMINANT_7;           // Dominant 7th
+struct ScaleBase {
+    char const*            name;
+    int const              size;
+    struct Interval const* steps;
+};
 
-// Defined function pointers for functions parameters. See documentation :) //
+// Preset Chords & Scales //
 
-typedef int (*modeInter)(int*, int*);
-typedef void (*modeScale)(Note[], const ScaleBase*, Note*, int);
+extern struct ScaleBase const MAJOR_SCALE;          // Major Scale
+extern struct ScaleBase const NATURAL_MIN_SCALE;    // Natural Minor Scale
+extern struct ScaleBase const HARMONIC_MIN_SCALE;   // Harmonic Minor Scale
+extern struct ScaleBase const MELODIC_MIN_SCALE;    // Melodic Minor Scale
+extern struct ScaleBase const PENTATONIC_MAJ_SCALE; // Major Pentatonic Scale
+extern struct ScaleBase const PENTATONIC_MIN_SCALE; // Minor Pentatonic Scale
+extern struct ScaleBase const BLUES_SCALE;          // Blues Scale (hexatonic)
 
-// Print Functions //
-
-void printNote(char* prefix, Note note, char* suffix);
-void printInter(char* prefix, Interval inter, char* suffix);
-void printChord(char* prefix, Chord chord, char* suffix);
-void printScale(char* prefix, Scale scale, char* suffix);
+extern struct ChordBase const MAJOR_TRIAD;          // Major Triad
+extern struct ChordBase const MINOR_TRIAD;          // Minor Triad
+extern struct ChordBase const AUGMENTED_TRIAD;      // Augmented Triad
+extern struct ChordBase const DIMINISHED_TRIAD;     // Diminished Triad
+extern struct ChordBase const DIMINISHED_7;         // Diminished 7th
+extern struct ChordBase const HALF_DIMINISHED_7;    // Half Diminished 7th
+extern struct ChordBase const MINOR_7;              // Minor 7th
+extern struct ChordBase const MAJOR_7;              // Major 7th
+extern struct ChordBase const DOMINANT_7;           // Dominant 7th
 
 // Interval Functions //
 
-Note getInter(enum NoteOrder root, enum Accidental acci, int pitch, int inter, enum Quality quality, modeInter type);
-Note getInterStruct(Note note, Interval interval, modeInter type);
-Interval returnInter(Note notea, Note noteb);
+struct Note getInter(struct Note note, struct Interval interval);
+struct Interval returnInter(struct Note notea, struct Note noteb);
 
 // Chord Functions //
 
-Chord getChord(Note note, const ChordBase* type, Note base[], Note notes[]);
-Chord invertChord(Chord* chord, int inversion);
+struct Chord getChord(struct Note root, struct ChordBase const* type, struct Note* restrict base, struct Note* restrict notes);
+void returnChord(struct Note const notes[], size_t noteNum, struct ChordResult list[], size_t listMax, bool useEnharmonic);
+void invertChord(struct Chord* chord, int inversion);
 
 // Scale Functions //
 
-Scale getScale (Note start, const ScaleBase* type, Note notes[], enum ScaleType mode);
+struct Scale getScale(struct Note start, const struct ScaleBase* type, struct Note notes[], enum ScaleType mode);
+void returnScale(struct Note const note[], size_t noteNum, struct ScaleResult list[], size_t listMax, bool useEnharmonic);
 
-// Misc Note Functions //
+// Misc Functions //
 
-int isEnharmonic(Note notea, Note noteb);
-double getFreqOrWave(Note note, int standard, enum NoteFormula type);
-
-// --------------------- KEY SIGNATURE ADDON --------------------- //
-#ifdef __MT_KEYSIG_H__
-
-// Enumerators //
-
-enum KeySigChordType {TYPE_TRIAD = 3, TYPE_SEVENTH_CHORD = 4};
-enum DispKeySig {ACCIDENTAL_ONLY, KEYSIG_ONLY, KEYSIG_AND_ACCIDENTAL};
-enum ScaleDegree {TONIC = 1, SUPERTONIC = 2, MEDIANT = 3, SUBDOMINANT = 4, DOMINANT = 5, SUBMEDIANT = 6, SUBTONIC = 7};
-enum KeySigType {MAJOR_KEY, MINOR_KEY};
-
-// Structures //
-
-typedef struct {
-    enum KeyType type;
-    int accinum;
-    int accitype;
-    Note* accilist;
-    Note* note;
-} KeySig;
-
-// Print Function //
-
-void printKeySig(char* prefix, KeySig key, char* suffix, enum DispKeySig type);
-
-// Get Key Signature Functions //
-
-KeySig getKeySig(Note note, enum KeySigType type, Note accilist[]);
-KeySig getKeyRelative(KeySig key, Note accilist[], Note* note);
-
-// Misc Key Signature Functions //
-
-int getKeyAcci(Note note, enum KeyType type);
-Note getKeyNote(KeySig key, int num);
-Chord getKeyChord(KeySig key, Note base[], Note notes[], int num, enum KeySigChordType type);
-
-#endif
+char* getMTError(void);
+char* printNote(struct Note const note, char buf[], size_t size);
+bool isEnharmonic(struct Note noteA, struct Note noteB);
 
 #endif
