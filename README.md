@@ -36,7 +36,7 @@ for (int i = 0; i < scale.size; i++) {
 ```C
 #define MT_DISP_LEN 8
 ```
-This is the default print size you can use for the ```printNote()```. The rationale is note (1) + max acci (<= 4) + number (<= 99) + null terminating (1)
+This is the default print size you can use for ```printNote()```. The rationale is note (1) + max acci (<= 4) + number (<= 99) + null terminating (1)
 ```C
 enum NoteOrder {
     C, D, E, F, G, A, B
