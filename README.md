@@ -10,6 +10,12 @@
 * No Accidental Limit (ie, G 20th sharp)
 * Enharmonically Correct (ie, minor 6th of D is Bb, not A#)
 
+## To-Do List
+
+* Rename enum NoteOrder with ```NOTE``` prefix
+* Add Key Signature functions
+* More convenience functions (fromSemitone, more advanced scale/chord functions)
+
 ## Example
 
 Here's an example that creates the C4 Blues Scale, ascending:
@@ -258,7 +264,7 @@ if (isEnharmonic (noteA, noteB)) {
 Enharmonic!
 ```
 ### 🟫 Error Handling 🟫
-If a function encounters one of the defined errors, it will return an empty struct if applicable, or an empty string in the case of ```printNote()```. You can then query the error through
+If a function encounters one of the defined errors, it will return an zeroed struct if applicable, or an empty string in the case of ```printNote()```. You can then query the error through
 ```
 char* getMTError(void);
 ```
