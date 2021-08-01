@@ -37,6 +37,16 @@ for (int i = 0; i < scale.size; i++) {
 ```
 
 ## Documentation
+### ⬛ Table of Contents ⬛
+  * [Enumerators & Macros](#enum)
+  * [Structures](#struct)
+  * [Interval Functions](#interval)
+  * [Chord Functions](#chord)
+  * [Scale Functions](#scale)
+  * [Misc Functions](#misc)
+  * [Error Handling](#error)
+
+<a name="enum"/>
 
 ### 🟥 Enumerators & Macros 🟥
 ```C
@@ -78,6 +88,8 @@ enum MT_Error {
 };
 ```
 For reference only. See Error Handling section down below.
+
+<a name="struct"/>
 
 ### 🟧 Structures 🟧
 ```C
@@ -140,6 +152,8 @@ struct ScaleBase {
 ```
 These are the "types" of Chords/Scales to be used. A number of common types have been pre-defined, but you make make your own if you wish. ```steps``` defines the intervals between *each note* (ie, ```G -> B -> D``` is a major 3rd, then a minor 3rd). ```size``` for ```struct ScaleBase``` includes the octave (ie, a major scale is size 8)
 
+<a name="interval"/>
+
 ### 🟨 Interval Functions 🟨
 ```C
 struct Note getInter(struct Note note, struct Interval interval);
@@ -163,6 +177,9 @@ printf("Augmented 4th of B double flat is %s",
 ```
 Augmented 4th of B double flat is Eb5.
 ```
+
+<a name="chord"/>
+
 ### 🟩 Chord Functions 🟩
 ```C
 struct Chord getChord(struct Note root, struct ChordBase const* type, struct Note* restrict base, struct Note* restrict notes);
@@ -205,6 +222,8 @@ C4 D4 F#4 A4
 
 ### 🟦 Scale Functions 🟦
 
+<a name="scale"/>
+
 ```C
 struct Scale getScale(struct Note start, const struct ScaleBase* type, struct Note notes[], enum ScaleType mode);
 ```
@@ -241,6 +260,9 @@ G#0 Harmonic Minor
 Ab0 Melodic Minor
 G#0 Melodic Minor
 ```
+
+<a name="misc"/>
+
 ### 🟪 Misc Functions 🟪
 ```C
 char* printNote(struct Note const note, char buf[], size_t size);
@@ -263,6 +285,9 @@ if (isEnharmonic (noteA, noteB)) {
 ```
 Enharmonic!
 ```
+
+<a name="error"/>
+
 ### 🟫 Error Handling 🟫
 If a function encounters one of the defined errors, it will return an zeroed struct if applicable, or an empty string in the case of ```printNote()```. You can then query the error through
 ```
