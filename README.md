@@ -22,7 +22,7 @@ Here's an example that creates the C4 Blues Scale, ascending:
 ```C
 struct Note notes[7];
 struct Scale scale = getScale(
-    (struct Note) {C, MAHLER_NONE, 4}, &MAHLER_BLUES_SCALE, notes, MAHLER_ASCEND
+    (struct Note) {MAHLER_C, MAHLER_NONE, 4}, &MAHLER_BLUES_SCALE, notes, MAHLER_ASCEND
 );
 ```
 
