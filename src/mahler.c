@@ -194,7 +194,7 @@ toSemitone(int note)
 char*
 printNote(struct Note const note, char buf[], size_t size)
 {
-    static char const* const dispNote[] = {"C", "D", "E", "F", "G", "A", "B"};
+    static char const* dispNote = "CDEFGAB";
     static char const* const dispAccidental[] = {"bbbb", "bbb", "bb", "b", "", "#", "##", "###", "####"};
     
     if (note.acci < -4 || note.acci > 4) { // dispAccidental limit
@@ -207,7 +207,7 @@ printNote(struct Note const note, char buf[], size_t size)
         return "";
     }
     
-    if (!(snprintf(buf, size, "%s%s%d", dispNote[note.note], dispAccidental[note.acci + 4], note.pitch) < size)) {
+    if (!(snprintf(buf, size, "%c%s%d", dispNote[note.note], dispAccidental[note.acci + 4], note.pitch) < size)) {
         MAHLER_LAST_ERROR = MAHLER_ERROR_OVERFLOW_PRINT_NOTE;
     }
     return buf;
