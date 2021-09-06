@@ -1,4 +1,4 @@
-<h1 align="center">musictheory.c</h1>
+<h1 align="center">mahler.c</h1>
 
 <p align="center">A simple and easy-to-use library for Western music theory in pure C99</p>
 
@@ -12,7 +12,6 @@
 
 ## To-Do List
 
-* Rename enum NoteOrder with ```NOTE``` prefix
 * Add Key Signature functions
 * More convenience functions (fromSemitone, more advanced scale/chord functions)
 
@@ -23,16 +22,16 @@ Here's an example that creates the C4 Blues Scale, ascending:
 ```C
 struct Note notes[7];
 struct Scale scale = getScale(
-    (struct Note) {C, NONE, 4}, &BLUES_SCALE, notes, SCALE_ASCEND
+    (struct Note) {C, MAHLER_NONE, 4}, &MAHLER_BLUES_SCALE, notes, MAHLER_ASCEND
 );
 ```
 
 And if you want to print it:
 
 ```C
-char print[MT_DISP_LEN];
+char print[MAHLER_DISP_LEN];
 for (int i = 0; i < scale.size; i++) {
-    puts(printNote(scale.notes[i], print, MT_DISP_LEN));
+    puts(printNote(scale.notes[i], print, MAHLER_DISP_LEN));
 }
 ```
 
@@ -50,41 +49,41 @@ for (int i = 0; i < scale.size; i++) {
 
 ### 🟥 Enumerators & Macros 🟥
 ```C
-#define MT_DISP_LEN 8
+#define MAHLER_DISP_LEN 8
 ```
 This is the default print size you can use for ```printNote()```. The rationale is note (1) + max acci (<= 4) + number (<= 99) + null terminating (1)
 ```C
 enum NoteOrder {
-    C, D, E, F, G, A, B
+    MAHLER_C, MAHLER_D, MAHLER_E, MAHLER_F, MAHLER_G, MAHLER_A, MAHLER_B
 };
 ```
 ```note``` member ```struct Note```, and represents the "root" note (no accidentals).
 
 ```C
 enum Quality {
-    MINOR = -1, MAJOR = 0, AUGMENTED = 1, DIMINISHED = -2, PERFECT = 3
+    MAHLER_MINOR = -1, MAHLER_MAJOR = 0, MAHLER_AUGMENTED = 1, MAHLER_DIMINISHED = -2, MAHLER_PERFECT = 3
 };
 ```
 ```quality``` member of ```struct Interval```. Self-explanatory.
 
 ```C
 enum Accidental {
-    DBFLAT = -2, FLAT = -1, NONE = 0, SHARP = 1, DBSHARP = 2
+    MAHLER_DBFLAT = -2, MAHLER_FLAT = -1, MAHLER_NONE = 0, MAHLER_SHARP = 1, MAHLER_DBSHARP = 2
 };
 ```
 ```acci``` member of ```struct Note```. Also self-explanatory. All functions support an infinite range of accidentals (ie, 30th sharp). Only thing holding you back is the size of ```enum Accidental```.
 ```C
 enum ScaleType {
-    SCALE_ASCEND, SCALE_DESCEND, SCALE_FULL
+    MAHLER_ASCEND, MAHLER_DESCEND, MAHLER_FULL
 };
 ```
 ```mode``` parameter of getScale. Determines whether it is ascending, descending, or full (both). Scales include 8th degree, and in ```SCALE_FULL``` it is doubled.
 
 ```C
-enum MT_Error {
-    MT_ERROR_NONE,
-    MT_ERROR_INVALID_QUAL, MT_ERROR_INVALID_INTER, MT_ERROR_INVALID_INVERSION, MT_ERROR_INVALID_PRINT_NOTE,
-    MT_ERROR_OVERFLOW_PRINT_NOTE, MT_ERROR_OVERFLOW_SCALE_RETURN, MT_ERROR_OVERFLOW_CHORD_RETURN
+enum MAHLER_Error {
+    MAHLER_ERROR_NONE,
+    MAHLER_ERROR_INVALID_QUAL, MAHLER_ERROR_INVALID_INTER, MAHLER_ERROR_INVALID_INVERSION, MAHLER_ERROR_INVALID_PRINT_NOTE,
+    MAHLER_ERROR_OVERFLOW_PRINT_NOTE, MAHLER_ERROR_OVERFLOW_SCALE_RETURN, MAHLER_ERROR_OVERFLOW_CHORD_RETURN
 };
 ```
 For reference only. See Error Handling section down below.
@@ -166,11 +165,11 @@ struct Interval returnInter(struct Note notea, struct Note noteb);
 
 #### Example
 ```C
-struct Note note = {B, DBFLAT, 4};
-struct Interval inter = {4, AUGMENTED};
+struct Note note = {MAHLER_B, MAHLER_DBFLAT, 4};
+struct Interval inter = {4, MAHLER_AUGMENTED};
 
 printf("Augmented 4th of B double flat is %s",
-    printNote(getInter(note, inter), (char[MT_DISP_LEN]) {0}, MT_DISP_LEN)
+    printNote(getInter(note, inter), (char[MAHLER_DISP_LEN]) {0}, MAHLER_DISP_LEN)
 );
 ```
 #### Result
@@ -199,15 +198,15 @@ This function inverts the ```notes``` member of ```chord``` to the ```inversion`
 struct Note base[4];
 struct Note notes[4];
 struct Chord chord = getChord(
-    (struct Note) {D, NONE, 3}, &DOMINANT_7, base, notes
+    (struct Note) {MAHLER_D, MAHLER_NONE, 3}, &MAHLER_DOMINANT_7, base, notes
 );
 
 for (size_t i = 0; i < chord.size; i++) {
     invertChord(&chord, i);
     
-    char disp[MT_DISP_LEN];
+    char disp[MAHLER_DISP_LEN];
     for (size_t j = 0; j < chord.size; j++) {
-        printf("%s ", printNote(chord.notes[j], disp, MT_DISP_LEN));
+        printf("%s ", printNote(chord.notes[j], disp, MAHLER_DISP_LEN));
     }
     putchar('\n');
 }
@@ -238,9 +237,9 @@ Identical to ```returnChord()```, but for scales. This function tests for major,
 struct ScaleResult list[5];
 returnScale(
     (struct Note[]) {
-        {A, FLAT, 0},
-        {C, FLAT, 0},
-        {G, NONE, 0}
+        {MAHLER_A, MAHLER_FLAT, 0},
+        {MAHLER_C, MAHLER_FLAT, 0},
+        {MAHLER_G, MAHLER_NONE, 0}
     },
     3, list, sizeof(list) / sizeof(*list), true
 );
@@ -248,7 +247,7 @@ returnScale(
 size_t i = 0;
 while (list[i].scale) {
     printf("%s %s\n",
-        printNote(list[i].key, (char[MT_DISP_LEN]) {0}, MT_DISP_LEN), list[i].scale->name
+        printNote(list[i].key, (char[MAHLER_DISP_LEN]) {0}, MAHLER_DISP_LEN), list[i].scale->name
     );
     i++;
 }
@@ -274,8 +273,8 @@ bool isEnharmonic(struct Note notea, struct Note noteb);
 This returns ```true``` if enharmonic, ```false``` if not. Identical notes are considered enharmonic.
 #### Example
 ```C
-struct Note noteA = {C, FLAT, 4};
-struct Note noteB = {B, NONE, 3};
+struct Note noteA = {MAHLER_C, MAHLER_FLAT, 4};
+struct Note noteB = {MAHLER_B, MAHLER_NONE, 3};
 
 if (isEnharmonic (noteA, noteB)) {
     puts("Enharmonic!");
@@ -291,6 +290,6 @@ Enharmonic!
 ### 🟫 Error Handling 🟫
 If a function encounters one of the defined errors, it will return an zeroed struct if applicable, or an empty string in the case of ```printNote()```. You can then query the error through
 ```
-char* getMTError(void);
+char* getMahlerError(void);
 ```
 which returns a string containing details of the last error. Read each function blurb for their specific errors.
