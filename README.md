@@ -157,11 +157,11 @@ These are the "types" of Chords/Scales to be used. A number of common types have
 ```C
 struct Note getInter(struct Note note, struct Interval interval);
 ```
-```getInter``` accepts all intervals (both simple and compound). Returns the destination note of ```interval``` starting from ```note```. If the given interval is an invalid quality (ie, non-perfect intervals with perfect quality, or perfect intervals with major or minor quality), then the last error is set to ```MT_ERROR_INVALID_QUAL```.
+```getInter``` accepts all intervals (both simple and compound). Returns the destination note of ```interval``` starting from ```note```. If the given interval is an invalid quality (ie, non-perfect intervals with perfect quality, or perfect intervals with major or minor quality), then the last error is set to ```MAHLER_ERROR_INVALID_QUAL```.
 ```C
 struct Interval returnInter(struct Note notea, struct Note noteb);
 ```
-```returnInter``` does the opposite. Given two notes, it will return the interval between them. If the resulting interval is invalid (wrong quality), then the last error is set to ```MT_ERROR_INVALID_INTER```.
+```returnInter``` does the opposite. Given two notes, it will return the interval between them. If the resulting interval is invalid (wrong quality), then the last error is set to ```MAHLER_ERROR_INVALID_INTER```.
 
 #### Example
 ```C
@@ -187,11 +187,11 @@ Returns a ```struct Chord``` with root ```root``` and type ```type```. You must 
 ```C
 void returnChord(struct Note const notes[], size_t noteNum, struct ChordResult list[], size_t listMax, bool useEnharmonic);
 ```
-This function populates ```list``` with the potential chords containing each note in ```notes``` . ```noteNum``` is the number of entries in ```notes```, while ```listMax - 1``` is the maximum number of entries to write to. The reason for -1 is because the last ```struct ChordBase``` is set empty as a looping sentinel. The ```pitch``` of each ```struct ChordResult``` note is 0. ```useEnharmonic``` determines whether enharmonic equivalents are used (ie, Bb+ triad is also A#+ triad). If there are more possible chords than ```listMax - 1```, the last error is set to ```MT_ERROR_OVERFLOW_CHORD_RETURN```. This function tests for major, minor, augmented, and diminished triads, as well as dominant and diminished 7ths up to one accidental (ie, flat, natural, and sharp).
+This function populates ```list``` with the potential chords containing each note in ```notes``` . ```noteNum``` is the number of entries in ```notes```, while ```listMax - 1``` is the maximum number of entries to write to. The reason for -1 is because the last ```struct ChordBase``` is set empty as a looping sentinel. The ```pitch``` of each ```struct ChordResult``` note is 0. ```useEnharmonic``` determines whether enharmonic equivalents are used (ie, Bb+ triad is also A#+ triad). If there are more possible chords than ```listMax - 1```, the last error is set to ```MAHLER_ERROR_OVERFLOW_CHORD_RETURN```. This function tests for major, minor, augmented, and diminished triads, as well as dominant and diminished 7ths up to one accidental (ie, flat, natural, and sharp).
 ```C
 void invertChord(struct Chord* chord, int inversion);
 ```
-This function inverts the ```notes``` member of ```chord``` to the ```inversion```th inversion. ```base``` is left unaltered. An inversion of 0 is considered the root inversion. Any invalid inversions will set the last error to ```MT_ERROR_INVALID_INVERSION```.
+This function inverts the ```notes``` member of ```chord``` to the ```inversion```th inversion. ```base``` is left unaltered. An inversion of 0 is considered the root inversion. Any invalid inversions will set the last error to ```MAHLER_ERROR_INVALID_INVERSION```.
 
 #### Example
 ```C
@@ -226,7 +226,7 @@ C4 D4 F#4 A4
 ```C
 struct Scale getScale(struct Note start, const struct ScaleBase* type, struct Note notes[], enum ScaleType mode);
 ```
-Returns a ```type``` scale starting on ```start```. ```notes``` contains the notes of the scale, hence the size must be >= the size member of ```type```. As well, a ```mode``` of ```SCALE_FULL``` doubles the size requirement (ie, if it was 8, ```SCALE_FULL``` would be 16).
+Returns a ```type``` scale starting on ```start```. ```notes``` contains the notes of the scale, hence the size must be >= the size member of ```type```. As well, a ```mode``` of ```MAHLER_FULL``` doubles the size requirement (ie, if it was 8, ```MAHLER_FULL``` would be 16).
 ```C
 void returnScale(struct Note const note[], size_t noteNum, struct ScaleResult list[], size_t listMax, bool useEnharmonic);
 ```
@@ -266,7 +266,7 @@ G#0 Melodic Minor
 ```C
 char* printNote(struct Note const note, char buf[], size_t size);
 ```
-This returns the buffer with ```note``` in text up to 4 accidentals (ie, ````bbbb -> ####````). If ```acci``` exceeds that range or the ```note``` member is invalid, the last error is set to ```MT_ERROR_INVALID_PRINT_NOTE```. If the given buffer is not large enough, the last error is set to ```MT_ERROR_OVERFLOW_PRINT_NOTE```.
+This returns the buffer with ```note``` in text up to 4 accidentals (ie, ````bbbb -> ####````). If ```acci``` exceeds that range or the ```note``` member is invalid, the last error is set to ```MAHLER_ERROR_INVALID_PRINT_NOTE```. If the given buffer is not large enough, the last error is set to ```MAHLER_ERROR_OVERFLOW_PRINT_NOTE```.
 ```C
 bool isEnharmonic(struct Note notea, struct Note noteb);
 ```
