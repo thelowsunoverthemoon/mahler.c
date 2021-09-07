@@ -10,10 +10,9 @@
 * No Accidental Limit (ie, G 20th sharp)
 * Enharmonically Correct (ie, minor 6th of D is Bb, not A#)
 
-## To-Do List
+## Who's Mahler?
 
-* Add Key Signature functions
-* More convenience functions (fromSemitone, more advanced scale/chord functions)
+Gustav Mahler is one of my favourite composers; if you like the emotions of Wagner, and the ideas of Stravinsky, Mahler is the perfect middle ground! All his works have a flair of modernism that gives his emotional works a unique touch. You should definitely check him out, especially his Symphony No.5 in C# Minor, The Song of the Earth, and Symphony No.6 in A Minor.
 
 ## Example
 
