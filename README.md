@@ -12,7 +12,7 @@
 
 ## Who's Mahler?
 
-    Gustav Mahler is one of my favourite composers; if you like the emotions of Wagner, and the ideas of Stravinsky, Mahler is the perfect middle ground! All his works have a flair of modernism that gives his emotional works a unique touch. You should definitely check him out, especially his Symphony No.5 in C# Minor, The Song of the Earth, and Symphony No.6 in A Minor.
+Gustav Mahler is one of my favourite composers; if you like the emotions of Wagner, and the ideas of Stravinsky, Mahler is the perfect middle ground! All his works have a flair of modernism that gives his emotional works a unique touch. You should definitely check him out, especially his Symphony No.5 in C# Minor, The Song of the Earth, and Symphony No.6 in A Minor.
 
 ## Example
 
