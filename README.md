@@ -292,3 +292,8 @@ If a function encounters one of the defined errors, it will return an zeroed str
 char* getMahlerError(void);
 ```
 which returns a string containing details of the last error. Read each function blurb for their specific errors.
+
+## To Do
+- [ ] Add Key Signature Functions
+- [ ] Add More Preset Scales, add option to include own in list in ```return``` functions
+- [ ] Cadences?...
