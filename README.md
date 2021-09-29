@@ -294,6 +294,9 @@ This function populates ```list``` with the potential chords containing each not
 void invertChord(struct Chord* chord, int inversion);
 ```
 This function inverts the ```notes``` member of ```chord``` to the ```inversion```th inversion. ```base``` is left unaltered. An inversion of 0 is considered the root inversion. Any invalid inversions will set the last error to ```MAHLER_ERROR_INVALID_INVERSION```.
+```C
+struct Chord getKeyChord(struct KeySig const* key, size_t index, size_t size, struct Note* restrict base, struct Note* restrict notes);
+```
 
 #### Example
 ```C
@@ -333,6 +336,9 @@ Returns a ```type``` scale starting on ```start```. ```notes``` contains the not
 void returnScale(struct Note const notes[], size_t noteNum, struct ScaleResult list[], size_t listMax, struct ScaleList const* custom, bool enharmonic);
 ```
 Identical to ```returnChord()```, but for scales.
+```C
+struct Scale getKeyScale(struct KeySig const* key, size_t index, enum MahlerScaleType mode, struct ScaleBase const* type, struct Note* notes);
+```
 
 #### Example
 ```C
@@ -365,11 +371,18 @@ G#0 Melodic Minor
 <a name="key"/>
 
 ### 🟧 Key Signature Functions 🟧
-
+```C
 struct KeySig getKeySig(struct Note key, enum MahlerKeyType type);
+```
+```C
 struct KeySig returnKeySig(char const* str, enum MahlerKeyType type);
+```
+```C
 struct KeySig getKeyRelative(struct KeySig const* key);
+```
+```C
 int queryAcci(struct KeySig const* key, enum MahlerNote note);
+```
 
 <a name="misc"/>
 
