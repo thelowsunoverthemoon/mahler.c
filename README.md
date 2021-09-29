@@ -121,7 +121,7 @@ For reference only. See Error Handling section down below.
 <a name="pre"/>
 
 ### 🟦 Predefined 🟦
-Predefined Scales
+#### Predefined Scales
 ```C
 extern struct ScaleBase const MAHLER_MAJOR_SCALE;          // Major Scale
 extern struct ScaleBase const MAHLER_NATURAL_MIN_SCALE;    // Natural Minor Scale
@@ -133,7 +133,7 @@ extern struct ScaleBase const MAHLER_BLUES_SCALE;          // Blues Scale (hexat
 extern struct ScaleBase const MAHLER_OCTATONIC_HALF_SCALE; // Octatonic Scale (starting with half tone)
 extern struct ScaleBase const MAHLER_OCTATONIC_WHOLE_SCALE;// Octatonic Scale (starting with whole tone)
 ```
-Predefined Chords
+#### Predefined Chords
 ```C
 extern struct ChordBase const MAHLER_MAJOR_TRIAD;          // Major Triad
 extern struct ChordBase const MAHLER_MINOR_TRIAD;          // Minor Triad
@@ -145,13 +145,33 @@ extern struct ChordBase const MAHLER_MINOR_7;              // Minor 7th
 extern struct ChordBase const MAHLER_MAJOR_7;              // Major 7th
 extern struct ChordBase const MAHLER_DOMINANT_7;           // Dominant 7th
 ```
+#### Predefined Chord List
+```C
+{
+    &MAHLER_MAJOR_TRIAD,
+    &MAHLER_MINOR_TRIAD,
+    &MAHLER_AUGMENTED_TRIAD,
+    &MAHLER_DIMINISHED_TRIAD,
+    &MAHLER_DIMINISHED_7,
+    &MAHLER_DOMINANT_7
+};
+```
+#### Predefined Scale List
+```C
+{
+    &MAHLER_MAJOR_SCALE,
+    &MAHLER_NATURAL_MIN_SCALE,
+    &MAHLER_HARMONIC_MIN_SCALE,
+    &MAHLER_MELODIC_MIN_SCALE
+};
+```
 <a name="struct"/>
 
 ### 🟧 Structures 🟧
 ```C
 struct Note {
-    enum NoteOrder  note;
-    enum Accidental acci;
+    enum MahlerNote note;
+    int             acci;
     int             pitch;
 };
 ```
@@ -159,25 +179,25 @@ The building block of music theory. ```pitch``` is the octave the note resides i
 
 ```C
 struct Interval {
-    int          inter;
-    enum Quality quality;
+    int                inter;
+    enum MahlerQuality quality;
 };
 ```
 Self explanatory.
 ```C
 struct Chord {
-    int const                         size;
-    int                               inversion;
-    struct Note const* const restrict base;
-    struct Note* const restrict       notes;
+    int const                size;
+    int                      inversion;
+    struct Note const* const base;
+    struct Note* const       notes;
 };
 ```
 You must provide two arrays of ```struct Note``` : ```base``` is for the root inversion chord (ie ```G7 is G B D F```) and ```notes``` is for the current inversion (ie ```B D F G```) specified in ```inversion```.
 ```C
 struct Scale {
-    int const            size;
-    enum ScaleType const type;
-    struct Note* const   notes;
+    int const                  size;
+    enum MahlerScaleType const type;
+    struct Note* const         notes;
 };
 ```
 Self-explanatory.
@@ -267,9 +287,9 @@ struct Chord getChord(struct Note root, struct ChordBase const* type, struct Not
 ```
 Returns a ```struct Chord``` with root ```root``` and type ```type```. You must provide two arrays of ```struct Note``` : ```base``` is for the root inversion chord (ie ```G7 is G B D F```) and ```notes``` is for the current inversion (ie ```B D F G```) specified in ```inversion```.
 ```C
-void returnChord(struct Note const notes[], size_t noteNum, struct ChordResult list[], size_t listMax, bool useEnharmonic);
+void returnChord(struct Note const notes[], size_t noteNum, struct ChordResult list[], size_t listMax, struct ChordList const* custom, bool enharmonic);
 ```
-This function populates ```list``` with the potential chords containing each note in ```notes``` . ```noteNum``` is the number of entries in ```notes```, while ```listMax - 1``` is the maximum number of entries to write to. The reason for -1 is because the last ```struct ChordBase``` is set empty as a looping sentinel. The ```pitch``` of each ```struct ChordResult``` note is 0. ```useEnharmonic``` determines whether enharmonic equivalents are used (ie, Bb+ triad is also A#+ triad). If there are more possible chords than ```listMax - 1```, the last error is set to ```MAHLER_ERROR_OVERFLOW_CHORD_RETURN```. This function tests for major, minor, augmented, and diminished triads, as well as dominant and diminished 7ths up to one accidental (ie, flat, natural, and sharp).
+This function populates ```list``` with the potential chords containing each note in ```notes``` . ```noteNum``` is the number of entries in ```notes```, while ```listMax - 1``` is the maximum number of entries to write to. The reason for -1 is because the last ```struct ChordBase``` is set empty as a looping sentinel. The ```pitch``` of each ```struct ChordResult``` note is 0. Defining ```custom``` will check for chords specified in ```struct ChordList```. Set to ```NULL``` is you would like to use the predefined chord list (see [Predefined](#pre)). ```useEnharmonic``` determines whether enharmonic equivalents are used (ie, Bb+ triad is also A#+ triad). If there are more possible chords than ```listMax - 1```, the last error is set to ```MAHLER_ERROR_OVERFLOW_CHORD_RETURN```. This function tests for chords up to one accidental (ie, flat, natural, and sharp).
 ```C
 void invertChord(struct Chord* chord, int inversion);
 ```
@@ -310,9 +330,9 @@ struct Scale getScale(struct Note start, const struct ScaleBase* type, struct No
 ```
 Returns a ```type``` scale starting on ```start```. ```notes``` contains the notes of the scale, hence the size must be >= the size member of ```type```. As well, a ```mode``` of ```MAHLER_FULL``` doubles the size requirement (ie, if it was 8, ```MAHLER_FULL``` would be 16).
 ```C
-void returnScale(struct Note const note[], size_t noteNum, struct ScaleResult list[], size_t listMax, bool useEnharmonic);
+void returnScale(struct Note const notes[], size_t noteNum, struct ScaleResult list[], size_t listMax, struct ScaleList const* custom, bool enharmonic);
 ```
-Identical to ```returnChord()```, but for scales. This function tests for major, natural minor, harmonic minor, and melodic minor scales up to one accidental (ie, flat, natural, and sharp).
+Identical to ```returnChord()```, but for scales.
 
 #### Example
 ```C
@@ -341,6 +361,15 @@ G#0 Harmonic Minor
 Ab0 Melodic Minor
 G#0 Melodic Minor
 ```
+
+<a name="key"/>
+
+### 🟧 Key Signature Functions 🟧
+
+struct KeySig getKeySig(struct Note key, enum MahlerKeyType type);
+struct KeySig returnKeySig(char const* str, enum MahlerKeyType type);
+struct KeySig getKeyRelative(struct KeySig const* key);
+int queryAcci(struct KeySig const* key, enum MahlerNote note);
 
 <a name="misc"/>
 
