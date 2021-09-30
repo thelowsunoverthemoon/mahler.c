@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include "mahler.h"
 
 // Create a Major Scale Chart starting from C //
