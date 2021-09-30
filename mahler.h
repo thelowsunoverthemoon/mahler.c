@@ -56,7 +56,7 @@ enum MahlerError {
 
 struct Note {
     enum MahlerNote note;
-    int             acci;
+    int             acci; // use int instead? Since only guaranteed enum to hold char, could have way higher flats
     int             pitch;
 };
 
@@ -130,6 +130,7 @@ extern struct ScaleBase const MAHLER_MELODIC_MIN_SCALE;    // Melodic Minor Scal
 extern struct ScaleBase const MAHLER_PENTATONIC_MAJ_SCALE; // Major Pentatonic Scale
 extern struct ScaleBase const MAHLER_PENTATONIC_MIN_SCALE; // Minor Pentatonic Scale
 extern struct ScaleBase const MAHLER_BLUES_SCALE;          // Blues Scale (hexatonic)
+extern struct ScaleBase const MAHLER_WHOLE_TONE_SCALE;     // Octatonic Scale (starting with half tone)
 extern struct ScaleBase const MAHLER_OCTATONIC_HALF_SCALE; // Octatonic Scale (starting with half tone)
 extern struct ScaleBase const MAHLER_OCTATONIC_WHOLE_SCALE;// Octatonic Scale (starting with whole tone)
 
