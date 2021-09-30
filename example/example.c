@@ -4,7 +4,8 @@
 // Create a Major Scale Chart starting from C //
 
 int
-main(void) {
+main(void)
+{
     struct Note scNotes[8];
     struct Scale scale = getScale(
         (struct Note) {MAHLER_C, MAHLER_NONE, 0}, &MAHLER_MAJOR_SCALE, scNotes, MAHLER_ASCEND
