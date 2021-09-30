@@ -56,7 +56,7 @@ enum MahlerError {
 
 struct Note {
     enum MahlerNote note;
-    int             acci; // use int instead? Since only guaranteed enum to hold char, could have way higher flats
+    int             acci;
     int             pitch;
 };
 
