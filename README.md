@@ -297,13 +297,15 @@ This function inverts the ```notes``` member of ```chord``` to the ```inversion`
 ```C
 struct Chord getKeyChord(struct KeySig const* key, size_t index, size_t size, struct Note* restrict base, struct Note* restrict notes);
 ```
-
+Returns a ```struct Chord``` starting on ```index```th note of ```key``` (ie, index 3 of D+ would be F#) of size ```size``` (ie, 3 would return a triad). ```base``` and ```notes``` are identical to ```getChord```. See general enums of [Enumerators & Macros](#pre).
 #### Example
 ```C
 struct Note base[4];
 struct Note notes[4];
 struct Chord chord = getChord(
-    (struct Note) {MAHLER_D, MAHLER_NONE, 3}, &MAHLER_DOMINANT_7, base, notes
+    (struct Note) {MAHLER_D, MAHLER_NONE, 3},
+    &MAHLER_DOMINANT_7,
+    base, notes
 );
 
 for (size_t i = 0; i < chord.size; i++) {
@@ -339,7 +341,7 @@ Identical to ```returnChord()```, but for scales.
 ```C
 struct Scale getKeyScale(struct KeySig const* key, size_t index, enum MahlerScaleType mode, struct ScaleBase const* type, struct Note* notes);
 ```
-
+Returns a ```struct Scale``` starting on ```index```th note of ```key``` (ie, index 3 of D+ would be F#). In other words, it returns the ```index```th mode of a given key (ie, index 2 of C+ would be C dorian). See general enums of [Enumerators & Macros](#pre).
 #### Example
 ```C
 struct ScaleResult list[5];
@@ -349,15 +351,14 @@ returnScale(
         {MAHLER_C, MAHLER_FLAT, 0},
         {MAHLER_G, MAHLER_NONE, 0}
     },
-    3, list, sizeof(list) / sizeof(*list), true
+    3, list, sizeof(list) / sizeof(*list), NULL, true
 );
 
-size_t i = 0;
-while (list[i].scale) {
+char disp[MAHLER_DISP_LEN];
+for (size_t i = 0; list[i].scale; i++) {
     printf("%s %s\n",
-        printNote(list[i].key, (char[MAHLER_DISP_LEN]) {0}, MAHLER_DISP_LEN), list[i].scale->name
+        printNote(list[i].key, disp, MAHLER_DISP_LEN), list[i].scale->name
     );
-    i++;
 }
 ```
 #### Result
@@ -374,14 +375,34 @@ G#0 Melodic Minor
 ```C
 struct KeySig getKeySig(struct Note key, enum MahlerKeyType type);
 ```
+Returns a ```struct KeySig```. All Key Signature functions support theoritical keys (ie D#+).
 ```C
 struct KeySig returnKeySig(char const* str, enum MahlerKeyType type);
 ```
+Returns a ```struct KeySig``` based on ```str```, which contains the accidentals stringified. For example, ```"###"``` with ```MAHLER_MAJOR_KEY``` would return A+. Accepted characters are ```#``` (sharp), ```x``` (double sharp), and ```b``` (flat). Any other characters are ignored. Equivalent expressions are accepted (ie ```"x#"``` -> G+).
 ```C
 struct KeySig getKeyRelative(struct KeySig const* key);
 ```
+Returns the relative major/minor of the given key.
 ```C
 int queryAcci(struct KeySig const* key, enum MahlerNote note);
+```
+Returns the accidental of the given ```note``` based on ```key```. Note that this is not a ```struct Note``` but the "base" note of ```enum MahlerNote```.
+#### Example
+```C
+struct KeySig key = getKeySig(
+    (struct Note) {MAHLER_G, MAHLER_NONE, 0},
+    MAHLER_MINOR_KEY
+);
+    
+char disp[MAHLER_DISP_LEN];
+for (size_t i = 0; i < key.size; i++) {
+    printf("%s ", printNote(key.notes[i], disp, MAHLER_DISP_LEN));
+}
+```
+#### Result
+```
+Bb0 Eb0
 ```
 
 <a name="misc"/>
@@ -419,6 +440,6 @@ char* getMahlerError(void);
 which returns a string containing details of the last error. Read each function blurb for their specific errors.
 
 ## To Do
-- [ ] Add Key Signature Functions
-- [ ] Add More Preset Scales, add option to include own in list in ```return``` functions
+- [x] Add Key Signature Functions
+- [x] Add More Preset Scales, add option to include own in list in ```return``` functions
 - [ ] Cadences?...
