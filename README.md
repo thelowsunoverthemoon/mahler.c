@@ -442,5 +442,6 @@ which returns a string containing details of the last error. Read each function 
 
 ## To Do
 - [x] Add Key Signature Functions
+- [ ] Octatonic Scale comment 
 - [x] Add More Preset Scales, add option to include own in list in ```return``` functions
 - [ ] Cadences?...
