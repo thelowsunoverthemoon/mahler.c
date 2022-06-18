@@ -1,6 +1,6 @@
 <h1 align="center">mahler.c</h1>
 
-<p align="center">A simple and easy-to-use library for Western music theory in pure C99</p>
+<p align="center">A simple and easy-to-use library for Western music theory in C99</p>
 
 ## Features
 
