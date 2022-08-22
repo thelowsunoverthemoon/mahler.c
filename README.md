@@ -50,67 +50,82 @@ for (int i = 0; i < scale.size; i++) {
 <a name="enum"/>
 
 ### 🟥 Enumerators & Macros 🟥
+
+#### MAHLER_DISP_LEN
 ```C
 #define MAHLER_DISP_LEN 8
 ```
-This is the default print size you can use for ```printNote()```. The rationale is note (1) + max acci (<= 4) + number (<= 99) + null terminating (1).
+This is the default print size you can use for ```printNote()```. The rationale is ```note (1) + max acci (<= 4) + number (<= 99) + null terminating (1)```
 
 ---
+
+#### MahlerNote
 
 ```C
 enum MahlerNote {
     MAHLER_C, MAHLER_D, MAHLER_E, MAHLER_F, MAHLER_G, MAHLER_A, MAHLER_B
 };
 ```
-```note``` member ```struct Note```, and represents the "root" note (no accidentals).
+```note``` member ```struct Note```, and represents the base note (no accidentals)
 
 ---
+
+#### MahlerQuality
 
 ```C
 enum MahlerQuality {
     MAHLER_MINOR = -1, MAHLER_MAJOR = 0, MAHLER_AUGMENTED = 1, MAHLER_DIMINISHED = -2, MAHLER_PERFECT = 3
 };
 ```
-```quality``` member of ```struct Interval```. Self-explanatory.
+```quality``` member of ```struct Interval```. Quality of interval
 
 ---
+
+#### MahlerAcci
 
 ```C
 enum MahlerAcci {
     MAHLER_DBFLAT = -2, MAHLER_FLAT = -1, MAHLER_NONE = 0, MAHLER_SHARP = 1, MAHLER_DBSHARP = 2
 };
 ```
-```acci``` member of ```struct Note```. Also self-explanatory. All functions support an infinite range of accidentals (ie, 30th sharp). Only thing holding you back is the size of ```enum Accidental```.
+```acci``` member of ```struct Note```. Accidental of note
 
 ---
+
+#### MahlerScaleType
 
 ```C
 enum MahlerScaleType {
     MAHLER_ASCEND, MAHLER_DESCEND, MAHLER_FULL
 };
 ```
-```mode``` parameter of ```getScale()```. Determines whether it is ascending, descending, or full (both). Scales include 8th degree, and in ```SCALE_FULL``` it is doubled.
+```mode``` parameter of ```getScale()```. Determines whether it is ascending, descending, or full (both). Scales include 8th degree, and in ```SCALE_FULL``` it is doubled
 
 ---
+
+#### MahlerKeyType
 
 ```C
 enum MahlerKeyType {
     MAHLER_MAJOR_KEY, MAHLER_MINOR_KEY
 };
 ```
-```type``` parameter of ```getKeySig()``` and ```returnKeySig()```. Determines type of key signature.
+```type``` parameter of ```getKeySig()``` and ```returnKeySig()```. Type of key signature
 
 ---
+
+#### MahlerChordType
 
 ```C
 enum MahlerChordType {
      MAHLER_TRIAD = 3, MAHLER_SEVENTH_CHORD = 4, MAHLER_NINTH_CHORD = 5, MAHLER_ELEVENTH_CHORD = 6
 };
 ```
-```size``` parameter of ```getKeyChord```. Determines size of returned chord.
+```size``` parameter of ```getKeyChord```. Size of returned chord
 
 ---
 
+#### MahlerDegree, MahleNumeral, MahlerMode
 ```C
 enum MahlerDegree {
     MAHLER_TONIC = 1, MAHLER_SUPERTONIC = 2, MAHLER_MEDIANT = 3, MAHLER_SUBDOMINANT = 4,
@@ -127,9 +142,11 @@ enum MahlerMode {
     MAHLER_MIXOLYDIAN = 5, MAHLER_AEOLIAN = 6, MAHLER_LOCRIAN = 7
 };
 ```
-These are generals enums that can be used where convenient in place of numbers. For example, one could use them as the ```index``` parameter of ```getKeyChord```.
+Generals enums that can be used where convenient in place of numbers. For example, one could use them as the ```index``` parameter of ```getKeyChord```
 
 ---
+
+#### MahlerError
 
 ```C
 enum MahlerError {
@@ -138,7 +155,7 @@ enum MahlerError {
     MAHLER_ERROR_OVERFLOW_PRINT_NOTE, MAHLER_ERROR_OVERFLOW_SCALE_RETURN, MAHLER_ERROR_OVERFLOW_CHORD_RETURN
 };
 ```
-For reference only. See Error Handling section down below.
+For reference only. See [Error Handling](#err).
 
 ---
 
@@ -146,57 +163,65 @@ For reference only. See Error Handling section down below.
 
 ### 🟦 Predefined 🟦
 #### Predefined Scales
-```C
-MAHLER_MAJOR_SCALE;          // Major Scale
-MAHLER_NATURAL_MIN_SCALE;    // Natural Minor Scale
-MAHLER_HARMONIC_MIN_SCALE;   // Harmonic Minor Scale
-MAHLER_MELODIC_MIN_SCALE;    // Melodic Minor Scale
-MAHLER_PENTATONIC_MAJ_SCALE; // Major Pentatonic Scale
-MAHLER_PENTATONIC_MIN_SCALE; // Minor Pentatonic Scale
-MAHLER_BLUES_SCALE;          // Blues Scale (hexatonic)
-MAHLER_WHOLE_TONE_SCALE;     // Whole Tone Scale
-MAHLER_OCTATONIC_HALF_SCALE; // Octatonic Scale (starting with half tone)
-MAHLER_OCTATONIC_WHOLE_SCALE;// Octatonic Scale (starting with whole tone)
-```
+
+| Name  | Type | 
+| ------------- | ------------- | 
+| ```MAHLER_MAJOR_SCALE```|           Major Scale |
+| ```MAHLER_NATURAL_MIN_SCALE```|     Natural Minor Scale |
+| ```MAHLER_HARMONIC_MIN_SCALE```|    Harmonic Minor Scale |
+| ```MAHLER_MELODIC_MIN_SCALE```|     Melodic Minor Scale |
+| ```MAHLER_PENTATONIC_MAJ_SCALE```|  Major Pentatonic Scale |
+| ```MAHLER_PENTATONIC_MIN_SCALE```|  Minor Pentatonic Scale |
+| ```MAHLER_BLUES_SCALE```|          Blues Scale (hexatonic) |
+| ```MAHLER_WHOLE_TONE_SCALE```|      Whole Tone Scale |
+| ```MAHLER_OCTATONIC_HALF_SCALE```|  Octatonic Scale (starting with half tone) |
+| ```MAHLER_OCTATONIC_WHOLE_SCALE```| Octatonic Scale (starting with whole tone) |
+
 
 ---
 
 #### Predefined Chords
-```C
-MAHLER_MAJOR_TRIAD;          // Major Triad
-MAHLER_MINOR_TRIAD;          // Minor Triad
-MAHLER_AUGMENTED_TRIAD;      // Augmented Triad
-MAHLER_DIMINISHED_TRIAD;     // Diminished Triad
-MAHLER_DIMINISHED_7;         // Diminished 7th
-MAHLER_HALF_DIMINISHED_7;    // Half Diminished 7th
-MAHLER_MINOR_7;              // Minor 7th
-MAHLER_MAJOR_7;              // Major 7th
-MAHLER_DOMINANT_7;           // Dominant 7th
-```
+
+| Name  | Type | 
+| ------------- | ------------- | 
+| ```MAHLER_MAJOR_TRIAD```|           Major Triad |
+| ```MAHLER_MINOR_TRIAD```|           Minor Triad |
+| ```MAHLER_AUGMENTED_TRIAD```|       Augmented Triad |
+| ```MAHLER_DIMINISHED_TRIAD```|      Diminished Triad |
+| ```MAHLER_DIMINISHED_7```|          Diminished 7th |
+| ```MAHLER_HALF_DIMINISHED_7```|     Half Diminished 7th |
+| ```MAHLER_MINOR_7```|               Minor 7th |
+| ```MAHLER_MAJOR_7```|             Major 7th |
+| ```MAHLER_DOMINANT_7```|           Dominant 7th |
+
 
 ---
 
 #### Predefined Chord List
+
+Contains :
 ```C
 
-&MAHLER_MAJOR_TRIAD,
-&MAHLER_MINOR_TRIAD,
-&MAHLER_AUGMENTED_TRIAD,
-&MAHLER_DIMINISHED_TRIAD,
-&MAHLER_DIMINISHED_7,
-&MAHLER_DOMINANT_7
+MAHLER_MAJOR_TRIAD,
+MAHLER_MINOR_TRIAD,
+MAHLER_AUGMENTED_TRIAD,
+MAHLER_DIMINISHED_TRIAD,
+MAHLER_DIMINISHED_7,
+MAHLER_DOMINANT_7
 
 ```
 
 ---
 
 #### Predefined Scale List
+
+Contains :
 ```C
 
-&MAHLER_MAJOR_SCALE,
-&MAHLER_NATURAL_MIN_SCALE,
-&MAHLER_HARMONIC_MIN_SCALE,
-&MAHLER_MELODIC_MIN_SCALE
+MAHLER_MAJOR_SCALE,
+MAHLER_NATURAL_MIN_SCALE,
+MAHLER_HARMONIC_MIN_SCALE,
+MAHLER_MELODIC_MIN_SCALE
 
 ```
 
@@ -206,6 +231,8 @@ MAHLER_DOMINANT_7;           // Dominant 7th
 
 ### 🟧 Structures 🟧
 
+#### Note
+
 ```C
 struct Note {
     enum MahlerNote note;
@@ -213,9 +240,15 @@ struct Note {
     int             pitch;
 };
 ```
-The building block of music theory. ```pitch``` is the octave the note resides in.
+A note in scientific pitch notation.
+
+* **note** : base note
+* **acci** : accidental
+* **pitch** : octave the note resides in
 
 ---
+
+#### Interval
 
 ```C
 struct Interval {
@@ -223,9 +256,14 @@ struct Interval {
     enum MahlerQuality quality;
 };
 ```
-Self explanatory.
+An interval.
+
+* **inter** : interval length
+* **quality** : interval quality
 
 ---
+
+#### Chord
 
 ```C
 struct Chord {
@@ -235,9 +273,16 @@ struct Chord {
     struct Note* const       notes;
 };
 ```
-You must provide two arrays of ```struct Note``` : ```base``` is for the root inversion chord (ie ```G7 is G B D F```) and ```notes``` is for the current inversion (ie ```B D F G```) specified in ```inversion```.
+A chord.
+
+* **size** : number of chord notes
+* **inversion** : current inversion
+* **base** : root inversion chord notes
+* **notes** : current inversion chord notes specified in ```inversion``
 
 ---
+
+#### Scale
 
 ```C
 struct Scale {
@@ -246,22 +291,37 @@ struct Scale {
     struct Note* const         notes;
 };
 ```
-Self-explanatory.
+A scale.
+
+* **size** : number of scale notes
+* **type** : type of chord
+* **notes** : scale notes
 
 ---
+
+#### KeySig
 
 ```C
 struct KeySig {
     enum MahlerKeyType const type;
-    int const                alter; // alteration
+    int const                alter;
     int const                size;
     struct Note const        key;
     struct Note              notes[7];
 };
 ```
-```alter``` is the sum of the accidentals in the key (ie, G+ is 1 and G- is -2). ```size``` is the number of accidentals in the key (ie, G+ is 1 and G- is 2). ```key``` is the key note. The pitches in ```notes``` are NOT guaranteed to be 0.
+
+A key signature.
+
+* **type** : major or minor
+* **alter** : sum of the accidentals in the key (ie, G+ is 1 and G- is -2)
+* **size** : number of accidentals in the key (ie, G+ is 1 and G- is 2)
+* **key** : key note
+* **notes** : key signature notes
 
 ---
+
+#### ChordResult, ScaleResult
 
 ```C
 struct ChordResult {
@@ -274,9 +334,15 @@ struct ScaleResult {
     struct ScaleBase const* scale;
 };
 ```
-Used for results of ```returnChord``` and ```returnScale```, respectively.
+Results of ```returnChord``` and ```returnScale```, respectively.
+
+* **key** : chord/scale base note
+* **chord** : pointer to ChordBase from list
+* **scale** : pointer to ScaleBase from list
 
 ---
+
+#### ChordBase, ScaleBase
 
 ```C
 struct ChordBase {
@@ -291,9 +357,15 @@ struct ScaleBase {
     struct Interval const* steps;
 };
 ```
-These are the "types" of Chords/Scales to be used. A number of common types have been pre-defined, but you make make your own if you wish (see [Predefined](#pre)). ```steps``` defines the intervals between *each note* (ie, ```G -> B -> D``` is a major 3rd, then a minor 3rd). ```size``` for ```struct ScaleBase``` includes the octave (ie, a major scale is size 8)
+Types of chords/scales to be used in chord and scale functions. A number of common types have been pre-defined, but you make make your own if you wish (see [Predefined](#pre)).
+
+* **name** : name of chord/scale base
+* **size** : size of chord/scale. For ```struct ScaleBase``` includes the octave (ie, a major scale is size 8)
+* **steps** : intervals between *each note* (ie, ```G -> B -> D``` is a major 3rd, then a minor 3rd)
 
 ---
+
+#### ChordList, ScaleList
 
 ```C
 struct ChordList {
@@ -309,17 +381,30 @@ struct ScaleList {
     struct Note*             scaleArray;
 };
 ```
-These are used for custom lists when checking for chords/scales in ```returnScale()``` and ```returnChord()```. The ```*Pos``` contain pointers to an array of bases, and ```*Num``` must contain the number of pointers inside. The arrays of ```struct Note``` must be big enough to hold the largest chord/scale. In terms of ```returnScale()```, it must be big enough to hold the largest scale in ```SCALE_ASCEND``` mode.
+Custom lists when checking for chords/scales in ```returnScale()``` and ```returnChord()```.
+
+* **pos** : array of bases to check
+* **num** : number of base inside ```pos```
+* **chordBase** : array of ```struct Note``` big enough to hold the largest chord. Cannot be the same as ```chordNotes```
+* **chordNotes** : array of ```struct Note``` big enough to hold the largest chord. Cannot be the same as ```chordBase```
+* **scaleArray** : array of ```struct Note``` big enough to hold the largest scale. Must be big enough to hold the largest scale in ```SCALE_ASCEND``` mode.
+
+---
 
 <a name="interval"/>
 
 ### 🟨 Interval Functions 🟨
+
+#### getInter
+
 ```C
 struct Note getInter(struct Note note, struct Interval interval);
 ```
 ```getInter``` accepts all intervals (both simple and compound). Returns the destination note of ```interval``` starting from ```note```. If the given interval is an invalid quality (ie, non-perfect intervals with perfect quality, or perfect intervals with major or minor quality), then the last error is set to ```MAHLER_ERROR_INVALID_QUAL```.
 
 ---
+
+#### returnInter
 
 ```C
 struct Interval returnInter(struct Note notea, struct Note noteb);
@@ -347,12 +432,17 @@ Augmented 4th of B double flat is Eb5.
 <a name="chord"/>
 
 ### 🟩 Chord Functions 🟩
+
+#### getChord
+
 ```C
 struct Chord getChord(struct Note root, struct ChordBase const* type, struct Note* restrict base, struct Note* restrict notes);
 ```
 Returns a ```struct Chord``` with root ```root``` and type ```type```. You must provide two arrays of ```struct Note``` : ```base``` is for the root inversion chord (ie ```G7 is G B D F```) and ```notes``` is for the current inversion (ie ```B D F G```) specified in ```inversion```.
 
 ---
+
+#### returnChord
 
 ```C
 void returnChord(struct Note const notes[], size_t noteNum, struct ChordResult list[], size_t listMax, struct ChordList const* custom, bool enharmonic);
@@ -361,12 +451,16 @@ This function populates ```list``` with the potential chords containing each not
 
 ---
 
+#### invertChord
+
 ```C
 void invertChord(struct Chord* chord, int inversion);
 ```
 This function inverts the ```notes``` member of ```chord``` to the ```inversion```th inversion. ```base``` is left unaltered. An inversion of 0 is considered the root inversion. Any invalid inversions will set the last error to ```MAHLER_ERROR_INVALID_INVERSION```.
 
 ---
+
+#### getKeyChord
 
 ```C
 struct Chord getKeyChord(struct KeySig const* key, size_t index, size_t size, struct Note* restrict base, struct Note* restrict notes);
@@ -409,6 +503,8 @@ C4 D4 F#4 A4
 
 <a name="scale"/>
 
+#### getScale
+
 ```C
 struct Scale getScale(struct Note start, const struct ScaleBase* type, struct Note notes[], enum ScaleType mode);
 ```
@@ -416,12 +512,16 @@ Returns a ```type``` scale starting on ```start```. ```notes``` contains the not
 
 ---
 
+#### returnScale
+
 ```C
 void returnScale(struct Note const notes[], size_t noteNum, struct ScaleResult list[], size_t listMax, struct ScaleList const* custom, bool enharmonic);
 ```
 Identical to ```returnChord()```, but for scales.
 
 ---
+
+#### getKeyScale
 
 ```C
 struct Scale getKeyScale(struct KeySig const* key, size_t index, enum MahlerScaleType mode, struct ScaleBase const* type, struct Note* notes);
@@ -462,12 +562,17 @@ G#0 Melodic Minor
 <a name="key"/>
 
 ### 🟧 Key Signature Functions 🟧
+
+#### getKeySig
+
 ```C
 struct KeySig getKeySig(struct Note key, enum MahlerKeyType type);
 ```
 Returns a ```struct KeySig```. All Key Signature functions support theoritical keys (ie D#+).
 
 ---
+
+#### returnKeySig
 
 ```C
 struct KeySig returnKeySig(char const* str, enum MahlerKeyType type);
@@ -476,12 +581,16 @@ Returns a ```struct KeySig``` based on ```str```, which contains the accidentals
 
 ---
 
+#### getKeyRelative
+
 ```C
 struct KeySig getKeyRelative(struct KeySig const* key);
 ```
 Returns the relative major/minor of the given key.
 
 ---
+
+#### queryAcci
 
 ```C
 int queryAcci(struct KeySig const* key, enum MahlerNote note);
@@ -512,12 +621,17 @@ Bb0 Eb0
 <a name="misc"/>
 
 ### 🟪 Misc Functions 🟪
+
+#### printNote
+
 ```C
 char* printNote(struct Note const note, char buf[], size_t size);
 ```
 This returns the buffer with ```note``` in text up to 4 accidentals (ie, ````bbbb -> ####````). If ```acci``` exceeds that range or the ```note``` member is invalid, the last error is set to ```MAHLER_ERROR_INVALID_PRINT_NOTE```. If the given buffer is not large enough, the last error is set to ```MAHLER_ERROR_OVERFLOW_PRINT_NOTE```.
 
 ---
+
+#### isEnharmonic
 
 ```C
 bool isEnharmonic(struct Note notea, struct Note noteb);
@@ -552,9 +666,3 @@ char* getMahlerError(void);
 which returns a string containing details of the last error. Read each function blurb for their specific errors.
 
 ---
-
-## To Do
-- [x] Add Key Signature Functions
-- [ ] Octatonic Scale comment 
-- [x] Add More Preset Scales, add option to include own in list in ```return``` functions
-- [ ] Cadences?...
