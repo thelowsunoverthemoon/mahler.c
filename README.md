@@ -577,7 +577,7 @@ Returns a ```struct KeySig```. All Key Signature functions support theoritical k
 ```C
 struct KeySig returnKeySig(char const* str, enum MahlerKeyType type);
 ```
-Returns a ```struct KeySig``` based on ```str```, which contains the accidentals stringified. For example, ```"###"``` with ```MAHLER_MAJOR_KEY``` would return A+. Accepted characters are ```#``` (sharp), ```x``` (double sharp), and ```b``` (flat). Any other characters are ignored. Equivalent expressions are accepted (ie ```"x#"``` -> G+).
+Returns a ```struct KeySig``` based on ```str```, which contains the accidentals stringified. For example, ```"###"``` with ```MAHLER_MAJOR_KEY``` would return A+. Accepted characters are ```#``` (sharp), ```x``` (double sharp), and ```b``` (flat). Any other characters are ignored. Equivalent expressions are accepted (ie ```"x#"``` -> A+).
 
 ---
 
