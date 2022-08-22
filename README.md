@@ -243,7 +243,7 @@ struct Note {
 A note in scientific pitch notation.
 
 * **note** : base note
-* **acci** : accidental
+* **acci** : accidental (ie, G+ is 1 and G- is -2)
 * **pitch** : octave the note resides in
 
 ---
