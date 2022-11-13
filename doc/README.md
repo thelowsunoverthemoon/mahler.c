@@ -3,7 +3,7 @@
 Click on each tab to see the respective documentation!
 
 <details>
-  <summary>🟥 <b>Enumerators & Macros</b> 🟥</summary>
+  <summary>🎷 <b>Enumerators & Macros</b> 🎷</summary>
   
 #### MAHLER_CHORD_LIST_DEFAULT
 ```C
@@ -128,7 +128,7 @@ For reference only. See [Error Handling](#err).
 ---
 
 <details>
-  <summary><b>🟦 Predefined 🟦</b></n></summary>
+  <summary><b>🎸 Predefined 🎸</b></n></summary>
 
 #### Predefined Scales
 
@@ -196,7 +196,7 @@ MAHLER_MELODIC_MIN_SCALE
 ---
 
 <details>
-  <summary><b>🟨 Notes 🟨</b></n></summary>
+  <summary><b>♩ Notes ♩</b></n></summary>
   
 #### Note
 
@@ -217,7 +217,7 @@ A note in scientific pitch notation.
 ---
 
 <details>
-  <summary><b>🟨 Intervals 🟨</b></n></summary>
+  <summary><b>♫ Intervals ♫</b></n></summary>
   
 #### Interval
 
@@ -237,7 +237,7 @@ An interval.
 #### getInter
 
 ```C
-struct Note getInter(struct Note const note, struct Interval const interval, enum MahlerError* err);
+struct Note getInter(struct Note const note, struct Interval const interval, enum MahlerError* err)
 ```
 ```getInter``` accepts all intervals (both simple and compound). Returns the destination note of ```interval``` starting from ```note```. If the given interval is an invalid quality (ie, non-perfect intervals with perfect quality, or perfect intervals with major or minor quality), then the ```err``` is set to ```MAHLER_ERROR_INVALID_QUAL```. If the length is not >= 1, it is set to ```MAHLER_ERROR_INVALID_RANGE```.
 
@@ -246,32 +246,16 @@ struct Note getInter(struct Note const note, struct Interval const interval, enu
 #### returnInter
 
 ```C
-struct Interval returnInter(struct Note const noteA, struct Note const noteB, enum MahlerError* err);
+struct Interval returnInter(struct Note const noteA, struct Note const noteB, enum MahlerError* err)
 ```
 ```returnInter``` does the opposite. Given two notes, it will return the interval between them. If the resulting interval has an invalid quality, then the ```err``` is set to ```MAHLER_ERROR_INVALID_INTER```. If it is not >= 1, ```err``` is set to ```MAHLER_ERROR_INVALID_RANGE```.
-
----
-
-#### Example
-```C
-struct Note note = {MAHLER_B, MAHLER_DBFLAT, 4};
-struct Interval inter = {4, MAHLER_AUGMENTED};
-
-printf("Augmented 4th of B double flat is %s",
-    printNote(getInter(note, inter, NULL), (char[MAHLER_DISP_LEN]) {0}, MAHLER_DISP_LEN, NULL)
-);
-```
-#### Result
-```
-Augmented 4th of B double flat is Eb5.
-```
 
 </details>
 
 ---
 
 <details>
-  <summary><b>🟩 Chord Functions 🟩</b></n></summary>
+  <summary><b>🎶 Chords 🎶</b></n></summary>
   
 #### Chord
 ```C
@@ -358,7 +342,7 @@ Passeed to ```returnChord``` with possible chord list
 #### getChord
 
 ```C
-struct Chord getChord(struct Note const root, struct ChordBase const* type, struct Note* restrict base, struct Note* restrict notes, enum MahlerError* err);
+struct Chord getChord(struct Note const root, struct ChordBase const* type, struct Note* restrict base, struct Note* restrict notes, enum MahlerError* err)
 ```
 Returns a ```struct Chord``` with root ```root``` and type ```type```. You must provide two arrays of ```struct Note``` : ```base``` is for the root inversion chord (ie ```G7 is G B D F```) and ```notes``` is for the current inversion (ie ```B D F G```) specified in ```inv```. Returns error in ```err``` if the ```type``` contains invalid intervals.
 
@@ -367,60 +351,32 @@ Returns a ```struct Chord``` with root ```root``` and type ```type```. You must 
 #### returnChord
 
 ```C
-void returnChord(struct Note const notes[], size_t noteNum, struct ChordResultList* list, struct ChordCheck* custom, bool enharmonic, enum MahlerError* err);
+void returnChord(struct Note const notes[], size_t noteNum, struct ChordResultList* list, struct ChordCheck* custom, bool enharmonic, enum MahlerError* err)
 ```
-Populates the ```results``` member of ```list``` with the potential chords containing every note in ```notes``` . ```noteNum``` is the number of entries in ```notes```. The ```pitch``` of each ```struct ChordResult``` note is 0. Defining ```custom``` will check for chords specified in ```struct ChordList```. Set to ```MAHLER_CHORD_LIST_DEFAULT``` is you would like to use the predefined chord list (see Predefined). ```enharmonic``` determines whether enharmonic equivalents are used (ie, Bb+ triad is also A#+ triad). If there are more possible chords than ```max``` member of ```list```, the ```err``` is set to ```MAHLER_ERROR_OVERFLOW_CHORD_RETURN```. This function tests for chords up to one accidental (ie, flat, natural, and sharp).
+Populates the ```results``` member of ```list``` with the potential chords containing every note in ```notes``` . ```noteNum``` is the number of entries in ```notes```. The ```pitch``` of each ```struct ChordResult``` note is 0. Defining ```custom``` will check for chords specified in ```struct ChordList```. Set to ```MAHLER_CHORD_LIST_DEFAULT``` is you would like to use the predefined chord list (see Predefined). ```enharmonic``` determines whether enharmonic equivalents are used (ie, Bb+ triad is also A#+ triad). If there are more possible chords than ```max``` member of ```list```, the ```err``` is set to ```MAHLER_ERROR_OVERFLOW_CHORD_RETURN```. This function tests for chords up to one accidental (ie, flat, natural, and sharp). Duplicate notes in ```notes``` are not allowed.
 
 ---
 
 #### invertChord
 
 ```C
-void invertChord(struct Chord* chord, int inv, enum MahlerError* err);
+void invertChord(struct Chord* chord, int inv, enum MahlerError* err)
 ```
 Inverts the ```notes``` member of ```chord``` to the ```inversion```th inversion. ```base``` is left unaltered. An inversion of 0 is considered the root inversion. Any invalid inversions will set the last error to ```MAHLER_ERROR_INVALID_INVERSION```.
-
-#### Example
-```C
-struct Note base[4];
-struct Note notes[4];
-struct Chord chord = getChord(
-    (struct Note) {MAHLER_D, MAHLER_NONE, 3},
-    &MAHLER_DOMINANT_7,
-    base, notes, NULL
-);
-
-for (size_t i = 0; i < chord.size; i++) {
-    invertChord(&chord, i);
-    
-    char disp[MAHLER_DISP_LEN];
-    for (size_t j = 0; j < chord.size; j++) {
-        printf("%s ", printNote(chord.notes[j], disp, MAHLER_DISP_LEN, NULL));
-    }
-    putchar('\n');
-}
-```
-#### Result
-```
-D3 F#3 A3 C4
-F#3 A3 C4 D4
-A3 C4 D4 F#4
-C4 D4 F#4 A4
-```
 
 </details>
 
 ---
 
 <details>
-  <summary><b>🟩 Scale Functions 🟩</b></n></summary>
+  <summary><b>🎹 Scales 🎹</b></n></summary>
 
 #### Scale
 ```C
 struct Scale {
-    int const                  size;
-    enum MahlerScaleType const type;
-    struct Note* const         notes;
+    int                  size;
+    enum MahlerScaleType type;
+    struct Note*         notes;
 };
 ```
 A scale.
@@ -431,23 +387,98 @@ A scale.
 
 ---
 
+#### ScaleBase
+```C
+struct ScaleBase {
+    char const*      name;
+    int              size;
+    struct Interval* steps;
+};
+ ```
+ Types of scale to be used in scale functions. A number of common types have been pre-defined, but you make make your own if you wish (see Predefined).
 
+* **name** : name of scale base
+* **size** : size of chord
+* **steps** : intervals between *each note* (ie, ```G -> B -> D``` is a major 3rd, then a minor 3rd)
 
+#### ScaleResult
+```C
+struct ScaleResult {
+    struct Note             key;
+    struct ScaleBase const* scale;
+};
+```
+Entry of result from ```returnScale```
 
+* **key** : scale base note
+* **scale** : pointer to ScaleBase from list
 
+---
 
+#### ScaleResultList
+```C
+struct ScaleResultList {
+    size_t              max;
+    size_t              size;
+    struct ScaleResult* results;
+};
+```
+Passed to ```returnScale``` containing results.
 
+* **max** : maximum size of ```results```
+* **size** : number of entries in ```results```
+* **results** : pointer to ScaleResult array with matching chords
 
+---
 
+#### ScaleCheck
+```C
+struct ScaleCheck {
+    struct ScaleBase const** pos;
+    size_t                   size;
+    struct Note*             notes;
+};
+```
+Passeed to ```returnScale``` with possible chord list
+
+* **pos** : array of bases to check
+* **size** : number of bases inside ```pos```
+* **chordBase** : array of ```struct Note``` big enough to hold the largest scale
+
+---
+
+#### getScale
+
+```C
+struct Scale getScale(struct Note const start, struct ScaleBase const* type, struct Note notes[], enum MahlerScaleType mode, enum MahlerError* err)
+```
+Returns a ```type``` scale starting on ```start```. ```notes``` contains the notes of the scale, hence the size must be >= the size member of ```type```. As well, a ```mode``` of ```MAHLER_FULL``` doubles the size requirement (ie, if it was 8, ```MAHLER_FULL``` would be 16). Returns error in ```err``` if the ```type``` contains invalid intervals.
+
+---
+
+#### returnScale
+
+```C
+void returnScale(struct Note const notes[], size_t noteNum, struct ScaleResultList* list, struct ScaleCheck* custom, bool enharmonic, enum MahlerError* err)
+```
+Identical to ```returnChord()```, but for scales.
+
+</details>
+
+---
+
+<details>
+  <summary><b>🎼 Key Signature 🎼</b></n></summary>
+  
 #### KeySig
 
 ```C
 struct KeySig {
-    enum MahlerKeyType const type;
-    int const                alter;
-    int const                size;
-    struct Note const        key;
-    struct Note              notes[7];
+    enum MahlerKeyType type;
+    int                alter;
+    int                size;
+    struct Note        key;
+    struct Note        notes[7];
 };
 ```
 
@@ -459,195 +490,29 @@ A key signature.
 * **key** : key note
 * **notes** : key signature notes
 
----
-
-#### ChordResult, ScaleResult
-
-```C
-struct ChordResult {
-    struct Note             key;
-    struct ChordBase const* chord;
-};
-
-struct ScaleResult {
-    struct Note             key;
-    struct ScaleBase const* scale;
-};
-```
-Results of ```returnChord``` and ```returnScale```, respectively.
-
-* **key** : chord/scale base note
-* **chord** : pointer to ChordBase from list
-* **scale** : pointer to ScaleBase from list
-
----
-
-#### ChordBase, ScaleBase
-
-```C
-struct ChordBase {
-    char const*            name;
-    int const              size;
-    struct Interval const* steps;
-};
-
-struct ScaleBase {
-    char const*            name;
-    int const              size;
-    struct Interval const* steps;
-};
-```
-Types of chords/scales to be used in chord and scale functions. A number of common types have been pre-defined, but you make make your own if you wish (see [Predefined](#pre)).
-
-* **name** : name of chord/scale base
-* **size** : size of chord/scale. For ```struct ScaleBase``` includes the octave (ie, a major scale is size 8)
-* **steps** : intervals between *each note* (ie, ```G -> B -> D``` is a major 3rd, then a minor 3rd)
-
----
-
-#### ChordList, ScaleList
-
-```C
-struct ChordList {
-    struct ChordBase const** chordPos;
-    size_t const             chordNum;
-    struct Note* restrict    chordBase;
-    struct Note* restrict    chordNotes;
-};
-
-struct ScaleList {
-    struct ScaleBase const** scalePos;
-    size_t const             scaleNum;
-    struct Note*             scaleArray;
-};
-```
-Custom lists when checking for chords/scales in ```returnScale()``` and ```returnChord()```.
-
-* **pos** : array of bases to check
-* **num** : number of base inside ```pos```
-* **chordBase** : array of ```struct Note``` big enough to hold the largest chord. Cannot be the same as ```chordNotes```
-* **chordNotes** : array of ```struct Note``` big enough to hold the largest chord. Cannot be the same as ```chordBase```
-* **scaleArray** : array of ```struct Note``` big enough to hold the largest scale. Must be big enough to hold the largest scale in ```SCALE_ASCEND``` mode.
-
----
-
-
-#### Example
-```C
-struct Note base[4];
-struct Note notes[4];
-struct Chord chord = getChord(
-    (struct Note) {MAHLER_D, MAHLER_NONE, 3},
-    &MAHLER_DOMINANT_7,
-    base, notes
-);
-
-for (size_t i = 0; i < chord.size; i++) {
-    invertChord(&chord, i);
-    
-    char disp[MAHLER_DISP_LEN];
-    for (size_t j = 0; j < chord.size; j++) {
-        printf("%s ", printNote(chord.notes[j], disp, MAHLER_DISP_LEN));
-    }
-    putchar('\n');
-}
-```
-#### Result
-```
-D3 F#3 A3 C4
-F#3 A3 C4 D4
-A3 C4 D4 F#4
-C4 D4 F#4 A4
-```
-
----
-
-### 🟦 Scale Functions 🟦
-
-<a name="scale"/>
-
-#### getScale
-
-```C
-struct Scale getScale(struct Note start, const struct ScaleBase* type, struct Note notes[], enum ScaleType mode);
-```
-Returns a ```type``` scale starting on ```start```. ```notes``` contains the notes of the scale, hence the size must be >= the size member of ```type```. As well, a ```mode``` of ```MAHLER_FULL``` doubles the size requirement (ie, if it was 8, ```MAHLER_FULL``` would be 16).
-
----
-
-#### returnScale
-
-```C
-void returnScale(struct Note const notes[], size_t noteNum, struct ScaleResult list[], size_t listMax, struct ScaleList const* custom, bool enharmonic);
-```
-Identical to ```returnChord()```, but for scales.
-
----
-
-#### getKeyScale
-
-```C
-struct Scale getKeyScale(struct KeySig const* key, size_t index, enum MahlerScaleType mode, struct ScaleBase const* type, struct Note* notes);
-```
-Returns a ```struct Scale``` starting on ```index```th note of ```key``` (ie, index 3 of D+ would be F#). In other words, it returns the ```index```th mode of a given key (ie, index 2 of C+ would be C dorian). See general enums of [Enumerators & Macros](#pre).
-
----
-
-#### Example
-```C
-struct ScaleResult list[5];
-returnScale(
-    (struct Note[]) {
-        {MAHLER_A, MAHLER_FLAT, 0},
-        {MAHLER_C, MAHLER_FLAT, 0},
-        {MAHLER_G, MAHLER_NONE, 0}
-    },
-    3, list, sizeof(list) / sizeof(*list), NULL, true
-);
-
-char disp[MAHLER_DISP_LEN];
-for (size_t i = 0; list[i].scale; i++) {
-    printf("%s %s\n",
-        printNote(list[i].key, disp, MAHLER_DISP_LEN), list[i].scale->name
-    );
-}
-```
-#### Result
-```
-Ab0 Harmonic Minor
-G#0 Harmonic Minor
-Ab0 Melodic Minor
-G#0 Melodic Minor
-```
-
----
-
-<a name="key"/>
-
-### 🟧 Key Signature Functions 🟧
 
 #### getKeySig
 
 ```C
-struct KeySig getKeySig(struct Note key, enum MahlerKeyType type);
+struct KeySig getKeySig(struct Note key, enum MahlerKeyType type)
 ```
-Returns a ```struct KeySig```. All Key Signature functions support theoritical keys (ie D#+).
+Returns a ```struct KeySig```. All functions support theoritical keys (ie D#+).
 
 ---
 
 #### returnKeySig
 
 ```C
-struct KeySig returnKeySig(char const* str, enum MahlerKeyType type);
+struct KeySig returnKeySig(int alter, enum MahlerKeyType type)
 ```
-Returns a ```struct KeySig``` based on ```str```, which contains the accidentals stringified. For example, ```"###"``` with ```MAHLER_MAJOR_KEY``` would return A+. Accepted characters are ```#``` (sharp), ```x``` (double sharp), and ```b``` (flat). Any other characters are ignored. Equivalent expressions are accepted (ie ```"x#"``` -> A+).
+Returns a ```struct KeySig``` based on ```alter``` which contains the number of accidentals in the key. Positive is sharp; negative is flat (ie 3 -> A+).
 
 ---
 
 #### getKeyRelative
 
 ```C
-struct KeySig getKeyRelative(struct KeySig const* key);
+struct KeySig getKeyRelative(struct KeySig const* key)
 ```
 Returns the relative major/minor of the given key.
 
@@ -656,76 +521,58 @@ Returns the relative major/minor of the given key.
 #### queryAcci
 
 ```C
-int queryAcci(struct KeySig const* key, enum MahlerNote note);
+int queryAcci(struct KeySig const* key, enum MahlerNote note)
 ```
 Returns the accidental of the given ```note``` based on ```key```. Note that this is not a ```struct Note``` but the "base" note of type ```enum MahlerNote```.
 
 ---
 
-#### Example
-```C
-struct KeySig key = getKeySig(
-    (struct Note) {MAHLER_G, MAHLER_NONE, 0},
-    MAHLER_MINOR_KEY
-);
-    
-char disp[MAHLER_DISP_LEN];
-for (size_t i = 0; i < key.size; i++) {
-    printf("%s ", printNote(key.notes[i], disp, MAHLER_DISP_LEN));
-}
-```
-#### Result
-```
-Bb0 Eb0
-```
+</details>
 
 ---
 
-<a name="misc"/>
-
-### 🟪 Misc Functions 🟪
-
+<details>
+  <summary><b>🥁 Misc 🥁</b></n></summary>
+  
 #### printNote
 
 ```C
-char* printNote(struct Note const note, char buf[], size_t size);
+char* printNote(struct Note const note, char buf[], size_t size, enum MahlerError* err)
 ```
-This returns the buffer with ```note``` in text up to 4 accidentals (ie, ````bbbb -> ####````). If ```acci``` exceeds that range or the ```note``` member is invalid, the last error is set to ```MAHLER_ERROR_INVALID_PRINT_NOTE```. If the given buffer is not large enough, the last error is set to ```MAHLER_ERROR_OVERFLOW_PRINT_NOTE```.
+This returns the buffer with ```note``` in text up to 4 accidentals (ie, ````bbbb -> ####````). If ```acci``` exceeds that range or the ```note``` member is invalid, the ```err``` is set to ```MAHLER_ERROR_INVALID_PRINT_NOTE```. If the given buffer is not large enough, the ```err``` is set to ```MAHLER_ERROR_OVERFLOW_PRINT_NOTE```.
 
 ---
 
 #### isEnharmonic
 
 ```C
-bool isEnharmonic(struct Note notea, struct Note noteb);
+bool isEnharmonic(struct Note const noteA, struct Note const noteB)
 ```
 This returns ```true``` if enharmonic, ```false``` if not. Identical notes are considered enharmonic.
 
----
-
-#### Example
-```C
-struct Note noteA = {MAHLER_C, MAHLER_FLAT, 4};
-struct Note noteB = {MAHLER_B, MAHLER_NONE, 3};
-
-if (isEnharmonic (noteA, noteB)) {
-    puts("Enharmonic!");
-}
-```
-#### Result
-```
-Enharmonic!
-```
+</details>
 
 ---
 
-<a name="error"/>
+<details>
+  <summary><b>🎻 Error Handling 🎻</b></n></summary>
+  
+  <br>
+  
+If a function encounters one of the defined errors, it will return an zeroed struct if applicable, or an empty string in the case of ```printNote()```. These functions take in an ```err``` variable, which will contain the error. You can pass in ```NULL``` if do not need any error checking. A description of the error can be displayed by passing the error to ```getMahlerError```.
 
-### 🟫 Error Handling 🟫
-If a function encounters one of the defined errors, it will return an zeroed struct if applicable, or an empty string in the case of ```printNote()```. You can then query the error through
+#### getMahlerError
+
 ```
-char* getMahlerError(void);
+char const* getMahlerError(enum MahlerError err)
 ```
-which returns a string containing details of the last error. Read each function blurb for their specific errors.
+Returns a string containing details of ```err```. Read each function blurb for their specific errors.
+
+</details>
 
 ---
+
+
+
+
+
