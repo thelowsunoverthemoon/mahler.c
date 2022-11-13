@@ -42,4 +42,4 @@ See [here](doc/README.md)!
 
 ## Test
 
-See [here](test/README.md)!
+See [here](test)!
