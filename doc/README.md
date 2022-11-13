@@ -4,6 +4,18 @@ Click on each tab to see the respective documentation!
 
 <details>
   <summary>🟥 <b>Enumerators & Macros</b> 🟥</summary>
+  
+#### MAHLER_CHORD_LIST_DEFAULT
+```C
+#define MAHLER_CHORD_LIST_DEFAULT NULL
+```
+Macro to use default chord list in ```returnChord```
+
+#### MAHLER_SCALE_LIST_DEFAULT
+```C
+#define MAHLER_SCALE_LIST_DEFAULT NULL
+```
+Macro to use default chord list in ```returnScale```
 
 #### MAHLER_DISP_LEN
 ```C
@@ -184,65 +196,8 @@ MAHLER_MELODIC_MIN_SCALE
 ---
 
 <details>
-  <summary><b>🟨 Intervals 🟨</b></n></summary>
+  <summary><b>🟨 Notes 🟨</b></n></summary>
   
-#### Interval
-
-```C
-struct Interval {
-    int                inter;
-    enum MahlerQuality quality;
-};
-```
-An interval.
-
-* **inter** : interval length that must be >= than 1
-* **quality** : interval quality
-
----
-
-#### getInter
-
-```C
-struct Note getInter(struct Note note, struct Interval interval, enum MahlerError* err);
-```
-```getInter``` accepts all intervals (both simple and compound). Returns the destination note of ```interval``` starting from ```note```. If the given interval is an invalid quality (ie, non-perfect intervals with perfect quality, or perfect intervals with major or minor quality), then the ```err``` is set to ```MAHLER_ERROR_INVALID_QUAL```. If the length is not >= 1, it is set to ```MAHLER_ERROR_INVALID_RANGE```.
-
----
-
-#### returnInter
-
-```C
-struct Interval returnInter(struct Note notea, struct Note noteb, enum MahlerError* err);
-```
-```returnInter``` does the opposite. Given two notes, it will return the interval between them. If the resulting interval has an invalid quality, then the ```err``` is set to ```MAHLER_ERROR_INVALID_INTER```. If it is not >= 1, ```err``` is set to ```MAHLER_ERROR_INVALID_RANGE```.
-
----
-
-#### Example
-```C
-struct Note note = {MAHLER_B, MAHLER_DBFLAT, 4};
-struct Interval inter = {4, MAHLER_AUGMENTED};
-
-printf("Augmented 4th of B double flat is %s",
-    printNote(getInter(note, inter, NULL), (char[MAHLER_DISP_LEN]) {0}, MAHLER_DISP_LEN)
-);
-```
-#### Result
-```
-Augmented 4th of B double flat is Eb5.
-```
-
-</details>
-
----
-
-<details>
-  <summary><b>🟩 Chord Functions 🟩</b></n></summary>
-  
-</details>
-### 🟧 Structures 🟧
-
 #### Note
 
 ```C
@@ -257,19 +212,74 @@ A note in scientific pitch notation.
 * **note** : base note
 * **acci** : accidental (ie, G+ is 1 and G- is -2)
 * **pitch** : octave the note resides in
+</details>
 
 ---
 
-
-
-#### Chord
+<details>
+  <summary><b>🟨 Intervals 🟨</b></n></summary>
+  
+#### Interval
 
 ```C
+struct Interval {
+    int                inter;
+    enum MahlerQuality qual;
+};
+```
+An interval.
+
+* **inter** : interval length that must be >= than 1
+* **quality** : interval quality
+
+---
+
+#### getInter
+
+```C
+struct Note getInter(struct Note const note, struct Interval const interval, enum MahlerError* err);
+```
+```getInter``` accepts all intervals (both simple and compound). Returns the destination note of ```interval``` starting from ```note```. If the given interval is an invalid quality (ie, non-perfect intervals with perfect quality, or perfect intervals with major or minor quality), then the ```err``` is set to ```MAHLER_ERROR_INVALID_QUAL```. If the length is not >= 1, it is set to ```MAHLER_ERROR_INVALID_RANGE```.
+
+---
+
+#### returnInter
+
+```C
+struct Interval returnInter(struct Note const noteA, struct Note const noteB, enum MahlerError* err);
+```
+```returnInter``` does the opposite. Given two notes, it will return the interval between them. If the resulting interval has an invalid quality, then the ```err``` is set to ```MAHLER_ERROR_INVALID_INTER```. If it is not >= 1, ```err``` is set to ```MAHLER_ERROR_INVALID_RANGE```.
+
+---
+
+#### Example
+```C
+struct Note note = {MAHLER_B, MAHLER_DBFLAT, 4};
+struct Interval inter = {4, MAHLER_AUGMENTED};
+
+printf("Augmented 4th of B double flat is %s",
+    printNote(getInter(note, inter, NULL), (char[MAHLER_DISP_LEN]) {0}, MAHLER_DISP_LEN, NULL)
+);
+```
+#### Result
+```
+Augmented 4th of B double flat is Eb5.
+```
+
+</details>
+
+---
+
+<details>
+  <summary><b>🟩 Chord Functions 🟩</b></n></summary>
+  
+#### Chord
+```C
 struct Chord {
-    int const                size;
-    int                      inversion;
-    struct Note const* const base;
-    struct Note* const       notes;
+    int                   size;
+    int                   inv;
+    struct Note* restrict base;
+    struct Note* restrict notes;
 };
 ```
 A chord.
@@ -281,8 +291,131 @@ A chord.
 
 ---
 
-#### Scale
+#### ChordBase
+```C
+struct ChordBase {
+    char const*      name;
+    int              size;
+    struct Interval* steps;
+};
+```
+Types of chords to be used in chord functions. A number of common types have been pre-defined, but you make make your own if you wish (see Predefined).
 
+* **name** : name of chord base
+* **size** : size of chord
+* **steps** : intervals between *each note* (ie, ```G -> B -> D``` is a major 3rd, then a minor 3rd)
+
+---
+
+#### ChordResult
+```C
+struct ChordResult {
+    struct Note             key;
+    struct ChordBase const* chord;
+};
+```
+Entry of result from ```returnChord```
+
+* **key** : chord base note
+* **chord** : pointer to ChordBase from list
+
+---
+
+#### ChordResultList
+```C
+struct ChordResultList {
+    size_t              max;
+    size_t              size;
+    struct ChordResult* results;
+};
+```
+Passed to ```returnChord``` containing results.
+
+* **max** : maximum size of ```results```
+* **size** : number of entries in ```results```
+* **results** : pointer to ChordResult array with matching chords
+
+---
+
+#### ChordCheck
+```C
+struct ChordCheck {
+    struct ChordBase const** pos;
+    size_t                   size;
+    struct Note* restrict    base;
+    struct Note* restrict    notes;
+};
+```
+Passeed to ```returnChord``` with possible chord list
+
+* **pos** : array of bases to check
+* **size** : number of bases inside ```pos```
+* **chordBase** : array of ```struct Note``` big enough to hold the largest chord. Cannot be the same as ```chordNotes```
+* **chordNotes** : array of ```struct Note``` big enough to hold the largest chord. Cannot be the same as ```chordBase```
+
+---
+
+#### getChord
+
+```C
+struct Chord getChord(struct Note const root, struct ChordBase const* type, struct Note* restrict base, struct Note* restrict notes, enum MahlerError* err);
+```
+Returns a ```struct Chord``` with root ```root``` and type ```type```. You must provide two arrays of ```struct Note``` : ```base``` is for the root inversion chord (ie ```G7 is G B D F```) and ```notes``` is for the current inversion (ie ```B D F G```) specified in ```inv```. Returns error in ```err``` if the ```type``` contains invalid intervals.
+
+---
+
+#### returnChord
+
+```C
+void returnChord(struct Note const notes[], size_t noteNum, struct ChordResultList* list, struct ChordCheck* custom, bool enharmonic, enum MahlerError* err);
+```
+Populates the ```results``` member of ```list``` with the potential chords containing every note in ```notes``` . ```noteNum``` is the number of entries in ```notes```. The ```pitch``` of each ```struct ChordResult``` note is 0. Defining ```custom``` will check for chords specified in ```struct ChordList```. Set to ```MAHLER_CHORD_LIST_DEFAULT``` is you would like to use the predefined chord list (see Predefined). ```enharmonic``` determines whether enharmonic equivalents are used (ie, Bb+ triad is also A#+ triad). If there are more possible chords than ```max``` member of ```list```, the ```err``` is set to ```MAHLER_ERROR_OVERFLOW_CHORD_RETURN```. This function tests for chords up to one accidental (ie, flat, natural, and sharp).
+
+---
+
+#### invertChord
+
+```C
+void invertChord(struct Chord* chord, int inv, enum MahlerError* err);
+```
+Inverts the ```notes``` member of ```chord``` to the ```inversion```th inversion. ```base``` is left unaltered. An inversion of 0 is considered the root inversion. Any invalid inversions will set the last error to ```MAHLER_ERROR_INVALID_INVERSION```.
+
+#### Example
+```C
+struct Note base[4];
+struct Note notes[4];
+struct Chord chord = getChord(
+    (struct Note) {MAHLER_D, MAHLER_NONE, 3},
+    &MAHLER_DOMINANT_7,
+    base, notes, NULL
+);
+
+for (size_t i = 0; i < chord.size; i++) {
+    invertChord(&chord, i);
+    
+    char disp[MAHLER_DISP_LEN];
+    for (size_t j = 0; j < chord.size; j++) {
+        printf("%s ", printNote(chord.notes[j], disp, MAHLER_DISP_LEN, NULL));
+    }
+    putchar('\n');
+}
+```
+#### Result
+```
+D3 F#3 A3 C4
+F#3 A3 C4 D4
+A3 C4 D4 F#4
+C4 D4 F#4 A4
+```
+
+</details>
+
+---
+
+<details>
+  <summary><b>🟩 Scale Functions 🟩</b></n></summary>
+
+#### Scale
 ```C
 struct Scale {
     int const                  size;
@@ -297,6 +430,14 @@ A scale.
 * **notes** : scale notes
 
 ---
+
+
+
+
+
+
+
+
 
 #### KeySig
 
@@ -390,47 +531,6 @@ Custom lists when checking for chords/scales in ```returnScale()``` and ```retur
 
 ---
 
----
-
-<a name="chord"/>
-
-### 🟩 Chord Functions 🟩
-
-#### getChord
-
-```C
-struct Chord getChord(struct Note root, struct ChordBase const* type, struct Note* restrict base, struct Note* restrict notes);
-```
-Returns a ```struct Chord``` with root ```root``` and type ```type```. You must provide two arrays of ```struct Note``` : ```base``` is for the root inversion chord (ie ```G7 is G B D F```) and ```notes``` is for the current inversion (ie ```B D F G```) specified in ```inversion```.
-
----
-
-#### returnChord
-
-```C
-void returnChord(struct Note const notes[], size_t noteNum, struct ChordResult list[], size_t listMax, struct ChordList const* custom, bool enharmonic);
-```
-This function populates ```list``` with the potential chords containing each note in ```notes``` . ```noteNum``` is the number of entries in ```notes```, while ```listMax - 1``` is the maximum number of entries to write to. The reason for -1 is because the last ```struct ChordBase``` is set empty as a looping sentinel. The ```pitch``` of each ```struct ChordResult``` note is 0. Defining ```custom``` will check for chords specified in ```struct ChordList```. Set to ```NULL``` is you would like to use the predefined chord list (see [Predefined](#pre)). ```useEnharmonic``` determines whether enharmonic equivalents are used (ie, Bb+ triad is also A#+ triad). If there are more possible chords than ```listMax - 1```, the last error is set to ```MAHLER_ERROR_OVERFLOW_CHORD_RETURN```. This function tests for chords up to one accidental (ie, flat, natural, and sharp).
-
----
-
-#### invertChord
-
-```C
-void invertChord(struct Chord* chord, int inversion);
-```
-This function inverts the ```notes``` member of ```chord``` to the ```inversion```th inversion. ```base``` is left unaltered. An inversion of 0 is considered the root inversion. Any invalid inversions will set the last error to ```MAHLER_ERROR_INVALID_INVERSION```.
-
----
-
-#### getKeyChord
-
-```C
-struct Chord getKeyChord(struct KeySig const* key, size_t index, size_t size, struct Note* restrict base, struct Note* restrict notes);
-```
-Returns a ```struct Chord``` starting on ```index```th note of ```key``` (ie, index 3 of D+ would be F#) of size ```size``` (ie, 3 would return a triad). ```base``` and ```notes``` are identical to ```getChord```. See general enums of [Enumerators & Macros](#pre).
-
----
 
 #### Example
 ```C
