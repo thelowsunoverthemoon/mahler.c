@@ -40,6 +40,10 @@ Gustav Mahler is one of my favourite composers; if you like the emotions of Wagn
 
 See [here](doc/README.md)!
 
-## Test
+## Unit Tests
 
 See [here](test)!
+
+## Compiling
+
+To compile, just include ```mahler.h``` and link with ```mahler.c```
