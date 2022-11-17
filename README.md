@@ -46,7 +46,7 @@ See [here](test)!
 
 ## Compiling
 
-To compile, you can use ```cmake```. Be sure to include the ```src``` and ```inc``` folders as ones to search. For example, if I have ```example.c``` and ```mahler``` is located in the same directory
+To compile, you can use ```cmake```. **Be sure to include the ```src``` and ```inc``` folders as folders to search for the source and header.** For example, if I have ```example.c``` and ```mahler``` is located in the same directory
 
 ```CMake
 cmake_minimum_required(VERSION 3.10)
