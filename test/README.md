@@ -1,1 +1,0 @@
-This includes unit tests for every function in ```mahler.c```. To run, simply compile ```test.c``` with mahler. The ```runAllTests``` function can be easily changed if only some functions need to be tested. Comments are in ```test.c``` on what each macro means.
