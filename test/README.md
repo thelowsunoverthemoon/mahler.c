@@ -1,0 +1,1 @@
+The tests can be easily customized with the ```runAllTests``` function. To compile, simply copy the ```test.c``` along with the ```modules``` folder in the same directory and compile ```test.c``` with ```mahler``` normally.
