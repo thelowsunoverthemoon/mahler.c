@@ -490,6 +490,7 @@ A key signature.
 * **key** : key note
 * **notes** : key signature notes
 
+---
 
 #### getKeySig
 
@@ -524,8 +525,6 @@ Returns the relative major/minor of the given key.
 int queryAcci(struct KeySig const* key, enum MahlerNote note)
 ```
 Returns the accidental of the given ```note``` based on ```key```. Note that this is not a ```struct Note``` but the "base" note of type ```enum MahlerNote```.
-
----
 
 </details>
 
