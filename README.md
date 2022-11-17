@@ -46,4 +46,45 @@ See [here](test)!
 
 ## Compiling
 
-To compile, just include ```mahler.h``` and link with ```mahler.c```
+To compile, you can use ```cmake```. Be sure to include the ```src``` and ```inc``` folders as ones to search. For example, if I have ```example.c``` and ```mahler``` is located in the same directory
+
+```CMake
+cmake_minimum_required(VERSION 3.10)
+project(example)
+set(MAHLER_PATH "${PROJECT_SOURCE_DIR}/mahler")
+
+add_executable(${PROJECT_NAME} ${PROJECT_NAME}.c)
+target_include_directories(
+    ${PROJECT_NAME} PUBLIC
+    "${PROJECT_BINARY_DIR}"
+    "${MAHLER_PATH}/inc"
+    "${MAHLER_PATH}/src"
+)
+
+add_subdirectory(${MAHLER_PATH})
+target_link_libraries(${PROJECT_NAME} PUBLIC mahler)
+```
+
+where ```MAHLER_PATH``` is the path to ```mahler```. It is also simple to do it via the commandline, but again make sure to include those folders. For example, using MSVC on the commandline
+
+```Batch
+SET "mahler[path]=mahler"
+
+SET "mahler[inc]=%mahler[path]%/inc"
+SET "mahler[src]=%mahler[path]%/src"
+SET mahler[files]="%mahler[src]%/note/note.c" ^
+                "%mahler[src]%/err/err.c" ^
+                "%mahler[src]%/misc/misc.c" ^
+                "%mahler[src]%/chord/chord.c" ^
+                "%mahler[src]%/scale/scale.c" ^
+                "%mahler[src]%/key/key.c" ^
+                "%mahler[src]%/inter/inter.c"
+
+cl example.c /I "%mahler[inc]%" /I "%mahler[src]%"  %mahler[files]%
+```
+
+Just change ```mahler[path]``` to the path to ```mahler``` and ```example.c``` to your source file.
+
+
+
+
