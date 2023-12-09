@@ -11,11 +11,10 @@ on:
     branches: [ "master" ]
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
 
 jobs:
-  build:
+  Build_And_Test:
 
     runs-on: windows-latest
 
@@ -26,7 +25,6 @@ jobs:
       run: cmake -B ${{github.workspace}}/build -S "${{github.workspace}}/test" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
-      # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Run Tests
