@@ -3,6 +3,10 @@ name: Run Unit Tests
 on:
   push:
     branches: [ "master" ]
+    paths-ignore:
+      - '**.md'
+      - '**.yml'
+      
   pull_request:
     branches: [ "master" ]
 
