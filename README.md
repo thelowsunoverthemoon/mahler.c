@@ -53,7 +53,7 @@ To compile, you can use ```cmake```. **Be sure to include the ```src``` and ```i
 ```CMake
 cmake_minimum_required(VERSION 3.10)
 project(example)
-set(MAHLER_PATH "${PROJECT_SOURCE_DIR}/mahler")
+set(MAHLER_PATH "${PROJECT_SOURCE_DIR}/mahler.c")
 
 add_executable(${PROJECT_NAME} ${PROJECT_NAME}.c)
 target_include_directories(
