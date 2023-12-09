@@ -59,20 +59,14 @@ returnKeySig(int alter, enum MahlerKeyType const type)
     
     struct Note key = {0};
     if (alter >= 0) {
-        key = (struct Note) {
-            .note  = tblKey[(alter + KEY_SHARP_ADJ) % KEYSIG_MAX], 
-            .acci  = (alter + KEY_SHARP_ADJ) / KEYSIG_MAX,
-        };
+        key.note  = tblKey[(alter + KEY_SHARP_ADJ) % KEYSIG_MAX]; 
+        key.acci  = (alter + KEY_SHARP_ADJ) / KEYSIG_MAX;
     } else {
         if (alter == -1) { // special case for F+
-            key = (struct Note) {
-                .note  = MAHLER_F
-            };
+            key.note  = MAHLER_F;
         } else {
-            key = (struct Note) {
-                .note  = tblKey[(KEY_FLAT_ROOT + ((alter + KEY_FLAT_ADJ) % KEYSIG_MAX))], 
-                .acci  = ((alter + KEY_FLAT_ADJ) / KEYSIG_MAX) - 1
-            };
+            key.note  = tblKey[(KEY_FLAT_ROOT + ((alter + KEY_FLAT_ADJ) % KEYSIG_MAX))]; 
+            key.acci  = ((alter + KEY_FLAT_ADJ) / KEYSIG_MAX) - 1;
         }
     }
     
