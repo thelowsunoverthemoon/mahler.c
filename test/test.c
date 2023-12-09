@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdbool.h>
+
 #include "mahler.h"
 
 /*
@@ -101,6 +103,9 @@ main(void)
 
     runAllTests();
     printf("%d / %d Tests Passed", TEST.testPass, TEST.testTotal);
+    if (TEST.testPass != TEST.testTotal) {
+        return EXIT_FAILURE;
+    }
     
 }
 
