@@ -1,6 +1,15 @@
 <h1 align="center">mahler.c</h1>
 
+<div align="center">
+    
+<a href="">![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/thelowsunoverthemoon/mahler.c/cmake-single-platform.yml)</a>
+<a href="">![Static Badge](https://img.shields.io/badge/code_coverage-100%25-%23327da8)</a>
+
+</div>
+
 <p align="center">Easy-to-use library for Western music theory in C99</p>
+
+
 
 ## Features
 
