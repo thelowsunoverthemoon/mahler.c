@@ -2,8 +2,9 @@
 
 <div align="center">
     
-<a href="">![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/thelowsunoverthemoon/mahler.c/cmake-single-platform.yml)</a>
+<a href="">![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/thelowsunoverthemoon/mahler.c/run_unit_tests.yml)</a>
 <a href="">![Static Badge](https://img.shields.io/badge/code_coverage-100%25-%23327da8)</a>
+<a href="">[![Stack Overflow Badge](https://img.shields.io/badge/docs-purple)](https://github.com/thelowsunoverthemoon/mahler.c/blob/master/doc/README.md)</a>
 
 </div>
 
