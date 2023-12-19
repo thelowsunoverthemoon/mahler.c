@@ -229,7 +229,7 @@ Given two notes, returns the interval between them assuming ```note_a``` is the 
 <details>
   <summary><b>🎶 Chords 🎶</b></n></summary>
   
-#### Chord
+#### mah_chord
 ```C
 typedef struct mah_chord {
     int                       size;
@@ -374,6 +374,8 @@ typedef struct mah_scale_base {
 * **name** : name of scale base
 * **size** : size of chord
 * **steps** : intervals between *each note* (eg, ```G -> B -> D``` is a major 3rd, then a minor 3rd)
+
+---
 
 #### mah_scale_result
 ```C
