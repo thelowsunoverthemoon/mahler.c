@@ -1,1 +1,1 @@
-The tests can be easily customized with the ```runAllTests``` function. To compile, simply copy the ```test.c``` along with the ```modules``` folder in the same directory and compile ```test.c``` with ```mahler``` normally.
+The tests can be easily customized by taking out suites or editing the ```.test``` files (which contain C code). In the ```suites``` folder, it is separated into individual function test suites. To compile, simply copy this folder and compile test.c, either with CMake or via commandline.
