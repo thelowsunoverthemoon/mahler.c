@@ -19,30 +19,30 @@
 
 #define GEN_SIZE 12
 
-void genCircle5ths(struct Note buf[], int iter);
+void gen_circle_fifths(struct mah_note buf[], int iter);
 
 int
 main(void)
 {
     
-    struct Note buf[GEN_SIZE];
-    genCircle5ths(buf, GEN_SIZE);
+    struct mah_note buf[GEN_SIZE];
+    gen_circle_fifths(buf, GEN_SIZE);
     
-    char disp[MAHLER_DISP_LEN];
-    for (size_t i = 0; i < GEN_SIZE; i++) {
-        struct KeySig key = getKeySig(buf[i], MAHLER_MAJOR_KEY);
-        printf("%s -> %d\n", printNote(buf[i], disp, MAHLER_DISP_LEN, NULL), key.alter);
+    char disp[MAH_DISP_LEN];
+    for (int i = 0; i < GEN_SIZE; i++) {
+        struct mah_key_sig key = mah_get_key_sig(buf[i], MAH_MAJOR_KEY);
+        printf("%s -> %d\n", mah_write_note(buf[i], disp, MAH_DISP_LEN, NULL), key.alter);
     }
 }
 
 void
-genCircle5ths(struct Note buf[], int iter)
+gen_circle_fifths(struct mah_note buf[], int iter)
 {
-    struct Note prev = (struct Note) {MAHLER_C, MAHLER_NONE, 0};
+    struct mah_note prev = (struct mah_note) {MAH_C, MAH_NATURAL, 0};
     buf[0] = prev;
     
     for (int i = 1; i < iter; i++) {
-        buf[i] = prev = getInter(prev, (struct Interval) {5, MAHLER_PERFECT}, NULL);
+        buf[i] = prev = mah_get_inter(prev, (struct mah_interval) {5, MAH_PERFECT}, NULL);
     }
     
 }

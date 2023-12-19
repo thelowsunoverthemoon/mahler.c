@@ -1,0 +1,26 @@
+// some sharps
+ASSERT_BC(mah_write_note(NOTE(F, 2, 3), BUF, 5, &ERR), 5, "F##3");
+
+// max sharps
+ASSERT_BC(mah_write_note(NOTE(B, 4, 0), BUF, 7, &ERR), 7, "B####0");
+
+// max flats
+ASSERT_BC(mah_write_note(NOTE(G, -4, 1), BUF, 7, &ERR), 7, "Gbbbb1");
+
+// natural
+ASSERT_BC(mah_write_note(NOTE(C, 0, 9), BUF, 5, &ERR), 5, "C9");
+
+// invalid sharp errror
+ASSERT_E(mah_write_note(NOTE(D, 5, 12), BUF_C(4), 4, &ERR), ERROR_INVALID_PRINT_QUAL);
+
+// invalid flat error
+ASSERT_E(mah_write_note(NOTE(A, -5, 1), BUF_C(4), 4, &ERR), ERROR_INVALID_PRINT_QUAL);
+
+// invalid too high note error
+ASSERT_E(mah_write_note(NOTE(B + 1, 1, 2), BUF_C(4), 4, &ERR), ERROR_INVALID_PRINT_NOTE);
+
+// invalid too low note error
+ASSERT_E(mah_write_note(NOTE(C - 1, 1, 2), BUF_C(4), 4, &ERR), ERROR_INVALID_PRINT_NOTE);
+
+// overflow buffer error
+ASSERT_E(mah_write_note(NOTE(F, 3, 2), BUF_C(2), 2, &ERR), ERROR_OVERFLOW_PRINT_NOTE);

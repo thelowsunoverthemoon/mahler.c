@@ -7,7 +7,7 @@
 
 </div>
 
-<p align="center">Easy-to-use library for Western music theory in C99</p>
+<p align="center">Simple library for Western music theory in C99</p>
 
 
 
@@ -15,10 +15,10 @@
 
 * Small & Easy-to-use
 * Interval, Chord, Scale, and Key Signature functions
-* No Memory Allocation happening under the hood
-* Supports Theoretical Keys (ie Fb+)
-* No Accidental Limit (ie G 20th sharp)
-* Enharmonically Correct (ie minor 6th of D is Bb, not A#)
+* No Internal Memory Allocation
+* Supports Theoretical Keys (eg Fb+)
+* No Accidental Limit (eg G 20th sharp)
+* Enharmonically Correct (eg minor 6th of D is Bb, not A#)
 * 100% Test Coverage
 
 ## Example
@@ -26,18 +26,18 @@
 Here's an example that creates the C4 Blues Scale, ascending:
 
 ```C
-struct Note notes[7];
-struct Scale scale = getScale(
-    (struct Note) {MAHLER_C, MAHLER_NONE, 4}, &MAHLER_BLUES_SCALE, notes, MAHLER_ASCEND, NULL
+struct mah_note notes[7];
+struct mah_scale scale = mah_get_scale(
+    (struct mah_note) {MAH_C, MAH_NATURAL, 4}, &MAH_BLUES_SCALE, notes, MAH_ASCEND, NULL
 );
 ```
 
 And if you want to print it:
 
 ```C
-char print[MAHLER_DISP_LEN];
+char buf[MAH_DISP_LEN];
 for (int i = 0; i < scale.size; i++) {
-    puts(printNote(scale.notes[i], print, MAHLER_DISP_LEN, NULL));
+    puts(mah_write_note(scale.notes[i], buf, MAH_DISP_LEN, NULL));
 }
 ```
 
@@ -57,7 +57,7 @@ See [here](test)!
 
 ## Compiling
 
-To compile, you can use ```cmake```. **Be sure to include the ```src``` and ```inc``` folders as folders to search for the source and header.** For example, if I have ```example.c``` and ```mahler``` is located in the same directory
+To compile, you can use ```cmake```. **Be sure to include the ```src``` and ```inc``` folders as folders to search for the source and header.** For example, given ```example.c``` and ```mahler``` is located in the same directory
 
 ```CMake
 cmake_minimum_required(VERSION 3.10)
@@ -76,25 +76,7 @@ add_subdirectory(${MAHLER_PATH})
 target_link_libraries(${PROJECT_NAME} PUBLIC mahler)
 ```
 
-where ```MAHLER_PATH``` is the path to ```mahler```. It is also simple to do it via the commandline, but again make sure to include those folders. For example, using MSVC on the commandline
-
-```Batch
-SET "mahler[path]=mahler"
-
-SET "mahler[inc]=%mahler[path]%/inc"
-SET "mahler[src]=%mahler[path]%/src"
-SET mahler[files]="%mahler[src]%/note/note.c" ^
-                "%mahler[src]%/err/err.c" ^
-                "%mahler[src]%/misc/misc.c" ^
-                "%mahler[src]%/chord/chord.c" ^
-                "%mahler[src]%/scale/scale.c" ^
-                "%mahler[src]%/key/key.c" ^
-                "%mahler[src]%/inter/inter.c"
-
-cl example.c /I "%mahler[inc]%" /I "%mahler[src]%"  %mahler[files]%
-```
-
-Just change ```mahler[path]``` to the path to ```mahler``` and ```example.c``` to your source file.
+where ```MAHLER_PATH``` is the path to ```mahler```. It is also simple to compile via commandline.
 
 
 

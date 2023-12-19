@@ -1,0 +1,40 @@
+// overflow error
+ASSERT_E(mah_return_scale(NOTE_L(NOTE(A, 0, 0)), 1, &SCL_RES_LIST(5, 0, SCL_RES_L(5)), NULL, &ERR), ERROR_OVERFLOW_SCALE_RETURN);
+
+// 5 results
+ASSERT_SRL(mah_return_scale(NOTE_L(NOTE(A, 0, 1), NOTE(D, 0, 1), NOTE(C, 1, 1), NOTE(G, 1, 2)), 4, &SCALE_LIST, NULL, &ERR),
+    SCL_RES_LIST(5, 0, SCL_RES_L(5)),
+    SCL_RES_LIST(5, 5, SCL_RES_C(
+        SCL_RES(NOTE(A, 0, 0), &MAH_MAJOR_SCALE),
+        SCL_RES(NOTE(F, 1, 0), &MAH_NATURAL_MIN_SCALE),
+        SCL_RES(NOTE(G, -1, 0), &MAH_NATURAL_MIN_SCALE),
+        SCL_RES(NOTE(F, 1, 0), &MAH_HARMONIC_MIN_SCALE),
+        SCL_RES(NOTE(G, -1, 0), &MAH_HARMONIC_MIN_SCALE)
+    ))
+);
+
+// same notes
+ASSERT_SRL(mah_return_scale(NOTE_L(NOTE(D, 2, 1), NOTE(D, 3, 1), NOTE(D, 7, 1)), 3, &SCALE_LIST, NULL, &ERR),
+    SCL_RES_LIST(9, 0, SCL_RES_L(9)),
+    SCL_RES_LIST(9, 7, SCL_RES_C(
+        SCL_RES(NOTE(C, 0, 0), &MAH_MAJOR_SCALE),
+        SCL_RES(NOTE(F, 0, 0), &MAH_MAJOR_SCALE),
+        SCL_RES(NOTE(D, 0, 0), &MAH_NATURAL_MIN_SCALE),
+        SCL_RES(NOTE(A, 0, 0), &MAH_NATURAL_MIN_SCALE),
+         SCL_RES(NOTE(D, 0, 0), &MAH_HARMONIC_MIN_SCALE),
+        SCL_RES(NOTE(A, 0, 0), &MAH_HARMONIC_MIN_SCALE),
+        SCL_RES(NOTE(D, 0, 0), &MAH_MELODIC_MIN_SCALE)
+    ))
+);
+
+// theoretical note
+ASSERT_SRL(mah_return_scale(NOTE_L(NOTE(F, 6, 1), NOTE(E, 3, 2), NOTE(B, 9, 2), NOTE(G, 1, 2)), 4, &SCALE_LIST, NULL, &ERR),
+    SCL_RES_LIST(6, 0, SCL_RES_L(6)),
+    SCL_RES_LIST(6, 5, SCL_RES_C(
+        SCL_RES(NOTE(C, 0, 0), &MAH_HARMONIC_MIN_SCALE),
+        SCL_RES(NOTE(G, 1, 0), &MAH_HARMONIC_MIN_SCALE),
+        SCL_RES(NOTE(A, -1, 0), &MAH_HARMONIC_MIN_SCALE),
+        SCL_RES(NOTE(G, 1, 0), &MAH_MELODIC_MIN_SCALE),
+        SCL_RES(NOTE(A, -1, 0), &MAH_MELODIC_MIN_SCALE)
+    ))
+);

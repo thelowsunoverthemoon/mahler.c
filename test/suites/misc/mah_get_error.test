@@ -1,0 +1,8 @@
+// no error
+ASSERT_ST(mah_get_error(MAH_ERROR_NONE), "None");
+
+// random error
+ASSERT_ST(mah_get_error(MAH_ERROR_INVALID_QUAL), "Invalid Quality for Interval");
+
+// unknown error
+ASSERT_ST(mah_get_error(200), "Unknown Error");

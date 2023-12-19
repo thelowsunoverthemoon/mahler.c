@@ -1,42 +1,41 @@
 /*
 
 | misc.c |
-defines the functions for general use (not related to chords, scales, ect)
+Defines the functions for general use (not related to chords, scales, ect)
 
 */
 
-#include "misc.h"
-
-// Macros //
-
-#define SIZE_CHROMATIC 12 // Size of chromatic scale
+#include <stdio.h>
+#include "misc/misc.h"
+#include "shared/shared.h"
 
 // Functions //
 
-bool
-isEnharmonic(struct Note const noteA, struct Note const noteB)
-{
-    return (toSemitone(noteA.note) + noteA.acci + noteA.pitch * SIZE_CHROMATIC) == (toSemitone(noteB.note) + noteB.acci + noteB.pitch * SIZE_CHROMATIC);
-}
-
 char*
-printNote(struct Note const note, char buf[], size_t size, enum MahlerError* err)
+mah_write_note(struct mah_note const note, char buf[], size_t const size, enum mah_error* err)
 {
-    static char const* dispNote = "CDEFGAB";
-    static char const* const dispAccidental[] = {"bbbb", "bbb", "bb", "b", "", "#", "##", "###", "####"};
+    static char const* disp_note = "CDEFGAB";
+    static char const* const disp_acci[] = {"bbbb", "bbb", "bb", "b", "", "#", "##", "###", "####"};
     
     if (note.acci < -4 || note.acci > 4) { // dispAccidental limit
-        SET_ERR(MAHLER_ERROR_INVALID_PRINT_QUAL);
+        SET_ERR(MAH_ERROR_INVALID_PRINT_QUAL);
         return "";
     }
     
-    if (note.note < MAHLER_C || note.note > MAHLER_B) {
-        SET_ERR(MAHLER_ERROR_INVALID_PRINT_NOTE);
+    if (note.tone < MAH_C || note.tone > MAH_B) {
+        SET_ERR(MAH_ERROR_INVALID_PRINT_NOTE);
         return "";
     }
     
-    if (!(snprintf(buf, size, "%c%s%d", dispNote[note.note], dispAccidental[note.acci + 4], note.pitch) < size)) {
-        SET_ERR(MAHLER_ERROR_OVERFLOW_PRINT_NOTE);
+    if (!(snprintf(buf, size, "%c%s%d", disp_note[note.tone], disp_acci[note.acci + 4], note.pitch) < size)) {
+        SET_ERR(MAH_ERROR_OVERFLOW_PRINT_NOTE);
     }
     return buf;
+}
+
+bool
+mah_is_enharmonic(struct mah_note const note_a, struct mah_note const note_b)
+{
+    return (to_semitone(note_a.tone) + note_a.acci + note_a.pitch * SIZE_CHROMATIC) ==
+           (to_semitone(note_b.tone) + note_b.acci + note_b.pitch * SIZE_CHROMATIC);
 }

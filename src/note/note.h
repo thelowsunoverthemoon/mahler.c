@@ -1,30 +1,22 @@
-#ifndef __MAHLER_NOTE_H__
-#define __MAHLER_NOTE_H__
-
-#include <stdbool.h>
+#ifndef __MAH_NOTE_H__
+#define __MAH_NOTE_H__
 
 // Enums //
 
-enum MahlerNote {
-    MAHLER_C, MAHLER_D, MAHLER_E, MAHLER_F, MAHLER_G, MAHLER_A, MAHLER_B
-};
+typedef enum mah_tone {
+    MAH_C, MAH_D, MAH_E, MAH_F, MAH_G, MAH_A, MAH_B
+} mah_tone;
 
-enum MahlerAcci {
-    MAHLER_DBFLAT = -2, MAHLER_FLAT = -1, MAHLER_NONE = 0, MAHLER_SHARP = 1, MAHLER_DBSHARP = 2
-};
+typedef enum mah_acci {
+    MAH_DBFLAT = -2, MAH_FLAT = -1, MAH_NATURAL = 0, MAH_SHARP = 1, MAH_DBSHARP = 2
+} mah_acci;
 
 // Structures //
 
-struct Note {
-    enum MahlerNote note;
-    int             acci;
-    int             pitch;
-};
-
-// Helper Functions //
-
-extern inline int toSemitone(int note);
-extern inline struct Note getEnharmonic(struct Note note);
-extern inline bool matchNote(struct Note const notes[], size_t noteNum, struct Note scale[], size_t scaleNum);
+typedef struct mah_note {
+    enum mah_tone tone;
+    int           acci;
+    int           pitch;
+} mah_note;
 
 #endif

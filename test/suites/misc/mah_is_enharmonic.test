@@ -1,0 +1,32 @@
+// true left side many sharp
+ASSERT_D(mah_is_enharmonic(NOTE(C, 0, 5), NOTE(B, 1, 4)), true);
+
+// true equal side
+ASSERT_D(mah_is_enharmonic(NOTE(D, 1, 2), NOTE(D, 1, 2)), true);
+
+// true E F
+ASSERT_D(mah_is_enharmonic(NOTE(F, -1, 3), NOTE(E, 0, 3)), true);
+
+// true right side many flat
+ASSERT_D(mah_is_enharmonic(NOTE(E, 2, 3), NOTE(A, -3, 3)), true);
+
+// true both side accidental
+ASSERT_D(mah_is_enharmonic(NOTE(G, 1, 7), NOTE(A, -1, 7)), true);
+
+// true both side sharp
+ASSERT_D(mah_is_enharmonic(NOTE(A, 4, 7), NOTE(B, 2, 7)), true);
+
+// false different pitch
+ASSERT_D(mah_is_enharmonic(NOTE(G, 1, 3), NOTE(G, 1, 4)), false);
+
+// false B C different pitch
+ASSERT_D(mah_is_enharmonic(NOTE(B, 1, 4), NOTE(C, 1, 5)), false);
+
+// false left side many sharp
+ASSERT_D(mah_is_enharmonic(NOTE(C, 4, 2), NOTE(F, 0, 2)), false);
+
+// false both side accidental
+ASSERT_D(mah_is_enharmonic(NOTE(F, -1, 3), NOTE(E, 2, 3)), false);
+
+// false unison
+ASSERT_D(mah_is_enharmonic(NOTE(A, -1, 3), NOTE(A, 0, 3)), false);

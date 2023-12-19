@@ -1,25 +1,25 @@
-#ifndef __MAHLER_INTER_H__
-#define __MAHLER_INTER_H__
+#ifndef __MAH_INTER_H__
+#define __MAH_INTER_H__
 
 #include "err/err.h"
 #include "note/note.h"
 
 // Enums //
 
-enum MahlerQuality {
-    MAHLER_MINOR = -1, MAHLER_MAJOR = 0, MAHLER_AUGMENTED = 1, MAHLER_DIMINISHED = -2, MAHLER_PERFECT = 3
+enum mah_quality {
+    MAH_MINOR = -1, MAH_MAJOR = 0, MAH_AUGMENTED = 1, MAH_DIMINISHED = -2, MAH_PERFECT = 3
 };
 
 // Structures //
 
-struct Interval {
-    int                inter;
-    enum MahlerQuality qual;
+struct mah_interval {
+    int              steps;
+    enum mah_quality qual;
 };
 
 // Functions //
 
-struct Note getInter(struct Note const note, struct Interval const interval, enum MahlerError* err);
-struct Interval returnInter(struct Note const noteA, struct Note const noteB, enum MahlerError* err);
+struct mah_note mah_get_inter(struct mah_note note, struct mah_interval interval, enum mah_error* err);
+struct mah_interval mah_return_inter(struct mah_note note_a, struct mah_note note_b, enum mah_error* err);
 
 #endif

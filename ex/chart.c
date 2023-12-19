@@ -16,21 +16,21 @@
 int
 main(void)
 {
-    struct Note scNotes[8];
-    struct Scale scale = getScale(
-        (struct Note) {MAHLER_C, MAHLER_NONE, 0}, &MAHLER_MAJOR_SCALE, scNotes, MAHLER_ASCEND, NULL
+    struct mah_note sc_notes[8];
+    struct mah_scale scale = mah_get_scale(
+        (struct mah_note) {MAH_C, MAH_NATURAL, 0}, &MAH_MAJOR_SCALE, sc_notes, MAH_ASCEND, NULL
     );
 
-    char disp[MAHLER_DISP_LEN];
-    for (size_t i = 0; i < scale.size; i++) {
+    char disp[MAH_DISP_LEN];
+    for (int i = 0; i < scale.size; i++) {
         
-        struct Note tempNotes[8];
-        struct Scale temp = getScale(
-            scale.notes[i], &MAHLER_MAJOR_SCALE, tempNotes, MAHLER_ASCEND, NULL
+        struct mah_note temp_notes[8];
+        struct mah_scale temp = mah_get_scale(
+            scale.notes[i], &MAH_MAJOR_SCALE, temp_notes, MAH_ASCEND, NULL
         );
         
         for (size_t j = 0; j < scale.size; j++) {
-            printf("%-3s ", printNote(temp.notes[j], disp, MAHLER_DISP_LEN, NULL));
+            printf("%-3s ", mah_write_note(temp.notes[j], disp, MAH_DISP_LEN, NULL));
         }
         putchar('\n');
     }

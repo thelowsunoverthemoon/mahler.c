@@ -1,62 +1,61 @@
-#ifndef __MAHLER_CHD_H__
-#define __MAHLER_CHD_H__
-
-#include <stddef.h>
-#include <stdbool.h>
+#ifndef __MAH_CHD_H__
+#define __MAH_CHD_H__
 
 #include "err/err.h"
 #include "note/note.h"
 #include "inter/inter.h"
+#include "shared/shared.h"
 
 // Structures //
 
-struct Chord {
-    int                   size;
-    int                   inv;
-    struct Note* restrict base;
-    struct Note* restrict notes;
-};
+typedef struct mah_chord {
+    int                       size; 
+    int                       inv;
+    struct mah_note* restrict base;
+    struct mah_note* restrict notes;
+} mah_chord;
 
-struct ChordBase {
-    char const*      name;
-    int              size;
-    struct Interval* steps;
-};
+typedef struct mah_chord_base {
+    char const*          name;
+    int                  size;
+    struct mah_interval* steps;
+} mah_chord_base;
 
-struct ChordResult {
-    struct Note             key;
-    struct ChordBase const* chord;
-};
+typedef struct mah_chord_result {
+    struct mah_note              key;
+    struct mah_chord_base const* chord;
+}  mah_chord_result;
 
-struct ChordResultList {
-    size_t              max;
-    size_t              size;
-    struct ChordResult* results;
-};
+typedef struct mah_chord_result_list {
+    int                      max;
+    int                      size;
+    struct mah_chord_result* results;
+} mah_chord_result_list;
 
-struct ChordCheck {
-    struct ChordBase const** pos;
-    size_t                   size;
-    struct Note* restrict    base;
-    struct Note* restrict    notes;
-};
+typedef struct mah_chord_check {
+    struct mah_chord_base const** pos;
+    int                           size;
+    struct mah_note* restrict     base;
+    struct mah_note* restrict     notes;
+    bool                          semi[SIZE_CHROMATIC];
+} mah_chord_check;
 
 // Preset Chords //
 
-extern struct ChordBase const MAHLER_MAJOR_TRIAD;       // Major Triad
-extern struct ChordBase const MAHLER_MINOR_TRIAD;       // Minor Triad
-extern struct ChordBase const MAHLER_AUGMENTED_TRIAD;   // Augmented Triad
-extern struct ChordBase const MAHLER_DIMINISHED_TRIAD;  // Diminished Triad
-extern struct ChordBase const MAHLER_DIMINISHED_7;      // Diminished 7th
-extern struct ChordBase const MAHLER_HALF_DIMINISHED_7; // Half Diminished 7th
-extern struct ChordBase const MAHLER_MINOR_7;           // Minor 7th
-extern struct ChordBase const MAHLER_MAJOR_7;           // Major 7th
-extern struct ChordBase const MAHLER_DOMINANT_7;        // Dominant 7th
+extern struct mah_chord_base const MAH_MAJOR_TRIAD;       // Major Triad
+extern struct mah_chord_base const MAH_MINOR_TRIAD;       // Minor Triad
+extern struct mah_chord_base const MAH_AUGMENTED_TRIAD;   // Augmented Triad
+extern struct mah_chord_base const MAH_DIMINISHED_TRIAD;  // Diminished Triad
+extern struct mah_chord_base const MAH_DIMINISHED_7;      // Diminished 7th
+extern struct mah_chord_base const MAH_HALF_DIMINISHED_7; // Half Diminished 7th
+extern struct mah_chord_base const MAH_MINOR_7;           // Minor 7th
+extern struct mah_chord_base const MAH_MAJOR_7;           // Major 7th
+extern struct mah_chord_base const MAH_DOMINANT_7;        // Dominant 7th
 
 // Functions //
 
-struct Chord getChord(struct Note const root, struct ChordBase const* type, struct Note* restrict base, struct Note* restrict notes, enum MahlerError* err);
-void returnChord(struct Note const notes[], size_t noteNum, struct ChordResultList* list, struct ChordCheck* custom, bool enharmonic, enum MahlerError* err);
-void invertChord(struct Chord* chord, int inv, enum MahlerError* err);
+struct mah_chord mah_get_chord(struct mah_note root, struct mah_chord_base const* type, struct mah_note* restrict base, struct mah_note* restrict notes, enum mah_error* err);
+void mah_return_chord(struct mah_note const notes[], int note, struct mah_chord_result_list* list, struct mah_chord_check* custom, enum mah_error* err);
+void mah_invert_chord(struct mah_chord* chord, int inv, enum mah_error* err);
 
 #endif

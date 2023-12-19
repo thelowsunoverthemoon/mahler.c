@@ -1,139 +1,138 @@
 /*
 
 | key.c |
-defines everything related to key signatures
+Defines everything related to key signatures
 
 */
 
-#include <stdlib.h>
+#include "key/key.h"
 #include "inter/inter.h"
-#include "key.h"
 
 // Macros //
 
-#define KEYSIG_MAX 7    // Size of Circle of Fifths
+#define KEY_SIG_MAX 7   // Size of Circle of Fifths
 #define KEY_FLAT_ADJ 2  // Adjust tblKey account for C and F for flats
 #define KEY_SHARP_ADJ 1 // Adjust tblKey account for F for sharps
 #define KEY_FLAT_ROOT 6 // Starting point for flats from sharps without F+ at tblKey
-#define KEYSIG_DIF 3    // Difference of Parallel Major and Minor (G+ = 1, 1 - 3 = -2 = G-)
+#define KEY_SIG_DIF 3   // Difference of Parallel Major and Minor (G+ = 1, 1 - 3 = -2 = G-)
+
+// Internal Functions //
+
+static struct mah_key_sig
+make_key_sig(struct mah_note key, int const alter, enum mah_key_type const type)
+{
+    static enum mah_tone const ordr_sharp[] = {
+        MAH_F, MAH_C, MAH_G, MAH_D, MAH_A, MAH_E, MAH_B
+    };
+    static enum mah_tone const ordr_flat[] = {
+        MAH_B, MAH_E, MAH_A, MAH_D, MAH_G, MAH_C, MAH_F
+    };
+    
+    int note_sign = alter < 0 ? -1 : 1,
+        note_abs  = alter * note_sign,
+        acci      = alter / KEY_SIG_MAX;
+    
+    key.pitch = 0;
+    struct mah_key_sig new = {
+        .key   = key,
+        .type  = type,
+        .alter = alter,
+        .size  = note_abs > KEY_SIG_MAX ? KEY_SIG_MAX : note_abs // get overflow of accidentals
+    };
+    
+    enum mah_tone const* ordr = alter < MAH_NATURAL ? ordr_flat : ordr_sharp;
+    for (int i = 0; i < KEY_SIG_MAX; i++) { // fill in base first
+        new.notes[i] = (struct mah_note) {
+            .tone = ordr[i], .acci = acci
+        };
+    }
+
+    for (int c = 0 ; c < note_abs % KEY_SIG_MAX; c++) { // do leftovers
+        new.notes[c].acci += note_sign;
+    }
+
+    return new;
+}
 
 // Functions //
 
-struct KeySig
-getKeySig(struct Note const key, enum MahlerKeyType const type)
+struct mah_key_sig
+mah_get_key_sig(struct mah_note const key, enum mah_key_type const type)
 {
     static int const table[] = {
         0, 2, 4, -1, 1, 3, 5 // Major Key Acci Number
     };
     
     // +7 is sharp equiv, -7 is flat equiv, ect, minor equiv - 3
-    return makeKeySig(key, table[key.note] + (KEYSIG_MAX * key.acci) - (type * KEYSIG_DIF), type);
+    return make_key_sig(key, table[key.tone] + (KEY_SIG_MAX * key.acci) - (type * KEY_SIG_DIF), type);
 }
 
-struct KeySig
-getKeyRelative(struct KeySig const* key)
+struct mah_key_sig
+mah_get_key_relative(struct mah_key_sig const* key)
 {
-    struct Note note = getInter(
+    struct mah_note note = mah_get_inter(
         key->key,
-        key->type == MAHLER_MINOR_KEY ? (struct Interval) {.inter = 3, .qual = MAHLER_MINOR} :
-                                        (struct Interval) {.inter = 6, .qual = MAHLER_MAJOR},
+        key->type == MAH_MINOR_KEY ? (struct mah_interval) {.steps = 3, .qual = MAH_MINOR} :
+                                     (struct mah_interval) {.steps = 6, .qual = MAH_MAJOR},
         NULL
     );
     
-    return getKeySig(note, key->type == MAHLER_MINOR_KEY ? MAHLER_MAJOR_KEY : MAHLER_MINOR_KEY);
+    return mah_get_key_sig(note, key->type == MAH_MINOR_KEY ? MAH_MAJOR_KEY : MAH_MINOR_KEY);
     
 }
 
-struct KeySig
-returnKeySig(int alter, enum MahlerKeyType const type)
+struct mah_key_sig
+mah_return_key_sig(int const alter, enum mah_key_type const type)
 {
-    static enum MahlerNote const tblKey[] = {
-        [0] = MAHLER_F,
-        [1] = MAHLER_C,
-        [2] = MAHLER_G,
-        [3] = MAHLER_D,
-        [4] = MAHLER_A,
-        [5] = MAHLER_E,
-        [6] = MAHLER_B,
+    static enum mah_tone const tbl_key[] = {
+        [0] = MAH_F,
+        [1] = MAH_C,
+        [2] = MAH_G,
+        [3] = MAH_D,
+        [4] = MAH_A,
+        [5] = MAH_E,
+        [6] = MAH_B,
     };
     
-    struct Note key = {0};
+    struct mah_note key = {0};
     if (alter >= 0) {
-        key.note  = tblKey[(alter + KEY_SHARP_ADJ) % KEYSIG_MAX]; 
-        key.acci  = (alter + KEY_SHARP_ADJ) / KEYSIG_MAX;
+        key.tone  = tbl_key[(alter + KEY_SHARP_ADJ) % KEY_SIG_MAX]; 
+        key.acci  = (alter + KEY_SHARP_ADJ) / KEY_SIG_MAX;
     } else {
         if (alter == -1) { // special case for F+
-            key.note  = MAHLER_F;
+            key.tone  = MAH_F;
         } else {
-            key.note  = tblKey[(KEY_FLAT_ROOT + ((alter + KEY_FLAT_ADJ) % KEYSIG_MAX))]; 
-            key.acci  = ((alter + KEY_FLAT_ADJ) / KEYSIG_MAX) - 1;
+            key.tone  = tbl_key[(KEY_FLAT_ROOT + ((alter + KEY_FLAT_ADJ) % KEY_SIG_MAX))]; 
+            key.acci  = ((alter + KEY_FLAT_ADJ) / KEY_SIG_MAX) - 1;
         }
     }
     
-    return makeKeySig(
-        type == MAHLER_MAJOR ? key : getInter(key, (struct Interval) {6, MAHLER_MAJOR}, NULL),
+    return make_key_sig(
+        type == MAH_MAJOR ? key : mah_get_inter(key, (struct mah_interval) {6, MAH_MAJOR}, NULL),
         alter, type
     );
 }
 
 int
-queryAcci(struct KeySig const* key, enum MahlerNote const note)
+mah_query_acci(struct mah_key_sig const* key, enum mah_tone const note)
 {
-    static int const lkpSharp[] = { // lkp = lookup
-        [MAHLER_F] = 0,
-        [MAHLER_C] = 1,
-        [MAHLER_G] = 2,
-        [MAHLER_D] = 3,
-        [MAHLER_A] = 4,
-        [MAHLER_E] = 5,
-        [MAHLER_B] = 6
+    static int const lkp_sharp[] = { // look up table for Circle of 5ths -> indices
+        [MAH_F] = 0,
+        [MAH_C] = 1,
+        [MAH_G] = 2,
+        [MAH_D] = 3,
+        [MAH_A] = 4,
+        [MAH_E] = 5,
+        [MAH_B] = 6
     };
-    static int const lkpFlat[] = {
-        [MAHLER_B] = 0,
-        [MAHLER_E] = 1,
-        [MAHLER_A] = 2,
-        [MAHLER_D] = 3,
-        [MAHLER_G] = 4,
-        [MAHLER_C] = 5,
-        [MAHLER_F] = 6
+    static int const lkp_flat[] = {
+        [MAH_B] = 0,
+        [MAH_E] = 1,
+        [MAH_A] = 2,
+        [MAH_D] = 3,
+        [MAH_G] = 4,
+        [MAH_C] = 5,
+        [MAH_F] = 6
     };
-    return key->notes[key->alter < 0 ? lkpFlat[note] : lkpSharp[note]].acci;
-}
-
-// Helper Functions //
-
-static struct KeySig
-makeKeySig(struct Note key, int alter, enum MahlerKeyType type)
-{
-    static enum MahlerNote const ordrSharp[] = {
-        MAHLER_F, MAHLER_C, MAHLER_G, MAHLER_D, MAHLER_A, MAHLER_E, MAHLER_B
-    };
-    static enum MahlerNote const ordrFlat[] = {
-        MAHLER_B, MAHLER_E, MAHLER_A, MAHLER_D, MAHLER_G, MAHLER_C, MAHLER_F
-    };
-    
-    int noteSign = alter < 0 ? -1 : 1,
-        noteAbs = alter * noteSign,
-        acci = alter / KEYSIG_MAX;
-    
-    key.pitch = 0;
-    struct KeySig new = {
-        .key   = key,
-        .type  = type,
-        .alter = alter,
-        .size  = noteAbs > KEYSIG_MAX ? KEYSIG_MAX : noteAbs
-    };
-    
-    enum MahlerNote const* ordr = alter < MAHLER_NONE ? ordrFlat : ordrSharp;
-    for (int i = 0; i < KEYSIG_MAX; i++) { // fill in base first
-        new.notes[i] = (struct Note) {
-            .note = ordr[i], .acci = acci, .pitch = 0
-        };
-    }
-
-    for (int c = 0 ; c < noteAbs % KEYSIG_MAX; c++) { // do leftovers
-        new.notes[c].acci += noteSign;
-    }
-
-    return new;
+    return key->notes[key->alter < 0 ? lkp_flat[note] : lkp_sharp[note]].acci;
 }

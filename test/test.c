@@ -1,167 +1,231 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
 #include "mahler.h"
+#include "macros.h"
 
-/*
-
-    This is a simple framework for testing mahler.c
-    There are various ASSERT macros to check the types of functions.
-    The _ suffix represents the type it checks. See table below
-    
-    D   Default (two integer values)
-    ST  Null terminated String
-    N   Note
-    I   Interval
-    C   Chord
-    S   Scale
-    K   KeySig
-    CP  Chord for functions that alter them via pointer (2nd param is base Chord)
-    CRL ChordResultList for functions that alter them via pointer (2nd param is base list)
-    SRL ScaleResultList for functions that alter them via pointer (2nd param is scale list)
-    BC  Null terminated String for functions that take char[] (2nd param is the buf size)
-    E   MahlerError. No need for MAHLER prefix when writing the error
-    
-    So for example, "ASSERT_N" checks if the two notes match
-    There are also global variables to assist in testing that are used in functions
-    
-    CHORD      Chord. Used in ASSERT_CP. The value is the 2nd param
-    CHORD_LIST ChordResultList. Used in ASSERT_CRL. The value is the 2nd param
-    SCALE_LIST ScaleResultList. Used in ASSERT_SCL. The value is the 2nd param
-    ERR        MahlerError
-    BUF        char[]. Used in ASSERT_BC. The size is the 2nd param
-    TEST       Used to keep track of passed/failed tests. Not used in any ASSERTs
-
-    Macros are included to save typing. 1st, 2nd, ... refer to the nth parameter
-    
-    BUF_C        Creates char buffer of size 1st 
-    NOTE         Creates note of note 1st, accidental 2nd, pitch 3rd. No need for MAHLER prefix in 1st
-    NOTE_K       Takes in any number of notes to put as notes parameter of KeySig
-    NOTE_N       Creates Note buffer of size 1st, with the contents in 2nd
-    NOTE_L       Creates empty Note buffer with any number of notes
-    INTER        Creates Interval with interval 1st and quality 2nd. No need for MAHLER prefix in 2nd
-    INTER_L      Creates Interval buffer with any number of intervals
-    CHORD        Creates Chord with size 1st, inversion 2nd, base 3rd, and notes 4th
-    CHORD_B      Creates &ChordBase with empty name, size 1st, and steps 2nd
-    SCALE        Creates Scale with size 1st, type 2nd, notes 3rd.
-    SCALE_B      Creates &ScaleBase with empty name, size 1st, and steps 2nd
-    KEY          Creates KeySig with type 1st, alter 2nd, size 3rd, key 4th, notes 5th
-    CHD_RES      Creates chord result with note 1st, base 2nd
-    CHD_RES_L    Creates empty ChordResult buffer with size 1st
-    CHD_RES_C    Creates ChordResult buffer with any number of notes
-    CHD_RES_LIST Creates ChordResultList with size max 1st, size 2nd, result 3rd
-    SCL_RES      Creates chord result with note 1st, base 2nd
-    SCL_RES_L    Creates empty ChordResult buffer with size 1st
-    SCL_RES_C    Creates ChordResult buffer with any number of notes
-    SCL_RES_LIST Creates ChordResultList with size max 1st, size 2nd, result 3rd
-    MAJOR_KEY    Same as MAHLER_MAJOR_KEY
-    MINOR_KEY    Same as MAHLER_MINOR_KEY
-    ASCEND       Same as MAHLER_ASCEND
-    DESCEND      Same as MAHLER_DESCEND
-    FULL         Same as MAHLER_FULL
-
-*/
-
-#define ASSERT(expr, mes) assert(expr, __LINE__, __FILE__, "Expected " #mes)
-#define ASSERT_D(act, exp) ASSERT(act == exp, exp)
-#define ASSERT_N(act, exp) ASSERT(compNote(act, exp) && (ERR == MAHLER_ERROR_NONE), exp)
-
-#define ASSERT_E(func, err) do {\
-    func;\
-    ASSERT(ERR == MAHLER_ ## err, MAHLER_ ## err);\
-} while (0)
-    
-#define NOTE(note, acci, pitch) (struct Note) {MAHLER_ ## note, acci, pitch}
-#define NOTE_K(...) {__VA_ARGS__}
-#define NOTE_N(size, ...) (struct Note[size]) {__VA_ARGS__}
-#define NOTE_L(...) (struct Note[]) {__VA_ARGS__}
+// Global Test Variable //
 
 struct Test {
-    int testPass;
-    int testTotal;
+    int pass;
+    int total;
 };
 
 struct Test TEST = {0};
-enum MahlerError ERR = MAHLER_ERROR_NONE;
+enum mah_error ERR = MAH_ERROR_NONE;
 
-void runAllTests();
+// Function Prototypes //
+
 void assert(int val, int line, char* file, char* expr);
 
-bool compNote(struct Note noteA, struct Note noteB);
-bool compNotes(struct Note const* notesA, struct Note const* notesB, size_t sizeA, size_t sizeB);
+bool comp_note(struct mah_note note_a, struct mah_note note_b);
+bool comp_notes(struct mah_note const* notes_a, struct mah_note const* notes_b, size_t size_a, size_t size_b);
 
-#include "module/inter_test.c"
-#include "module/chord_test.c"
-#include "module/scale_test.c"
-#include "module/key_test.c"
-#include "module/misc_test.c"
+bool comp_interval(struct mah_interval inter_a, struct mah_interval inter_b);
+bool comp_inters(struct mah_interval const* inters_a, struct mah_interval const* inters_b, size_t size_a, size_t size_b);
+
+bool comp_key_sig(struct mah_key_sig key_a, struct mah_key_sig key_b);
+
+bool comp_chord(struct mah_chord chord_a, struct mah_chord chord_b);
+bool comp_chord_result_list(struct mah_chord_result_list list_a, struct mah_chord_result_list list_b);
+bool comp_chord_result(struct mah_chord_result result_a, struct mah_chord_result result_b);
+bool comp_chord_results(struct mah_chord_result* results_a, struct mah_chord_result* results_b, size_t size_a, size_t size_b);
+bool comp_chord_base(struct mah_chord_base const* base_a, struct mah_chord_base const* base_b);
+
+bool comp_scale(struct mah_scale scale_a, struct mah_scale scale_b);
+bool comp_scale_result_list(struct mah_scale_result_list list_a, struct mah_scale_result_list list_b);
+bool comp_scale_result(struct mah_scale_result result_a, struct mah_scale_result result_b);
+bool comp_scale_results(struct mah_scale_result* results_a, struct  mah_scale_result* results_b, size_t size_a, size_t size_b);
+bool comp_scale_base(struct mah_scale_base const* base_a, struct mah_scale_base const* base_b);
 
 int
 main(void)
 {
+    #include "suites/inter/mah_return_inter.test"
+    #include "suites/inter/mah_get_inter.test"
+    
+    #include "suites/key/mah_get_key_sig.test"
+    #include "suites/key/mah_return_key_sig.test"
+    #include "suites/key/mah_get_key_relative.test"
+    #include "suites/key/mah_query_acci.test"
 
-    runAllTests();
-    printf("%d / %d Tests Passed", TEST.testPass, TEST.testTotal);
-    if (TEST.testPass != TEST.testTotal) {
+    #include "suites/misc/mah_is_enharmonic.test"
+    #include "suites/misc/mah_write_note.test"
+    #include "suites/misc/mah_get_error.test" 
+    
+    #include "suites/chord/mah_invert_chord.test"
+    #include "suites/chord/mah_get_chord.test"
+    #include "suites/chord/mah_return_chord.test"
+    
+    #include "suites/scale/mah_get_scale.test"
+    #include "suites/scale/mah_return_scale.test"
+    
+    printf("%d / %d Tests Passed", TEST.pass, TEST.total);
+    if (TEST.pass != TEST.total) {
         return EXIT_FAILURE;
     }
     
 }
 
-void
-runAllTests()
-{
-
-    testGetInter();
-    testReturnInter();
-
-    testGetChord();
-    testInvertChord();
-    testReturnChord();
-    
-    testGetScale();
-    testReturnScale();
-    
-    testGetKeySig();
-    testReturnKeySig();
-    testGetKeyRelative();
-    testQueryAcci();
-    
-    testIsEnharmonic();
-    testPrintNote();
-    testGetMahlerError();
-    
-}
+// Function Definitions //
 
 void
 assert(int val, int line, char* file, char* expr)
 {
-    TEST.testTotal++;
+    TEST.total++;
     if (val) {
-        TEST.testPass++;
+        TEST.pass++;
     } else {
         fprintf(stderr, "%s @ LINE %d | %s\n", file, line, expr);
     }
-    ERR = MAHLER_ERROR_NONE;
+    ERR = MAH_ERROR_NONE;
 }
 
 bool
-compNote(struct Note noteA, struct Note noteB)
+comp_note(struct mah_note note_a, struct mah_note note_b)
 {
-    return noteA.note == noteB.note &&
-           noteA.acci == noteB.acci &&
-           noteA.pitch == noteB.pitch;
+    return note_a.tone == note_b.tone &&
+           note_a.acci == note_b.acci &&
+           note_a.pitch == note_b.pitch;
 }
 
 bool
-compNotes(struct Note const* notesA, struct Note const* notesB, size_t sizeA, size_t sizeB) {
-    if (sizeA != sizeB) {
+comp_notes(struct mah_note const* notes_a, struct mah_note const* notes_b, size_t size_a, size_t size_b)
+{
+    if (size_a != size_b) {
         return false;
     }
 
-    for (size_t i = 0; i < sizeA; i++) {
-        if (!compNote(notesA[i], notesB[i])) {
+    for (size_t i = 0; i < size_a; i++) {
+        if (!comp_note(notes_a[i], notes_b[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool
+comp_interval(struct mah_interval inter_a, struct mah_interval inter_b)
+{
+    return inter_a.steps == inter_b.steps &&
+           inter_a.qual == inter_b.qual;
+}
+
+bool
+comp_inters(struct mah_interval const* inters_a, struct mah_interval const* inters_b, size_t size_a, size_t size_b)
+{
+    if (size_a != size_b) {
+        return false;
+    }
+
+    for (size_t i = 0; i < size_a; i++) {
+        if (!comp_interval(inters_a[i], inters_b[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool
+comp_key_sig(struct mah_key_sig key_a, struct mah_key_sig key_b)
+{
+    return key_a.type == key_b.type &&
+           key_a.alter == key_b.alter &&
+           key_a.size == key_b.size &&
+           comp_note(key_a.key, key_b.key) &&
+           comp_notes(key_a.notes, key_b.notes, key_a.size, key_b.size);
+}
+
+bool
+comp_chord(struct mah_chord chord_a, struct mah_chord chord_b)
+{
+    return chord_a.size == chord_b.size &&
+           chord_a.inv == chord_b.inv &&
+           comp_notes(chord_a.notes, chord_b.notes, chord_a.size, chord_b.size) &&
+           comp_notes(chord_a.base, chord_b.base, chord_a.size, chord_b.size);
+           
+}
+
+bool
+comp_chord_base(struct mah_chord_base const* base_a, struct mah_chord_base const* base_b)
+{
+    return !strcmp(base_a->name, base_b->name) &&
+           base_a->size == base_b->size &&
+           comp_inters(base_a->steps, base_b->steps, base_a->size, base_b->size);
+}
+
+bool
+comp_chord_result(struct mah_chord_result result_a, struct mah_chord_result result_b)
+{
+    return comp_note(result_a.key, result_b.key) &&
+           comp_chord_base(result_a.chord, result_b.chord);
+}
+
+bool
+comp_chord_result_list(struct mah_chord_result_list list_a, struct mah_chord_result_list list_b)
+{
+    return list_a.max == list_b.max &&
+           list_a.size == list_b.size &&
+           comp_chord_results(list_a.results, list_b.results, list_a.size, list_b.size);
+}
+
+bool
+comp_chord_results(struct mah_chord_result* results_a, struct mah_chord_result* results_b, size_t size_a, size_t size_b)
+{
+    if (size_a != size_b) {
+        return false;
+    }
+
+    for (size_t i = 0; i < size_a; i++) {
+        if (!comp_chord_result(results_a[i], results_b[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool
+comp_scale(struct mah_scale scale_a, struct mah_scale scale_b)
+{
+    return scale_a.size == scale_b.size &&
+           scale_a.type == scale_b.type &&
+           comp_notes(scale_a.notes, scale_b.notes, scale_a.size, scale_b.size);
+}
+
+bool
+comp_scale_base(struct mah_scale_base const* base_a, struct mah_scale_base const* base_b)
+{
+    return !strcmp(base_a->name, base_b->name) &&
+           base_a->size == base_b->size &&
+           comp_inters(base_a->steps, base_b->steps, base_a->size, base_b->size);
+}
+
+bool
+comp_scale_result(struct mah_scale_result result_a, struct mah_scale_result result_b)
+{
+    return comp_note(result_a.key, result_b.key) &&
+           comp_scale_base(result_a.scale, result_b.scale);
+}
+
+bool
+comp_scale_result_list(struct mah_scale_result_list list_a, struct mah_scale_result_list list_b)
+{
+    return list_a.max == list_b.max &&
+           list_a.size == list_b.size &&
+           comp_scale_results(list_a.results, list_b.results, list_a.size, list_b.size);
+}
+
+bool
+comp_scale_results(struct mah_scale_result* results_a, struct  mah_scale_result* results_b, size_t size_a, size_t size_b)
+{
+    if (size_a != size_b) {
+        return false;
+    }
+
+    for (size_t i = 0; i < size_a; i++) {
+        if (!comp_scale_result(results_a[i], results_b[i])) {
             return false;
         }
     }

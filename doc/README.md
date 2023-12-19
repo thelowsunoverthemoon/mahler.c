@@ -1,125 +1,97 @@
 ## Documentation
 
-Click on each tab to see the respective documentation!
+```mahler.c``` is designed based on [minimalist libaries](https://nullprogram.com/blog/2018/06/10/). Therefore, only the building blocks of music theory are exposed, as well as no dynamic memory allocation and I/O. All exposed parts of the library are prefixed with ```mah_``` or ```MAH_``` to avoid naming conflicts. As a small note, all structs and enums are typedef'd, so you can do ```struct mah_note``` or ```mah_note``` depending on your style. Click on each tab to see the respective documentation!
 
 <details>
   <summary>🎷 <b>Enumerators & Macros</b> 🎷</summary>
   
-#### MAHLER_CHORD_LIST_DEFAULT
+#### MAH_CHORD_LIST_DEFAULT
 ```C
-#define MAHLER_CHORD_LIST_DEFAULT NULL
+#define MAH_CHORD_LIST_DEFAULT NULL
 ```
-Macro to use default chord list in ```returnChord```
-
-#### MAHLER_SCALE_LIST_DEFAULT
-```C
-#define MAHLER_SCALE_LIST_DEFAULT NULL
-```
-Macro to use default chord list in ```returnScale```
-
-#### MAHLER_DISP_LEN
-```C
-#define MAHLER_DISP_LEN 8
-```
-Macro for default print size you can use for ```printNote()```. The rationale is ```note (1) + max acci (<= 4) + number (<= 99) + null terminating (1)```
+Macro to use default chord list in ```mah_return_chord```
 
 ---
 
-#### MahlerNote
-
+#### MAH_SCALE_LIST_DEFAULT
 ```C
-enum MahlerNote {
-    MAHLER_C, MAHLER_D, MAHLER_E, MAHLER_F, MAHLER_G, MAHLER_A, MAHLER_B
-};
+#define MAH_SCALE_LIST_DEFAULT NULL
 ```
-```note``` member ```struct Note```, and represents the base note (no accidentals)
+Macro to use default chord list in ```mah_return_scale```
 
 ---
 
-#### MahlerQuality
-
+#### MAH_DISP_LEN
 ```C
-enum MahlerQuality {
-    MAHLER_MINOR = -1, MAHLER_MAJOR = 0, MAHLER_AUGMENTED = 1, MAHLER_DIMINISHED = -2, MAHLER_PERFECT = 3
-};
+#define MAH_DISP_LEN 8
 ```
-```quality``` member of ```struct Interval```. Quality of interval
+Macro for default print size you can use for ```mah_write_note()```. The rationale is ```note (1) + max acci (<= 4) + number (<= 99) + null terminating (1)```
 
 ---
 
-#### MahlerAcci
+#### mah_tone
 
 ```C
-enum MahlerAcci {
-    MAHLER_DBFLAT = -2, MAHLER_FLAT = -1, MAHLER_NONE = 0, MAHLER_SHARP = 1, MAHLER_DBSHARP = 2
-};
+typedef enum mah_tone {
+    MAH_C, MAH_D, MAH_E, MAH_F, MAH_G, MAH_A, MAH_B
+} mah_tone;
 ```
-```acci``` member of ```struct Note```. Accidental of note
+```tone``` member ```struct mah_note```. Represents the base tone
 
 ---
 
-#### MahlerScaleType
+#### mah_quality
 
 ```C
-enum MahlerScaleType {
-    MAHLER_ASCEND, MAHLER_DESCEND, MAHLER_FULL
-};
+typedef enum mah_quality {
+    MAH_MINOR = -1, MAH_MAJOR = 0, MAH_AUGMENTED = 1, MAH_DIMINISHED = -2, MAH_PERFECT = 3
+} mah_quality;
 ```
-```mode``` parameter of ```getScale()```. Determines whether it is ascending, descending, or full (both). Scales include 8th degree, and in ```SCALE_FULL``` it is doubled
+```quality``` member of ```struct mah_interval```. Represents the interval quality
 
 ---
 
-#### MahlerKeyType
+#### mah_acci
 
 ```C
-enum MahlerKeyType {
+typedef enum mah_acci {
+    MAH_DBFLAT = -2, MAH_FLAT = -1, MAH_NATURAL = 0, MAH_SHARP = 1, MAH_DBSHARP = 2
+} mah_acci;
+```
+```acci``` member of ```struct mah_note```. Represents the accidental of note
+
+---
+
+#### mah_scale_type
+
+```C
+typedef enum mah_scale_type {
+    MAH_ASCEND, MAH_DESCEND, MAH_FULL
+} mah_scale_type;
+```
+```mode``` parameter of ```mah_get_scale()```. Determines whether it is ascending, descending, or full (both). Scales include 8th degree, and in ```SCALE_FULL``` it is doubled
+
+---
+
+#### mah_key_type
+
+```C
+typedef enum mah_key_type {
     MAHLER_MAJOR_KEY, MAHLER_MINOR_KEY
-};
+} mah_key_type;
 ```
-```type``` parameter of ```getKeySig()``` and ```returnKeySig()```. Type of key signature
+```type``` parameter of ```mah_get_key_sig()``` and ```mah_return_key_sig()```. Type of key signature
 
 ---
 
-#### MahlerChordType
+#### mah_error
 
 ```C
-enum MahlerChordType {
-     MAHLER_TRIAD = 3, MAHLER_SEVENTH_CHORD = 4, MAHLER_NINTH_CHORD = 5, MAHLER_ELEVENTH_CHORD = 6
-};
-```
-```size``` parameter of ```getKeyChord```. Size of returned chord
-
----
-
-#### MahlerDegree, MahleNumeral, MahlerMode
-```C
-enum MahlerDegree {
-    MAHLER_TONIC = 1, MAHLER_SUPERTONIC = 2, MAHLER_MEDIANT = 3, MAHLER_SUBDOMINANT = 4,
-    MAHLER_DOMINANT = 5, MAHLER_SUBMEDIANT = 6, MAHLER_LEADING_TONE = 7, MAHLER_SUBTONIC = 8
-};
-
-enum MahlerNumeral {
-    MAHLER_I = 1, MAHLER_II = 2, MAHLER_III = 3, MAHLER_IV = 4,
-    MAHLER_V = 5, MAHLER_VI = 6, MAHLER_VII = 7, MAHLER_VIII = 8
-};
-
-enum MahlerMode {
-    MAHLER_IONIAN = 1, MAHLER_DORIAN = 2, MAHLER_PHRYGIAN = 3, MAHLER_LYDIAN = 4,
-    MAHLER_MIXOLYDIAN = 5, MAHLER_AEOLIAN = 6, MAHLER_LOCRIAN = 7
-};
-```
-Generals enums that can be used where convenient in place of numbers. For example, one could use them as the ```index``` parameter of ```getKeyChord```
-
----
-
-#### MahlerError
-
-```C
-enum MahlerError {
-    MAHLER_ERROR_NONE,
-    MAHLER_ERROR_INVALID_QUAL, MAHLER_ERROR_INVALID_INTER, MAHLER_ERROR_INVALID_INVERSION, MAHLER_ERROR_INVALID_PRINT_NOTE,
-    MAHLER_ERROR_OVERFLOW_PRINT_NOTE, MAHLER_ERROR_OVERFLOW_SCALE_RETURN, MAHLER_ERROR_OVERFLOW_CHORD_RETURN
-};
+typedef enum mah_error {
+    MAH_ERROR_NONE,
+    MAH_ERROR_INVALID_QUAL, MAH_ERROR_INVALID_INTER, MAH_ERROR_INVALID_INVERSION, MAH_ERROR_INVALID_PRINT_NOTE,
+    MAH_ERROR_OVERFLOW_PRINT_NOTE, MAH_ERROR_OVERFLOW_SCALE_RETURN, MAH_ERROR_OVERFLOW_CHORD_RETURN
+} mah_error;
 ```
 For reference only. See [Error Handling](#err).
 
@@ -134,16 +106,16 @@ For reference only. See [Error Handling](#err).
 
 | Name  | Type | 
 | ------------- | ------------- | 
-| ```MAHLER_MAJOR_SCALE```|           Major Scale |
-| ```MAHLER_NATURAL_MIN_SCALE```|     Natural Minor Scale |
-| ```MAHLER_HARMONIC_MIN_SCALE```|    Harmonic Minor Scale |
-| ```MAHLER_MELODIC_MIN_SCALE```|     Melodic Minor Scale |
-| ```MAHLER_PENTATONIC_MAJ_SCALE```|  Major Pentatonic Scale |
-| ```MAHLER_PENTATONIC_MIN_SCALE```|  Minor Pentatonic Scale |
-| ```MAHLER_BLUES_SCALE```|          Blues Scale (hexatonic) |
-| ```MAHLER_WHOLE_TONE_SCALE```|      Whole Tone Scale |
-| ```MAHLER_OCTATONIC_HALF_SCALE```|  Octatonic Scale (starting with half tone) |
-| ```MAHLER_OCTATONIC_WHOLE_SCALE```| Octatonic Scale (starting with whole tone) |
+| ```MAH_MAJOR_SCALE```|           Major Scale |
+| ```MAH_NATURAL_MIN_SCALE```|     Natural Minor Scale |
+| ```MAH_HARMONIC_MIN_SCALE```|    Harmonic Minor Scale |
+| ```MAH_MELODIC_MIN_SCALE```|     Melodic Minor Scale |
+| ```MAH_PENTATONIC_MAJ_SCALE```|  Major Pentatonic Scale |
+| ```MAH_PENTATONIC_MIN_SCALE```|  Minor Pentatonic Scale |
+| ```MAH_BLUES_SCALE```|          Blues Scale (hexatonic) |
+| ```MAH_WHOLE_TONE_SCALE```|      Whole Tone Scale |
+| ```MAH_OCTATONIC_HALF_SCALE```|  Octatonic Scale (starting with half tone) |
+| ```MAH_OCTATONIC_WHOLE_SCALE```| Octatonic Scale (starting with whole tone) |
 
 ---
 
@@ -151,15 +123,15 @@ For reference only. See [Error Handling](#err).
 
 | Name  | Type | 
 | ------------- | ------------- | 
-| ```MAHLER_MAJOR_TRIAD```|           Major Triad |
-| ```MAHLER_MINOR_TRIAD```|           Minor Triad |
-| ```MAHLER_AUGMENTED_TRIAD```|       Augmented Triad |
-| ```MAHLER_DIMINISHED_TRIAD```|      Diminished Triad |
-| ```MAHLER_DIMINISHED_7```|          Diminished 7th |
-| ```MAHLER_HALF_DIMINISHED_7```|     Half Diminished 7th |
-| ```MAHLER_MINOR_7```|               Minor 7th |
-| ```MAHLER_MAJOR_7```|             Major 7th |
-| ```MAHLER_DOMINANT_7```|           Dominant 7th |
+| ```MAH_MAJOR_TRIAD```|           Major Triad |
+| ```MAH_MINOR_TRIAD```|           Minor Triad |
+| ```MAH_AUGMENTED_TRIAD```|       Augmented Triad |
+| ```MAH_DIMINISHED_TRIAD```|      Diminished Triad |
+| ```MAH_DIMINISHED_7```|          Diminished 7th |
+| ```MAH_HALF_DIMINISHED_7```|     Half Diminished 7th |
+| ```MAH_MINOR_7```|               Minor 7th |
+| ```MAH_MAJOR_7```|             Major 7th |
+| ```MAH_DOMINANT_7```|           Dominant 7th |
 
 
 ---
@@ -169,12 +141,12 @@ For reference only. See [Error Handling](#err).
 Contains :
 ```C
 
-MAHLER_MAJOR_TRIAD,
-MAHLER_MINOR_TRIAD,
-MAHLER_AUGMENTED_TRIAD,
-MAHLER_DIMINISHED_TRIAD,
-MAHLER_DIMINISHED_7,
-MAHLER_DOMINANT_7
+MAH_MAJOR_TRIAD,
+MAH_MINOR_TRIAD,
+MAH_AUGMENTED_TRIAD,
+MAH_DIMINISHED_TRIAD,
+MAH_DIMINISHED_7,
+MAH_DOMINANT_7
 
 ```
 
@@ -185,10 +157,10 @@ MAHLER_DOMINANT_7
 Contains :
 ```C
 
-MAHLER_MAJOR_SCALE,
-MAHLER_NATURAL_MIN_SCALE,
-MAHLER_HARMONIC_MIN_SCALE,
-MAHLER_MELODIC_MIN_SCALE
+MAH_MAJOR_SCALE,
+MAH_NATURAL_MIN_SCALE,
+MAH_HARMONIC_MIN_SCALE,
+MAH_MELODIC_MIN_SCALE
 
 ```
 </details>
@@ -198,19 +170,19 @@ MAHLER_MELODIC_MIN_SCALE
 <details>
   <summary><b>♩ Notes ♩</b></n></summary>
   
-#### Note
+#### mah_note
 
 ```C
-struct Note {
-    enum MahlerNote note;
-    int             acci;
-    int             pitch;
-};
+typedef struct mah_note {
+    enum mah_tone tone
+    int           acci;
+    int           pitch;
+} mah_note;
 ```
 A note in scientific pitch notation.
 
-* **note** : base note
-* **acci** : accidental (ie, G+ is 1 and G- is -2)
+* **tone** : base tone
+* **acci** : accidental (eg, G+ is 1 and G- is -2)
 * **pitch** : octave the note resides in
 </details>
 
@@ -219,36 +191,36 @@ A note in scientific pitch notation.
 <details>
   <summary><b>♫ Intervals ♫</b></n></summary>
   
-#### Interval
+#### mah_interval
 
 ```C
-struct Interval {
-    int                inter;
-    enum MahlerQuality qual;
-};
+typedef struct mah_interval {
+    int              steps;
+    enum mah_quality qual;
+} mah_interval;
 ```
 An interval.
 
-* **inter** : interval length that must be >= than 1
+* **steps** : interval length that must be ```>= than 1```
 * **quality** : interval quality
 
 ---
 
-#### getInter
+#### mah_get_inter()
 
 ```C
-struct Note getInter(struct Note const note, struct Interval const interval, enum MahlerError* err)
+struct mah_note mah_get_inter(struct mah_note note, struct mah_interval interval, enum mah_error* err)
 ```
-```getInter``` accepts all intervals (both simple and compound). Returns the destination note of ```interval``` starting from ```note```. If the given interval is an invalid quality (ie, non-perfect intervals with perfect quality, or perfect intervals with major or minor quality), then the ```err``` is set to ```MAHLER_ERROR_INVALID_QUAL```. If the length is not >= 1, it is set to ```MAHLER_ERROR_INVALID_RANGE```.
+Returns the destination note of ```interval``` starting from ```note```. Accepts both simple and compound intervals. If the given interval is an invalid quality (ie, non-perfect intervals with perfect quality, or perfect intervals with major or minor quality), then the ```err``` is set to ```MAH_ERROR_INVALID_QUAL```. If the length is not ```>= 1```, it is set to ```MAH_ERROR_INVALID_RANGE```.
 
 ---
 
-#### returnInter
+#### mah_return_inter()
 
 ```C
-struct Interval returnInter(struct Note const noteA, struct Note const noteB, enum MahlerError* err)
+struct mah_interval mah_return_inter(struct mah_note note_a, struct mah_note const note_b, enum mah_error* err)
 ```
-```returnInter``` does the opposite. Given two notes, it will return the interval between them. If the resulting interval has an invalid quality, then the ```err``` is set to ```MAHLER_ERROR_INVALID_INTER```. If it is not >= 1, ```err``` is set to ```MAHLER_ERROR_INVALID_RANGE```.
+Given two notes, returns the interval between them assuming ```note_a``` is the starting point to ```note_b```. If the resulting interval has an invalid quality, then the ```err``` is set to ```MAH_ERROR_INVALID_INTER```. If it is not ```>= 1```, ```err``` is set to ```MAH_ERROR_INVALID_RANGE```.
 
 </details>
 
@@ -259,29 +231,29 @@ struct Interval returnInter(struct Note const noteA, struct Note const noteB, en
   
 #### Chord
 ```C
-struct Chord {
-    int                   size;
-    int                   inv;
-    struct Note* restrict base;
-    struct Note* restrict notes;
-};
+typedef struct mah_chord {
+    int                       size;
+    int                       inv;
+    struct mah_note* restrict base;
+    struct mah_note* restrict notes;
+} mah_chord;
 ```
 A chord.
 
 * **size** : number of chord notes
 * **inversion** : current inversion
 * **base** : root inversion chord notes
-* **notes** : current inversion chord notes specified in ```inversion``
+* **notes** : current inversion chord notes specified in ```inversion```
 
 ---
 
-#### ChordBase
+#### mah_chord_base
 ```C
-struct ChordBase {
-    char const*      name;
-    int              size;
-    struct Interval* steps;
-};
+typedef struct mah_chord_base {
+    char const*          name;
+    int                  size;
+    struct mah_interval* steps;
+} mah_chord_base;
 ```
 Types of chords to be used in chord functions. A number of common types have been pre-defined, but you make make your own if you wish (see Predefined).
 
@@ -291,78 +263,80 @@ Types of chords to be used in chord functions. A number of common types have bee
 
 ---
 
-#### ChordResult
+#### mah_chord_result
 ```C
-struct ChordResult {
-    struct Note             key;
-    struct ChordBase const* chord;
-};
+typedef struct mah_chord_result {
+    struct mah_note              key;
+    struct mah_chord_base const* chord;
+} mah_chord_result;
 ```
-Entry of result from ```returnChord```
+Entry of result from ```mah_return_chord()```
 
 * **key** : chord base note
-* **chord** : pointer to ChordBase from list
+* **chord** : pointer to mah_chord_base from list
 
 ---
 
-#### ChordResultList
+#### mah_chord_result_list
 ```C
-struct ChordResultList {
-    size_t              max;
-    size_t              size;
-    struct ChordResult* results;
-};
+typedef struct mah_chord_result_list {
+    int                      max;
+    int                      size;
+    struct mah_chord_result* results;
+} mah_chord_result_list;
 ```
-Passed to ```returnChord``` containing results.
+Passed to ```mah_return_chord``` containing results.
 
 * **max** : maximum size of ```results```
 * **size** : number of entries in ```results```
-* **results** : pointer to ChordResult array with matching chords
+* **results** : pointer to mah_chord_result array with matching chords
 
 ---
 
-#### ChordCheck
+#### mah_chord_check
 ```C
-struct ChordCheck {
-    struct ChordBase const** pos;
-    size_t                   size;
-    struct Note* restrict    base;
-    struct Note* restrict    notes;
-};
+typedef struct mah_chord_check {
+    struct mah_chord_base const** pos;
+    int                           size;
+    struct mah_note* restrict     base;
+    struct mah_note* restrict     notes;
+    bool                          semi[SIZE_CHROMATIC];
+} mah_chord_check;
 ```
-Passeed to ```returnChord``` with possible chord list
+Passed to ```mah_return_chord()``` for possible chord list
 
 * **pos** : array of bases to check
 * **size** : number of bases inside ```pos```
-* **chordBase** : array of ```struct Note``` big enough to hold the largest chord. Cannot be the same as ```chordNotes```
-* **chordNotes** : array of ```struct Note``` big enough to hold the largest chord. Cannot be the same as ```chordBase```
+* **base** : array of ```struct mah_note``` big enough to hold the largest chord. Cannot be the same pointer as ```notes```
+* **notes** : array of ```struct mah_note``` big enough to hold the largest chord. Cannot be the same pointer as ```base```
+* **semi** : internal use only
 
 ---
 
-#### getChord
+#### mah_get_chord()
 
 ```C
-struct Chord getChord(struct Note const root, struct ChordBase const* type, struct Note* restrict base, struct Note* restrict notes, enum MahlerError* err)
+struct mah_chord mah_get_chord(struct mah_note root, struct mah_chord_base const* type, struct mah_note* restrict base, struct mah_note* restrict notes, enum mah_error* err)
 ```
-Returns a ```struct Chord``` with root ```root``` and type ```type```. You must provide two arrays of ```struct Note``` : ```base``` is for the root inversion chord (ie ```G7 is G B D F```) and ```notes``` is for the current inversion (ie ```B D F G```) specified in ```inv```. Returns error in ```err``` if the ```type``` contains invalid intervals.
+Returns a ```struct mah_chord``` with root ```root``` and type ```type```. You must provide two arrays of ```struct mah_note``` : ```base``` is for the root inversion chord (ie ```G7 is G B D F```) and ```notes``` is for the current inversion (ie ```B D F G```) specified in ```inv```. Returns error in ```err``` if the ```type``` contains invalid intervals.
 
 ---
 
-#### returnChord
+#### mah_return_chord()
 
 ```C
-void returnChord(struct Note const notes[], size_t noteNum, struct ChordResultList* list, struct ChordCheck* custom, bool enharmonic, enum MahlerError* err)
+void mah_return_chord(struct mah_note const notes[], int num, struct mah_chord_result_list* list, struct mah_chord_check* custom, enum mah_error* err)
 ```
-Populates the ```results``` member of ```list``` with the potential chords containing every note in ```notes``` . ```noteNum``` is the number of entries in ```notes```. The ```pitch``` of each ```struct ChordResult``` note is 0. Defining ```custom``` will check for chords specified in ```struct ChordList```. Set to ```MAHLER_CHORD_LIST_DEFAULT``` is you would like to use the predefined chord list (see Predefined). ```enharmonic``` determines whether enharmonic equivalents are used (ie, Bb+ triad is also A#+ triad). If there are more possible chords than ```max``` member of ```list```, the ```err``` is set to ```MAHLER_ERROR_OVERFLOW_CHORD_RETURN```. This function tests for chords up to one accidental (ie, flat, natural, and sharp). Duplicate notes in ```notes``` are not allowed.
+Populates the ```results``` member of ```list``` with the potential chords containing every note in ```notes``` . ```num``` is the number of entries in ```notes```. The ```pitch``` of each ```struct mah_chord_result``` note is 0. Defining ```custom``` will check for chords specified in ```struct chord_list```. Set to ```MAH_CHORD_LIST_DEFAULT``` if you would like to use the predefined chord list (see Predefined). Returned results include enharmonic results (eg, Bb+ triad is also A#+ triad). If there are more possible chords than ```max``` member of ```list```, the ```err``` is set to ```MAH_ERROR_OVERFLOW_CHORD_RETURN```. This function tests for chords up to one accidental (eg, flat, natural, and sharp).
 
 ---
 
-#### invertChord
+#### mah_invert_chord()
 
 ```C
-void invertChord(struct Chord* chord, int inv, enum MahlerError* err)
+void mah_invert_chord(struct mah_chord* chord, int inv, enum mah_error* err)
 ```
-Inverts the ```notes``` member of ```chord``` to the ```inversion```th inversion. ```base``` is left unaltered. An inversion of 0 is considered the root inversion. Any invalid inversions will set the last error to ```MAHLER_ERROR_INVALID_INVERSION```.
+Inverts the ```notes``` member of ```chord``` to the ```inversion```th inversion. ```base``` is left unaltered. An inversion of 0 is considered the root inversion. Any invalid inversions will set the last error to ```MAH_ERROR_INVALID_INVERSION```.
 
 </details>
 
@@ -371,13 +345,13 @@ Inverts the ```notes``` member of ```chord``` to the ```inversion```th inversion
 <details>
   <summary><b>🎹 Scales 🎹</b></n></summary>
 
-#### Scale
+#### mah_scale
 ```C
-struct Scale {
-    int                  size;
-    enum MahlerScaleType type;
-    struct Note*         notes;
-};
+typedef struct mah_scale {
+    int                 size;
+    enum mah_scale_type type;
+    struct mah_note*    notes;
+} mah_scale;
 ```
 A scale.
 
@@ -387,81 +361,83 @@ A scale.
 
 ---
 
-#### ScaleBase
+#### mah_scale_base
 ```C
-struct ScaleBase {
-    char const*      name;
-    int              size;
-    struct Interval* steps;
-};
+typedef struct mah_scale_base {
+    char const*          name;
+    int                  size;
+    struct mah_interval* steps;
+} mah_scale_base;
  ```
  Types of scale to be used in scale functions. A number of common types have been pre-defined, but you make make your own if you wish (see Predefined).
 
 * **name** : name of scale base
 * **size** : size of chord
-* **steps** : intervals between *each note* (ie, ```G -> B -> D``` is a major 3rd, then a minor 3rd)
+* **steps** : intervals between *each note* (eg, ```G -> B -> D``` is a major 3rd, then a minor 3rd)
 
-#### ScaleResult
+#### mah_scale_result
 ```C
-struct ScaleResult {
-    struct Note             key;
-    struct ScaleBase const* scale;
-};
+typedef struct mah_scale_result {
+    struct mah_note              key;
+    struct mah_scale_base const* scale;
+} mah_scale_result;
 ```
-Entry of result from ```returnScale```
+Entry of result from ```mah_return_scale()```
 
 * **key** : scale base note
-* **scale** : pointer to ScaleBase from list
+* **scale** : pointer to mah_scale_base from list
 
 ---
 
-#### ScaleResultList
+#### mah_scale_result_list
 ```C
-struct ScaleResultList {
-    size_t              max;
-    size_t              size;
-    struct ScaleResult* results;
-};
+typedef struct mah_scale_result_list {
+    int                  max;
+    int                  size;
+    struct scale_result* results;
+} mah_scale_result_list;
 ```
-Passed to ```returnScale``` containing results.
+Passed to ```mah_return_scale()``` containing results.
 
 * **max** : maximum size of ```results```
 * **size** : number of entries in ```results```
-* **results** : pointer to ScaleResult array with matching chords
+* **results** : pointer to mah_scale_result array with matching chords
 
 ---
 
-#### ScaleCheck
+#### mah_scale_check
 ```C
-struct ScaleCheck {
-    struct ScaleBase const** pos;
-    size_t                   size;
-    struct Note*             notes;
-};
+typedef struct mah_scale_check {
+    struct mah_scale_base const** pos;
+    int                           size;
+    struct mah_note*              notes;
+    bool                          semi[SIZE_CHROMATIC];
+} mah_scale_check;
 ```
-Passeed to ```returnScale``` with possible chord list
+Passeed to ```mah_return_scale()``` with possible chord list
 
 * **pos** : array of bases to check
 * **size** : number of bases inside ```pos```
-* **chordBase** : array of ```struct Note``` big enough to hold the largest scale
+* **notes** : array of ```struct mah_note``` big enough to hold the largest scale
+* **semi** : internal use only
 
 ---
 
-#### getScale
+#### mah_get_scale()
 
 ```C
-struct Scale getScale(struct Note const start, struct ScaleBase const* type, struct Note notes[], enum MahlerScaleType mode, enum MahlerError* err)
+struct mah_scale mah_get_scale(struct mah_note start, struct mah_scale_base const* type, struct mah_note notes[], enum mah_scale_type mode, enum mah_error* err)
 ```
-Returns a ```type``` scale starting on ```start```. ```notes``` contains the notes of the scale, hence the size must be >= the size member of ```type```. As well, a ```mode``` of ```MAHLER_FULL``` doubles the size requirement (ie, if it was 8, ```MAHLER_FULL``` would be 16). Returns error in ```err``` if the ```type``` contains invalid intervals.
+Returns a ```type``` scale starting on ```start```. ```notes``` contains the notes of the scale, hence the size must be >= the size member of ```type```. As well, a ```mode``` of ```MAH_FULL``` doubles the size requirement (ie, if it was 8, ```MAH_FULL``` would be 16). Returns error in ```err``` if the ```type``` contains invalid intervals.
 
 ---
 
-#### returnScale
+#### mah_return_scale()
 
 ```C
-void returnScale(struct Note const notes[], size_t noteNum, struct ScaleResultList* list, struct ScaleCheck* custom, bool enharmonic, enum MahlerError* err)
+void mah_return_scale(struct mah_note const notes[], int num, struct mah_scale_result_list* list, struct mah_scale_check* custom, enum mah_error* err)
 ```
-Identical to ```returnChord()```, but for scales.
+Identical to ```mah_return_chord()```, but for scales.
 
 </details>
 
@@ -470,61 +446,61 @@ Identical to ```returnChord()```, but for scales.
 <details>
   <summary><b>🎼 Key Signature 🎼</b></n></summary>
   
-#### KeySig
+#### mah_key_sig
 
 ```C
-struct KeySig {
-    enum MahlerKeyType type;
-    int                alter;
-    int                size;
-    struct Note        key;
-    struct Note        notes[7];
-};
+typedef struct mah_key_sig {
+    enum mah_key_type type;
+    int               alter;
+    int               size;
+    struct mah_note   key;
+    struct mah_note   notes[7];
+} mah_key_sig;
 ```
 
 A key signature.
 
 * **type** : major or minor
-* **alter** : sum of the accidentals in the key (ie, G+ is 1 and G- is -2)
-* **size** : number of accidentals in the key (ie, G+ is 1 and G- is 2)
+* **alter** : sum of the accidentals in the key (eg, G+ is 1 and G- is -2)
+* **size** : number of accidentals in the key (eg, G+ is 1 and G- is 2)
 * **key** : key note
 * **notes** : key signature notes
 
 ---
 
-#### getKeySig
+#### mah_get_key_sig()
 
 ```C
-struct KeySig getKeySig(struct Note key, enum MahlerKeyType type)
+struct mah_key_sig mah_get_key_sig(struct mah_note key, enum mah_key_type type)
 ```
-Returns a ```struct KeySig```. All functions support theoritical keys (ie D#+).
+Returns a ```struct mah_key_sig``` base on ```key``` with type ```type```. All functions support theoritical keys (eg D#+).
 
 ---
 
-#### returnKeySig
+#### mah_return_key_sig()
 
 ```C
-struct KeySig returnKeySig(int alter, enum MahlerKeyType type)
+struct mah_key_sig mah_return_key_sig(int alter, enum mah_key_type type)
 ```
-Returns a ```struct KeySig``` based on ```alter``` which contains the number of accidentals in the key. Positive is sharp; negative is flat (ie 3 -> A+).
+Returns a ```struct mah_key_sig``` based on ```type``` and ```alter``` which contains the number of accidentals in the key. Positive is sharp; negative is flat (ie 3 -> A+).
 
 ---
 
-#### getKeyRelative
+#### mah_get_key_relative()
 
 ```C
-struct KeySig getKeyRelative(struct KeySig const* key)
+struct mah_key_sig mah_get_key_relative(struct mah_key_sig const* key)
 ```
 Returns the relative major/minor of the given key.
 
 ---
 
-#### queryAcci
+#### mah_query_acci()
 
 ```C
-int queryAcci(struct KeySig const* key, enum MahlerNote note)
+int mah_query_acci(struct mah_key_sig const* key, enum mah_tone note)
 ```
-Returns the accidental of the given ```note``` based on ```key```. Note that this is not a ```struct Note``` but the "base" note of type ```enum MahlerNote```.
+Returns the accidental of the given ```note``` based on ```key```. Note that this is not a ```struct mah_note``` but the tone, of type ```enum mah_tone```.
 
 </details>
 
@@ -533,19 +509,19 @@ Returns the accidental of the given ```note``` based on ```key```. Note that thi
 <details>
   <summary><b>🥁 Misc 🥁</b></n></summary>
   
-#### printNote
+#### mah_write_note()
 
 ```C
-char* printNote(struct Note const note, char buf[], size_t size, enum MahlerError* err)
+char* mah_write_note(struct mah_note const note, char buf[], size_t size, enum mah_error* err)
 ```
-This returns the buffer with ```note``` in text up to 4 accidentals (ie, ````bbbb -> ####````). If ```acci``` exceeds that range or the ```note``` member is invalid, the ```err``` is set to ```MAHLER_ERROR_INVALID_PRINT_NOTE```. If the given buffer is not large enough, the ```err``` is set to ```MAHLER_ERROR_OVERFLOW_PRINT_NOTE```.
+This returns the buffer with ```note``` in text up to 4 accidentals (ie, ````bbbb -> ####````). If ```acci``` exceeds that range or the ```note``` member is invalid, the ```err``` is set to ```MAH_ERROR_INVALID_PRINT_NOTE```. If the given buffer is not large enough, the ```err``` is set to ```MAH_ERROR_OVERFLOW_PRINT_NOTE```.
 
 ---
 
-#### isEnharmonic
+#### mah_is_enharmonic()
 
 ```C
-bool isEnharmonic(struct Note const noteA, struct Note const noteB)
+bool mah_is_enharmonic(struct mah_note note_a, struct mah_note note_b)
 ```
 This returns ```true``` if enharmonic, ```false``` if not. Identical notes are considered enharmonic.
 
@@ -558,12 +534,12 @@ This returns ```true``` if enharmonic, ```false``` if not. Identical notes are c
   
   <br>
   
-If a function encounters one of the defined errors, it will return an zeroed struct if applicable, or an empty string in the case of ```printNote()```. These functions take in an ```err``` variable, which will contain the error. You can pass in ```NULL``` if do not need any error checking. A description of the error can be displayed by passing the error to ```getMahlerError```.
+If a function encounters one of the defined errors, it will return an zeroed struct if applicable, or an empty string in the case of ```mah_write_note()```. These functions take in an ```err``` variable, which will contain the error. You can pass in ```NULL``` if do not need any error checking. A description of the error can be displayed by passing the error to ```mah_get_error```.
 
-#### getMahlerError
+#### mah_get_error()
 
 ```
-char const* getMahlerError(enum MahlerError err)
+char const* mah_get_error(enum MahlerError err)
 ```
 Returns a string containing details of ```err```. Read each function blurb for their specific errors.
 

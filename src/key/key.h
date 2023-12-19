@@ -1,31 +1,29 @@
-#ifndef __MAHLER_KEY_H__
-#define __MAHLER_KEY_H__
+#ifndef __MAH_KEY_H__
+#define __MAH_KEY_H__
 
 #include "note/note.h"
 
 // Enums //
 
-enum MahlerKeyType {
-    MAHLER_MAJOR_KEY, MAHLER_MINOR_KEY
-};
+typedef enum mah_key_type {
+    MAH_MAJOR_KEY, MAH_MINOR_KEY
+} mah_key_type;
 
 // Structures //
 
-struct KeySig {
-    enum MahlerKeyType type;
-    int                alter; // alteration
-    int                size;
-    struct Note        key;
-    struct Note        notes[7];
-};
+typedef struct mah_key_sig {
+    enum mah_key_type type;
+    int               alter;
+    int               size;
+    struct mah_note   key;
+    struct mah_note   notes[7];
+} mah_key_sig;
 
 // Functions //
 
-struct KeySig getKeySig(struct Note key, enum MahlerKeyType type);
-struct KeySig returnKeySig(int alter, enum MahlerKeyType type);
-struct KeySig getKeyRelative(struct KeySig const* key);
-int queryAcci(struct KeySig const* key, enum MahlerNote note);
-
-static struct KeySig makeKeySig(struct Note key, int alter, enum MahlerKeyType type);
+struct mah_key_sig mah_get_key_sig(struct mah_note key, enum mah_key_type type);
+struct mah_key_sig mah_return_key_sig(int alter, enum mah_key_type type);
+struct mah_key_sig mah_get_key_relative(struct mah_key_sig const* key);
+int mah_query_acci(struct mah_key_sig const* key, enum mah_tone note);
 
 #endif

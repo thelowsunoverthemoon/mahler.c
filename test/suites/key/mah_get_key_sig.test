@@ -1,0 +1,57 @@
+// major sharp key
+ASSERT_K(mah_get_key_sig(NOTE(A, 0, 0), MAJOR_KEY), KEY(MAJOR_KEY, 3, 3, NOTE(A, 0, 0), NOTE_K(
+    NOTE(F, 1, 0),
+    NOTE(C, 1, 0),
+    NOTE(G, 1, 0)
+)));
+
+// major flat key
+ASSERT_K(mah_get_key_sig(NOTE(D, -1, 5), MAJOR_KEY), KEY(MAJOR_KEY, -5, 5, NOTE(D, -1, 0), NOTE_K(
+    NOTE(B, -1, 0),
+    NOTE(E, -1, 0),
+    NOTE(A, -1, 0),
+    NOTE(D, -1, 0),
+    NOTE(G, -1, 0)
+)));
+
+// F+
+ASSERT_K(mah_get_key_sig(NOTE(F, 0, 2), MAJOR_KEY), KEY(MAJOR_KEY, -1, 1, NOTE(F, 0, 0), NOTE_K(
+    NOTE(B, -1, 0)
+)));
+
+// minor sharp key
+ASSERT_K(mah_get_key_sig(NOTE(B, 0, 3), MINOR_KEY), KEY(MINOR_KEY, 2, 2, NOTE(B, 0, 0), NOTE_K(
+    NOTE(F, 1, 0),
+    NOTE(C, 1, 0)
+)));
+
+// TURN TO MINOR FLAT KEY 
+ASSERT_K(mah_get_key_sig(NOTE(G, 1, 4), MINOR_KEY), KEY(MINOR_KEY, 5, 5, NOTE(G, 1, 0), NOTE_K(
+    NOTE(F, 1, 0),
+    NOTE(C, 1, 0),
+    NOTE(G, 1, 0),
+    NOTE(D, 1, 0),
+    NOTE(A, 1, 0)
+)));
+
+// major sharp theoretical key 
+ASSERT_K(mah_get_key_sig(NOTE(C, 2, 2), MAJOR_KEY), KEY(MAJOR_KEY, 14, 7, NOTE(C, 2, 0), NOTE_K(
+    NOTE(F, 2, 0),
+    NOTE(C, 2, 0),
+    NOTE(G, 2, 0),
+    NOTE(D, 2, 0),
+    NOTE(A, 2, 0),
+    NOTE(E, 2, 0),
+    NOTE(B, 2, 0)
+)));
+
+// major flat theoretical key 
+ASSERT_K(mah_get_key_sig(NOTE(F, -3, 9), MINOR_KEY), KEY(MINOR_KEY, -25, 7, NOTE(F, -3, 0), NOTE_K(
+    NOTE(B, -4, 0),
+    NOTE(E, -4, 0),
+    NOTE(A, -4, 0),
+    NOTE(D, -4, 0),
+    NOTE(G, -3, 0),
+    NOTE(C, -3, 0),
+    NOTE(F, -3, 0)
+)));

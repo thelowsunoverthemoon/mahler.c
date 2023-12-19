@@ -1,0 +1,68 @@
+// zero range error
+ASSERT_E(mah_get_inter(NOTE(E, 5, 1), INTER(0, AUGMENTED), &ERR), ERROR_INVALID_RANGE);
+
+// negative range error
+ASSERT_E(mah_get_inter(NOTE(B, 2, 10), INTER(-6, DIMINISHED), &ERR), ERROR_INVALID_RANGE);
+
+// simple interval quality error
+ASSERT_E(mah_get_inter(NOTE(D, 1, 3), INTER(4, MAJOR), &ERR), ERROR_INVALID_QUAL);
+
+// compound interval quality error
+ASSERT_E(mah_get_inter(NOTE(F, 3, 12), INTER(11, MAJOR), &ERR), ERROR_INVALID_QUAL);
+
+// simple interval perfect quality error
+ASSERT_E(mah_get_inter(NOTE(A, -2, 5), INTER(3, PERFECT), &ERR), ERROR_INVALID_QUAL);
+
+// compound interval perfect quality error
+ASSERT_E(mah_get_inter(NOTE(C, -1, 7), INTER(10, PERFECT), &ERR), ERROR_INVALID_QUAL);
+
+// augmented simple interval
+ASSERT_N(mah_get_inter(NOTE(F, 2, 3), INTER(6, AUGMENTED), &ERR), NOTE(D, 3, 4));
+
+// augmented perfect simple interval
+ASSERT_N(mah_get_inter(NOTE(B, 0, 2), INTER(5, AUGMENTED), &ERR), NOTE(F, 2, 3));
+
+// augmented compound interval
+ASSERT_N(mah_get_inter(NOTE(E, -1, 0), INTER(12, AUGMENTED), &ERR), NOTE(B, 0, 1));
+
+// augmented compound interval many flats
+ASSERT_N(mah_get_inter(NOTE(G, -3, 4), INTER(24, AUGMENTED), &ERR), NOTE(B, -2, 7));
+
+// diminished unison
+ASSERT_N(mah_get_inter(NOTE(G, 0, 3), INTER(1, DIMINISHED), &ERR), NOTE(G, -1, 3));
+
+// diminished simple interval
+ASSERT_N(mah_get_inter(NOTE(A, -5, 2), INTER(3, DIMINISHED), &ERR), NOTE(C, -6, 3));
+
+// diminished compound perfect interval
+ASSERT_N(mah_get_inter(NOTE(C, -1, 0), INTER(11, DIMINISHED), &ERR), NOTE(F, -2, 1));
+
+// diminished compound interval
+ASSERT_N(mah_get_inter(NOTE(C, -3, 4), INTER(13, DIMINISHED), &ERR), NOTE(A, -5, 5));
+
+// simple major interval
+ASSERT_N(mah_get_inter(NOTE(E, 0, 3), INTER(7, MAJOR), &ERR), NOTE(D, 1, 4));
+
+// compound major interval
+ASSERT_N(mah_get_inter(NOTE(C, -1, 0), INTER(14, MAJOR), &ERR), NOTE(B, -1, 1));
+
+// simple minor interval
+ASSERT_N(mah_get_inter(NOTE(D, -5, 2), INTER(2, MINOR), &ERR), NOTE(E, -6, 2));
+
+// compound minor interval
+ASSERT_N(mah_get_inter(NOTE(C, -3, 4), INTER(13, MINOR), &ERR), NOTE(A, -4, 5));
+
+// unison
+ASSERT_N(mah_get_inter(NOTE(G, 1, 3), INTER(1, PERFECT), &ERR), NOTE(G, 1, 3));
+
+// perfect 4
+ASSERT_N(mah_get_inter(NOTE(A, 0, 2), INTER(4, PERFECT), &ERR), NOTE(D, 0, 3));
+
+// perfect 5
+ASSERT_N(mah_get_inter(NOTE(F, -4, 0), INTER(5, PERFECT), &ERR), NOTE(C, -4, 1));
+
+// perfect 8
+ASSERT_N(mah_get_inter(NOTE(E, 5, 4), INTER(8, PERFECT), &ERR), NOTE(E, 5, 5));
+
+// perfect compound
+ASSERT_N(mah_get_inter(NOTE(B, 7, 4), INTER(12, PERFECT), &ERR), NOTE(F, 8, 6));

@@ -1,0 +1,24 @@
+// natural
+ASSERT_D(mah_query_acci(&KEY(MAJOR_KEY, 0, 0, NOTE(C, 0, 0), NOTE_K(
+    0
+)), MAH_F), 0);
+
+// flat
+ASSERT_D(mah_query_acci(&KEY(MINOR_KEY, 0, 0, NOTE(B, -1, 0), NOTE_K(
+    NOTE(B, -1, 0),
+    NOTE(E, -1, 0),
+    NOTE(A, -1, 0),
+    NOTE(D, -1, 0),
+    NOTE(G, -1, 0)
+)), MAH_D), -1);
+
+// sharp
+ASSERT_D(mah_query_acci(&KEY(MAJOR_KEY, 0, 0, NOTE(D, 1, 0), NOTE_K(
+    NOTE(F, 2, 0),
+    NOTE(C, 2, 0),
+    NOTE(G, 1, 0),
+    NOTE(D, 1, 0),
+    NOTE(A, 1, 0),
+    NOTE(E, 1, 0),
+    NOTE(B, 1, 0)
+)), MAH_G), 1);

@@ -8,33 +8,33 @@
 
 #define BUF_SIZE 10
 
-void transpose(struct Note mel[], struct Note buf[], int size, struct Interval inter);
+void transpose(struct mah_note mel[], struct mah_note buf[], int size, struct mah_interval inter);
 
 int
 main(void)
 {
-    struct Note mel[] = {
-        {MAHLER_C, MAHLER_NONE, 3},
-        {MAHLER_D, MAHLER_FLAT, 3},
-        {MAHLER_F, MAHLER_SHARP, 4},
+    struct mah_note mel[] = {
+        {MAH_C, MAH_NATURAL, 3},
+        {MAH_D, MAH_FLAT, 3},
+        {MAH_F, MAH_SHARP, 4},
     };
     
-    struct Note buf[BUF_SIZE];
-    int melLen = sizeof(mel) / sizeof(*mel);
-    transpose(mel, buf, melLen, (struct Interval) {
-        5, MAHLER_PERFECT
+    struct mah_note buf[BUF_SIZE];
+    int mel_len = sizeof(mel) / sizeof(*mel);
+    transpose(mel, buf, mel_len, (struct mah_interval) {
+        5, MAH_PERFECT
     });
     
-    char disp[MAHLER_DISP_LEN];
-    for (size_t i = 0; i < melLen; i++) {
-        printf("%s ", printNote(buf[i], disp, MAHLER_DISP_LEN, NULL));
+    char disp[MAH_DISP_LEN];
+    for (int i = 0; i < mel_len; i++) {
+        printf("%s ", mah_write_note(buf[i], disp, MAH_DISP_LEN, NULL));
     }
 }
 
 void
-transpose(struct Note* mel, struct Note* buf, int size, struct Interval inter)
+transpose(struct mah_note* mel, struct mah_note* buf, int size, struct mah_interval inter)
 {
     for (int i = 0; i < size; i++) {
-        buf[i] = getInter(mel[i], inter, NULL);
+        buf[i] = mah_get_inter(mel[i], inter, NULL);
     }
 }

@@ -1,0 +1,23 @@
+// invalid chord error
+ASSERT_E(mah_get_chord(NOTE(E, 2, 9), CHORD_B(3, INTER_L(INTER(3, MAJOR), INTER(5, MAJOR))), NOTE_N(3, 0), NOTE_N(3, 0), &ERR), ERROR_INVALID_QUAL);
+
+// 4 note chord
+ASSERT_C(mah_get_chord(NOTE(F, -1, 4), &MAH_DOMINANT_7, NOTE_N(4, 0), NOTE_N(4, 0), &ERR), CHORD(
+    4, 0,
+    NOTE_L(NOTE(F, -1, 4), NOTE(A, -1, 4), NOTE(C, -1, 5), NOTE(E, -2, 5)),
+    NOTE_L(NOTE(F, -1, 4), NOTE(A, -1, 4), NOTE(C, -1, 5), NOTE(E, -2, 5))
+));
+
+// 3 note chord
+ASSERT_C(mah_get_chord(NOTE(D, 0, 9), &MAH_MAJOR_TRIAD, NOTE_N(3, 0), NOTE_N(3, 0), &ERR), CHORD(
+    3, 0,
+    NOTE_L(NOTE(D, 0, 9), NOTE(F, 1, 9), NOTE(A, 0, 9)),
+    NOTE_L(NOTE(D, 0, 9), NOTE(F, 1, 9), NOTE(A, 0, 9))
+));
+
+// 2 note chord
+ASSERT_C(mah_get_chord(NOTE(C, 3, 1), CHORD_B(2, INTER_L(INTER(1, PERFECT))), NOTE_N(2, 0), NOTE_N(2, 0), &ERR), CHORD(
+    2, 0,
+    NOTE_L(NOTE(C, 3, 1), NOTE(C, 3, 1)),
+    NOTE_L(NOTE(C, 3, 1), NOTE(C, 3, 1))
+));
