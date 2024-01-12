@@ -13,7 +13,8 @@
     C1  D1  E1  F1  G1  A1  B1  C2
 */
 
-int main(void)
+int
+main(void)
 {
     struct mah_note sc_notes[8];
     struct mah_scale scale = mah_get_scale(

@@ -21,7 +21,8 @@
 
 void gen_circle_fifths(struct mah_note buf[], int iter);
 
-int main(void)
+int
+main(void)
 {
 
     struct mah_note buf[GEN_SIZE];
@@ -35,11 +36,12 @@ int main(void)
     }
 }
 
-void gen_circle_fifths(struct mah_note buf[], int iter)
+void
+gen_circle_fifths(struct mah_note buf[], int iter)
 {
     struct mah_note prev = (struct mah_note) { MAH_C, MAH_NATURAL, 0 };
-    buf[0]               = prev;
 
+    buf[0] = prev;
     for (int i = 1; i < iter; i++)
     {
         buf[i] = prev = mah_get_inter(prev, (struct mah_interval) { 5, MAH_PERFECT }, NULL);

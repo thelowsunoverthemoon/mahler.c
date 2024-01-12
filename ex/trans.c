@@ -10,7 +10,8 @@
 
 void transpose(struct mah_note mel[], struct mah_note buf[], int size, struct mah_interval inter);
 
-int main(void)
+int
+main(void)
 {
     struct mah_note mel[] = {
         { MAH_C, MAH_NATURAL, 3 },
@@ -29,7 +30,8 @@ int main(void)
     }
 }
 
-void transpose(struct mah_note* mel, struct mah_note* buf, int size, struct mah_interval inter)
+void
+transpose(struct mah_note* mel, struct mah_note* buf, int size, struct mah_interval inter)
 {
     for (int i = 0; i < size; i++)
     {

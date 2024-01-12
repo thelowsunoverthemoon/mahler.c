@@ -110,8 +110,8 @@ mah_get_chord(
     for (int i = 1; i < type->size; i++)
     {
         enum mah_error inter_err = MAH_ERROR_NONE;
-        notes[i]                 = base[i] =
-            mah_get_inter(notes[i - 1], type->steps[i - 1], &inter_err); // - 1 b/c interval starts at note before
+
+        notes[i] = base[i] = mah_get_inter(notes[i - 1], type->steps[i - 1], &inter_err); // - 1 b/c starts at prev note
         if (inter_err != MAH_ERROR_NONE)
         {
             RETURN_EMPTY_STRUCT_ERR(mah_chord, inter_err);
