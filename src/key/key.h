@@ -5,18 +5,21 @@
 
 // Enums //
 
-typedef enum mah_key_type {
-    MAH_MAJOR_KEY, MAH_MINOR_KEY
+typedef enum mah_key_type
+{
+    MAH_MAJOR_KEY,
+    MAH_MINOR_KEY
 } mah_key_type;
 
 // Structures //
 
-typedef struct mah_key_sig {
+typedef struct mah_key_sig
+{
     enum mah_key_type type;
-    int               alter;
-    int               size;
-    struct mah_note   key;
-    struct mah_note   notes[7];
+    int alter;
+    int size;
+    struct mah_note key;
+    struct mah_note notes[7];
 } mah_key_sig;
 
 // Functions //

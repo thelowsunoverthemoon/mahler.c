@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include "mahler.h"
+#include <stdio.h>
 
 // Generate the Major Circle of 5ths for 12 iterations //
 /*
@@ -21,28 +21,27 @@
 
 void gen_circle_fifths(struct mah_note buf[], int iter);
 
-int
-main(void)
+int main(void)
 {
-    
+
     struct mah_note buf[GEN_SIZE];
     gen_circle_fifths(buf, GEN_SIZE);
-    
+
     char disp[MAH_DISP_LEN];
-    for (int i = 0; i < GEN_SIZE; i++) {
+    for (int i = 0; i < GEN_SIZE; i++)
+    {
         struct mah_key_sig key = mah_get_key_sig(buf[i], MAH_MAJOR_KEY);
         printf("%s -> %d\n", mah_write_note(buf[i], disp, MAH_DISP_LEN, NULL), key.alter);
     }
 }
 
-void
-gen_circle_fifths(struct mah_note buf[], int iter)
+void gen_circle_fifths(struct mah_note buf[], int iter)
 {
-    struct mah_note prev = (struct mah_note) {MAH_C, MAH_NATURAL, 0};
-    buf[0] = prev;
-    
-    for (int i = 1; i < iter; i++) {
-        buf[i] = prev = mah_get_inter(prev, (struct mah_interval) {5, MAH_PERFECT}, NULL);
+    struct mah_note prev = (struct mah_note) { MAH_C, MAH_NATURAL, 0 };
+    buf[0]               = prev;
+
+    for (int i = 1; i < iter; i++)
+    {
+        buf[i] = prev = mah_get_inter(prev, (struct mah_interval) { 5, MAH_PERFECT }, NULL);
     }
-    
 }

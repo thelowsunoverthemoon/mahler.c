@@ -1,0 +1,10 @@
+﻿---
+BasedOnStyle: Microsoft
+Cpp11BracedListStyle: 'false'
+PointerAlignment: Left
+SpaceBeforeCpp11BracedList: 'true'
+AlignAfterOpenBracket: BlockIndent
+AlignConsecutiveAssignments: Consecutive
+AlwaysBreakAfterDefinitionReturnType: All
+
+...

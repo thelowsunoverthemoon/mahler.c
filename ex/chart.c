@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include "mahler.h"
+#include <stdio.h>
 
 // Create a Major Scale Chart starting from C0 //
 /*
@@ -13,23 +13,27 @@
     C1  D1  E1  F1  G1  A1  B1  C2
 */
 
-int
-main(void)
+int main(void)
 {
     struct mah_note sc_notes[8];
     struct mah_scale scale = mah_get_scale(
-        (struct mah_note) {MAH_C, MAH_NATURAL, 0}, &MAH_MAJOR_SCALE, sc_notes, MAH_ASCEND, NULL
+        (struct mah_note) {
+            MAH_C,
+            MAH_NATURAL,
+            0,
+        },
+        &MAH_MAJOR_SCALE, sc_notes, MAH_ASCEND, NULL,
     );
 
     char disp[MAH_DISP_LEN];
-    for (int i = 0; i < scale.size; i++) {
-        
+    for (int i = 0; i < scale.size; i++)
+    {
+
         struct mah_note temp_notes[8];
-        struct mah_scale temp = mah_get_scale(
-            scale.notes[i], &MAH_MAJOR_SCALE, temp_notes, MAH_ASCEND, NULL
-        );
-        
-        for (size_t j = 0; j < scale.size; j++) {
+        struct mah_scale temp = mah_get_scale(scale.notes[i], &MAH_MAJOR_SCALE, temp_notes, MAH_ASCEND, NULL);
+
+        for (int j = 0; j < scale.size; j++)
+        {
             printf("%-3s ", mah_write_note(temp.notes[j], disp, MAH_DISP_LEN, NULL));
         }
         putchar('\n');

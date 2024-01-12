@@ -3,9 +3,9 @@
 <div align="center">
     
 <a href="">![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/thelowsunoverthemoon/mahler.c/run_unit_tests.yml)</a>
-<a href="">![Static Badge](https://img.shields.io/badge/code_coverage-100%25-%23327da8)</a>
+<a href="">[![Static Badge](https://img.shields.io/badge/coverage-100%25-%23327da8)](https://github.com/thelowsunoverthemoon/mahler.c/tree/master/test)</a>
 <a href="">[![Stack Overflow Badge](https://img.shields.io/badge/docs-purple)](https://github.com/thelowsunoverthemoon/mahler.c/blob/master/doc/README.md)</a>
-
+<a href="">[![Static Badge](https://img.shields.io/badge/clang--format-brown)](https://github.com/thelowsunoverthemoon/mahler.c/tree/master/.clang-format)</a>
 </div>
 
 <p align="center">Simple library for Western music theory in C99</p>

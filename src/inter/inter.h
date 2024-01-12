@@ -6,16 +6,22 @@
 
 // Enums //
 
-enum mah_quality {
-    MAH_MINOR = -1, MAH_MAJOR = 0, MAH_AUGMENTED = 1, MAH_DIMINISHED = -2, MAH_PERFECT = 3
-};
+typedef enum mah_quality
+{
+    MAH_MINOR      = -1,
+    MAH_MAJOR      = 0,
+    MAH_AUGMENTED  = 1,
+    MAH_DIMINISHED = -2,
+    MAH_PERFECT    = 3
+} mah_quality;
 
 // Structures //
 
-struct mah_interval {
-    int              steps;
+typedef struct mah_interval
+{
+    int steps;
     enum mah_quality qual;
-};
+} mah_interval;
 
 // Functions //
 

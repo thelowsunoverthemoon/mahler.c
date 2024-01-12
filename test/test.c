@@ -21,28 +21,29 @@ enum mah_error ERR = MAH_ERROR_NONE;
 void assert(int val, int line, char* file, char* expr);
 
 bool comp_note(struct mah_note note_a, struct mah_note note_b);
-bool comp_notes(struct mah_note const* notes_a, struct mah_note const* notes_b, size_t size_a, size_t size_b);
+bool comp_notes(struct mah_note const* notes_a, struct mah_note const* notes_b, int size_a, int size_b);
 
 bool comp_interval(struct mah_interval inter_a, struct mah_interval inter_b);
-bool comp_inters(struct mah_interval const* inters_a, struct mah_interval const* inters_b, size_t size_a, size_t size_b);
+bool comp_inters(struct mah_interval const* inters_a, struct mah_interval const* inters_b, int size_a, int size_b);
 
 bool comp_key_sig(struct mah_key_sig key_a, struct mah_key_sig key_b);
 
 bool comp_chord(struct mah_chord chord_a, struct mah_chord chord_b);
 bool comp_chord_result_list(struct mah_chord_result_list list_a, struct mah_chord_result_list list_b);
 bool comp_chord_result(struct mah_chord_result result_a, struct mah_chord_result result_b);
-bool comp_chord_results(struct mah_chord_result* results_a, struct mah_chord_result* results_b, size_t size_a, size_t size_b);
+bool comp_chord_results(struct mah_chord_result* results_a, struct mah_chord_result* results_b, int size_a, int size_b);
 bool comp_chord_base(struct mah_chord_base const* base_a, struct mah_chord_base const* base_b);
 
 bool comp_scale(struct mah_scale scale_a, struct mah_scale scale_b);
 bool comp_scale_result_list(struct mah_scale_result_list list_a, struct mah_scale_result_list list_b);
 bool comp_scale_result(struct mah_scale_result result_a, struct mah_scale_result result_b);
-bool comp_scale_results(struct mah_scale_result* results_a, struct  mah_scale_result* results_b, size_t size_a, size_t size_b);
+bool comp_scale_results(struct mah_scale_result* results_a, struct  mah_scale_result* results_b, int size_a, int size_b);
 bool comp_scale_base(struct mah_scale_base const* base_a, struct mah_scale_base const* base_b);
 
 int
 main(void)
 {
+    
     #include "suites/inter/mah_return_inter.test"
     #include "suites/inter/mah_get_inter.test"
     
@@ -66,7 +67,7 @@ main(void)
     if (TEST.pass != TEST.total) {
         return EXIT_FAILURE;
     }
-    
+
 }
 
 // Function Definitions //
@@ -92,13 +93,13 @@ comp_note(struct mah_note note_a, struct mah_note note_b)
 }
 
 bool
-comp_notes(struct mah_note const* notes_a, struct mah_note const* notes_b, size_t size_a, size_t size_b)
+comp_notes(struct mah_note const* notes_a, struct mah_note const* notes_b, int size_a, int size_b)
 {
     if (size_a != size_b) {
         return false;
     }
 
-    for (size_t i = 0; i < size_a; i++) {
+    for (int i = 0; i < size_a; i++) {
         if (!comp_note(notes_a[i], notes_b[i])) {
             return false;
         }
@@ -114,13 +115,13 @@ comp_interval(struct mah_interval inter_a, struct mah_interval inter_b)
 }
 
 bool
-comp_inters(struct mah_interval const* inters_a, struct mah_interval const* inters_b, size_t size_a, size_t size_b)
+comp_inters(struct mah_interval const* inters_a, struct mah_interval const* inters_b, int size_a, int size_b)
 {
     if (size_a != size_b) {
         return false;
     }
 
-    for (size_t i = 0; i < size_a; i++) {
+    for (int i = 0; i < size_a; i++) {
         if (!comp_interval(inters_a[i], inters_b[i])) {
             return false;
         }
@@ -172,13 +173,13 @@ comp_chord_result_list(struct mah_chord_result_list list_a, struct mah_chord_res
 }
 
 bool
-comp_chord_results(struct mah_chord_result* results_a, struct mah_chord_result* results_b, size_t size_a, size_t size_b)
+comp_chord_results(struct mah_chord_result* results_a, struct mah_chord_result* results_b, int size_a, int size_b)
 {
     if (size_a != size_b) {
         return false;
     }
 
-    for (size_t i = 0; i < size_a; i++) {
+    for (int i = 0; i < size_a; i++) {
         if (!comp_chord_result(results_a[i], results_b[i])) {
             return false;
         }
@@ -218,13 +219,13 @@ comp_scale_result_list(struct mah_scale_result_list list_a, struct mah_scale_res
 }
 
 bool
-comp_scale_results(struct mah_scale_result* results_a, struct  mah_scale_result* results_b, size_t size_a, size_t size_b)
+comp_scale_results(struct mah_scale_result* results_a, struct  mah_scale_result* results_b, int size_a, int size_b)
 {
     if (size_a != size_b) {
         return false;
     }
 
-    for (size_t i = 0; i < size_a; i++) {
+    for (int i = 0; i < size_a; i++) {
         if (!comp_scale_result(results_a[i], results_b[i])) {
             return false;
         }

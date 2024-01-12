@@ -24,6 +24,15 @@ ASSERT_CRL(mah_return_chord(NOTE_L(NOTE(A, 0, 0), NOTE(G, 1, 1)), 2, &CHORD_LIST
     ))
 );
 
+// B edge case
+ASSERT_CRL(mah_return_chord(NOTE_L(NOTE(B, 0, 0), NOTE(D, 1, 0), NOTE(F, 1, 0), NOTE(A, 0, 0)), 4, &CHORD_LIST, NULL, &ERR),
+    CHD_RES_LIST(2, 0, CHD_RES_L(2)),
+    CHD_RES_LIST(2, 2, CHD_RES_C(
+        CHD_RES(NOTE(B, 0, 0), &MAH_DOMINANT_7),
+        CHD_RES(NOTE(C, -1, 0), &MAH_DOMINANT_7)
+    ))
+);
+
 // exact chord
 ASSERT_CRL(mah_return_chord(NOTE_L(NOTE(A, 0, 0), NOTE(F, 0, 0), NOTE(C, 0, 0), NOTE(E, -1, 1)), 4, &CHORD_LIST, NULL, &ERR),
     CHD_RES_LIST(2, 0, CHD_RES_L(2)),
