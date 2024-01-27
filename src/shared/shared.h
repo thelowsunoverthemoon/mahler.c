@@ -11,6 +11,7 @@
 
 // Adds enharmonic Result entries to list for return functions
 #define ADD_MATCHING_RESULT(err, type, match)                                                                          \
+    do                                                                                                                 \
     {                                                                                                                  \
         struct mah_note ret = from_semitone(d);                                                                        \
         RETURN_IF_OVERFLOW_ERR(err);                                                                                   \
