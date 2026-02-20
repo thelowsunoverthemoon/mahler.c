@@ -226,7 +226,7 @@ mah_return_scale(
             continue;
         }
 
-        enum MahlerError scale_err = MAH_ERROR_NONE;
+        enum mah_error scale_err = MAH_ERROR_NONE;
         struct mah_scale base      = mah_get_scale(
             (struct mah_note) {
                      .tone = MAH_C,

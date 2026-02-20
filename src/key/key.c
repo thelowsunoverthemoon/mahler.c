@@ -110,7 +110,7 @@ mah_return_key_sig(int const alter, enum mah_key_type const type)
     }
 
     return make_key_sig(
-        type == MAH_MAJOR ? key : mah_get_inter(key, (struct mah_interval) { 6, MAH_MAJOR }, NULL), alter, type
+        type == MAH_MAJOR_KEY ? key : mah_get_inter(key, (struct mah_interval) { 6, MAH_MAJOR }, NULL), alter, type
     );
 }
 
